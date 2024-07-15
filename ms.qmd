@@ -53,9 +53,17 @@ We also considered individuals to be reinforced if the cricket was eaten after t
  
 
 ## Results
+
+```{r, data_processing}
+#| label: data_processing
+# The result will be the final df with the data for the analysis. To do so, we first estimate the learning slope (choice and errors) for each individual and then merge the data with the mitochondrial data, extracted using the script in extract.R and extraction_finc.R (see R folder). The final df will be saved in (here("output/databases_clean/data_complete.csv") 
+refit = FALSE
+source(here("R", "data_process.R"))
+```
+
 ```{r, sampleSize}
 #| label: sampleSize
-# List with the sample sizes from the database (here("output/databases_clean/data_asso.csv") as the sample size per species and group is the same on each task. We used function sample (see func.R) to estimate the sample size per treatment and species.
+# List with the sample sizes from the database (here("output/databases_clean/data_complete.csv") as the sample size per species and group is the same on each task. We used function sample (see func.R) to estimate the sample size per treatment and species.
 source(here("R", "func.R"))
 #
 specie <- c("delicata", "guichenoti")

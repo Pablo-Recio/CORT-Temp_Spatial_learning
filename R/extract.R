@@ -14,7 +14,7 @@ library(rstan)
 setwd(here())
 
 # source custom functions
-source("./r/func.R")
+source("./r/extraction_func.R")
 
 # make a path to your data
 path <- "./data/"
