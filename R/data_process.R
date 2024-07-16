@@ -24,31 +24,32 @@ data_spal <- data %>%
   ungroup() %>% 
 data.frame()
 #### A.2) Extract the slope of each individual
-  #Fit the models only if they have not been fit yet (if refit=TRUE)
-  if(refit){
-    # Formula models
-    formula <- choice ~ 1 + (1 + day|lizard_id) + (1|clutch)
-    # Fit the models
-    # Choice
-    model_choice <- brm(formula,
+#Fit the models only if they have not been fit yet (if refit = TRUE)
+if(refit==TRUE){
+# Fit the models
+  # Choice
+  formula_choice <- choice ~ 1 + (1 + day|lizard_id) + (1|clutch)
+  model_choice <- brm(formula_choice,
                 data = data_spal,
                 family = bernoulli(link = "logit"),
-                chains = 4, cores = 4, iter = 3000, warmup = 1000, control = list(adapt_delta = 0.99))
-    # Errors
-    model_errors <- brm(formula,
+                chains = 4, cores = 4, iter = 5000, warmup = 1000, control = list(adapt_delta = 0.99))
+  # Errors
+  formula_errors <- errors ~ 1 + (1 + day|lizard_id) + (1|clutch)
+  model_errors <- brm(formula_errors,
                 data = data_spal,
                 negbinomial(link = "log"),
-                chains = 4, cores = 4, iter = 3000, warmup = 1000, control = list(adapt_delta = 0.99))
-    # Write the models to two files
-    saveRDS(model_choice, file = paste0(here("output/models/model_choice.rds")))
-    saveRDS(model_errors, file = paste0(here("output/models/model_errors.rds")))
-
+                chains = 4, cores = 4, iter = 8000, warmup = 2000, prior = ,
+                control = list(adapt_delta = 0.999, max_treedepth = 15))
+  # Write the models to two files
+  saveRDS(model_choice, file = paste0(here("output/models/model_choice.rds")))
+  saveRDS(model_errors, file = paste0(here("output/models/model_errors.rds")))
   } else {
-      # Read the model from a file
-      model_choice <- readRDS(file = paste0(here("output/models/model_choice.rds")))
-      model_errors <- readRDS(file = paste0(here("output/models/model_errors.rds")))
+    # Read the model from a file
+    model_choice <- readRDS(file = paste0(here("output/models/model_choice.rds")))
+    model_errors <- readRDS(file = paste0(here("output/models/model_errors.rds")))
   } 
-  # Extract posteriors
-  posteriors_choice <- as_draws_df(model_choice)
-  posteriors_errors <- as_draws_df(model_errors)
+# Extract posteriors
+posteriors_choice <- as_draws_df(model_choice)
+posteriors_errors <- as_draws_df(model_errors)
+
 
