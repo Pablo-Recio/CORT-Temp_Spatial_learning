@@ -17,29 +17,26 @@ data_spal <- data %>%
     mutate(cort = factor(cort,
       levels = c("B", "A"),
       labels = c("B" = "CORT", "A" = "Control"))) %>%
-    mutate( # Standarize data by trial (i.e. make the first trial where each individual participated their trial 1)
-      first_non_na = min(which(!is.na(choice))),
-      day = ifelse(!is.na(first_non_na),choice - first_non_na + 1, day))%>% 
-      filter(day >= 1) %>%
   ungroup() %>% 
 data.frame()
+#
+#
 #### A.2) Extract the slope of each individual
-#Fit the models only if they have not been fit yet (if refit = TRUE)
+#
+## Fit the models only if they have not been fit yet (if refit = TRUE)
 if(refit==TRUE){
-# Fit the models
   # Choice
-  formula_choice <- choice ~ 1 + (1 + day|lizard_id) + (1|clutch)
-  model_choice <- brm(formula_choice,
+  model_choice <- brm(choice ~ 1 + (1 + day|lizard_id) + (1|clutch),
                 data = data_spal,
                 family = bernoulli(link = "logit"),
-                chains = 4, cores = 4, iter = 5000, warmup = 1000, control = list(adapt_delta = 0.99))
+                chains = 4, cores = 4, iter = 8000, warmup = 2000, 
+                control = list(adapt_delta = 0.99, max_treedepth = 12))
   # Errors
-  formula_errors <- errors ~ 1 + (1 + day|lizard_id) + (1|clutch)
-  model_errors <- brm(formula_errors,
+  model_errors <- brm(errors ~ 1 + (1 + day|lizard_id) + (1|clutch),
                 data = data_spal,
                 negbinomial(link = "log"),
-                chains = 4, cores = 4, iter = 8000, warmup = 2000, prior = ,
-                control = list(adapt_delta = 0.999, max_treedepth = 15))
+                chains = 4, cores = 4, iter = 8000, warmup = 2000,
+                control = list(adapt_delta = 0.99, max_treedepth = 12))
   # Write the models to two files
   saveRDS(model_choice, file = paste0(here("output/models/model_choice.rds")))
   saveRDS(model_errors, file = paste0(here("output/models/model_errors.rds")))
@@ -48,8 +45,68 @@ if(refit==TRUE){
     model_choice <- readRDS(file = paste0(here("output/models/model_choice.rds")))
     model_errors <- readRDS(file = paste0(here("output/models/model_errors.rds")))
   } 
-# Extract posteriors
+#
+## Extract posteriors
 posteriors_choice <- as_draws_df(model_choice)
 posteriors_errors <- as_draws_df(model_errors)
-
-
+#
+#
+#### A.3) Modify posteriors df to get the mean slope and intercept of each individual (the latter would be useful for the figures)
+#
+## Choice
+  post_choice <- posteriors_choice %>%
+    select(starts_with("r_lizard_id")) %>%
+    summarise(across(everything(), list(
+      mean = ~ mean(.x, na.rm = TRUE),
+      sd = ~ sd(.x, na.rm = TRUE),
+      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x))
+    ))) %>%
+  data.frame()
+  post_choice_b <- post_choice %>%
+    pivot_longer(cols = everything(),
+                names_to = "lizard_id", 
+                values_to = "value") %>% # Extract the relevant columns and reshape them
+    mutate(lizard_id = gsub("r_lizard_id\\.", "", lizard_id),  # Remove prefix
+           lizard_id = gsub("\\.", "_", lizard_id),            # Replace all remaining dots with underscores
+           lizard_id = gsub("_Intercept_", "_Intercept", lizard_id),  
+           lizard_id = gsub("_day_", "_day", lizard_id)) %>% # Remove extra underscore
+    separate(lizard_id, into = c("lizard_id", "effect", "stat"),
+            sep = "_", convert = TRUE) %>% # Separate the parameter names to get lizard_id, statistic type, and effect type
+    pivot_wider(names_from = stat, values_from = value, names_prefix = "choice_") %>% # Split the colum stats into mean, sd, and se
+  data.frame()
+#
+## Errors
+  post_errors <- posteriors_errors %>%
+    select(starts_with("r_lizard_id")) %>%
+    summarise(across(everything(), list(
+      mean = ~ mean(.x, na.rm = TRUE),
+      sd = ~ sd(.x, na.rm = TRUE),
+      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x))
+    ))) %>%
+  data.frame()
+  post_errors_b <- post_errors %>%
+    pivot_longer(cols = everything(),
+                names_to = "lizard_id", 
+                values_to = "value") %>% # Extract the relevant columns and reshape them
+    mutate(lizard_id = gsub("r_lizard_id\\.", "", lizard_id),  # Remove prefix
+           lizard_id = gsub("\\.", "_", lizard_id),            # Replace all remaining dots with underscores
+           lizard_id = gsub("_Intercept_", "_Intercept", lizard_id),  
+           lizard_id = gsub("_day_", "_day", lizard_id)) %>% # Remove extra underscore
+    separate(lizard_id, into = c("lizard_id", "effect", "stat"),
+            sep = "_", convert = TRUE) %>% # Separate the parameter names to get lizard_id, statistic type, and effect type
+    pivot_wider(names_from = stat, values_from = value, names_prefix = "errors_") %>% # Split the colum stats into mean, sd, and se
+  data.frame()
+#
+#
+#### A.4) Merge posteriors
+learning_posteriors <- merge(post_choice_b, post_errors_b, by = c("lizard_id", "effect"), all = TRUE)
+#
+#
+#### A.5) Merging initial df with posteriors to get the final learning df with individual learning slopes and treatments
+  mod_spal <- data_spal %>%
+    group_by(lizard_id) %>%
+      filter(day == 1) %>%
+    select(lizard_id, clutch, age, temp, cort) %>% # We modify here the spal df to merge it with the estiamates per invidual
+  data.frame()
+learning_df <- merge(mod_spal, learning_posteriors, by = "lizard_id")
+write.csv(learning_df, here("output/Checking/learning_df.csv"))
