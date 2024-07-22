@@ -2,7 +2,8 @@
 # 1_data_process
 ####################################
 pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, forcats)
-# A) Processing the learning df
+#
+# A) PROCESSING THE LEARNING DF
 data <- read.csv(here("./data/Spatial_learn.csv"))
 #### A.1) Remove individuals who did not participate (more than 15 NAs), remove trials [36-40] (Only in associative) and split treatment into Temp and Cort
 data_spal <- data %>%
@@ -30,7 +31,8 @@ if(refit==TRUE){
                 data = data_spal,
                 family = bernoulli(link = "logit"),
                 chains = 4, cores = 4, iter = 8000, warmup = 2000, 
-                control = list(adapt_delta = 0.99, max_treedepth = 12))
+                control = list(adapt_delta = 0.99, max_treedepth = 12),
+                prior = custom_priors)
   # Errors
   model_errors <- brm(errors ~ 1 + (1 + day|lizard_id) + (1|clutch),
                 data = data_spal,
@@ -53,53 +55,15 @@ posteriors_errors <- as_draws_df(model_errors)
 #
 #### A.3) Modify posteriors df to get the mean slope and intercept of each individual (the latter would be useful for the figures)
 #
+# Getting slopes
+source(here("R", "func.R"))
 ## Choice
-  post_choice <- posteriors_choice %>%
-    select(starts_with("r_lizard_id")) %>%
-    summarise(across(everything(), list(
-      mean = ~ mean(.x, na.rm = TRUE),
-      sd = ~ sd(.x, na.rm = TRUE),
-      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x))
-    ))) %>%
-  data.frame()
-  post_choice_b <- post_choice %>%
-    pivot_longer(cols = everything(),
-                names_to = "lizard_id", 
-                values_to = "value") %>% # Extract the relevant columns and reshape them
-    mutate(lizard_id = gsub("r_lizard_id\\.", "", lizard_id),  # Remove prefix
-           lizard_id = gsub("\\.", "_", lizard_id),            # Replace all remaining dots with underscores
-           lizard_id = gsub("_Intercept_", "_Intercept", lizard_id),  
-           lizard_id = gsub("_day_", "_day", lizard_id)) %>% # Remove extra underscore
-    separate(lizard_id, into = c("lizard_id", "effect", "stat"),
-            sep = "_", convert = TRUE) %>% # Separate the parameter names to get lizard_id, statistic type, and effect type
-    pivot_wider(names_from = stat, values_from = value, names_prefix = "choice_") %>% # Split the colum stats into mean, sd, and se
-  data.frame()
-#
+post_choice_slope <- tidy_post_df("choice", "slope")
 ## Errors
-  post_errors <- posteriors_errors %>%
-    select(starts_with("r_lizard_id")) %>%
-    summarise(across(everything(), list(
-      mean = ~ mean(.x, na.rm = TRUE),
-      sd = ~ sd(.x, na.rm = TRUE),
-      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x))
-    ))) %>%
-  data.frame()
-  post_errors_b <- post_errors %>%
-    pivot_longer(cols = everything(),
-                names_to = "lizard_id", 
-                values_to = "value") %>% # Extract the relevant columns and reshape them
-    mutate(lizard_id = gsub("r_lizard_id\\.", "", lizard_id),  # Remove prefix
-           lizard_id = gsub("\\.", "_", lizard_id),            # Replace all remaining dots with underscores
-           lizard_id = gsub("_Intercept_", "_Intercept", lizard_id),  
-           lizard_id = gsub("_day_", "_day", lizard_id)) %>% # Remove extra underscore
-    separate(lizard_id, into = c("lizard_id", "effect", "stat"),
-            sep = "_", convert = TRUE) %>% # Separate the parameter names to get lizard_id, statistic type, and effect type
-    pivot_wider(names_from = stat, values_from = value, names_prefix = "errors_") %>% # Split the colum stats into mean, sd, and se
-  data.frame()
+post_errors_slope <- tidy_post_df("errors", "slope")
 #
-#
-#### A.4) Merge posteriors
-learning_posteriors <- merge(post_choice_b, post_errors_b, by = c("lizard_id", "effect"), all = TRUE)
+#### A.4) Merge posteriors of the slopes for the analyses with other variables
+learning_posteriors <- merge(post_choice_slope, post_errors_slope, by = "lizard_id", all = TRUE)
 #
 #
 #### A.5) Merging initial df with posteriors to get the final learning df with individual learning slopes and treatments
@@ -109,4 +73,7 @@ learning_posteriors <- merge(post_choice_b, post_errors_b, by = c("lizard_id", "
     select(lizard_id, clutch, age, temp, cort) %>% # We modify here the spal df to merge it with the estiamates per invidual
   data.frame()
 learning_df <- merge(mod_spal, learning_posteriors, by = "lizard_id")
-write.csv(learning_df, here("output/Checking/learning_df.csv"))
+#
+#
+#
+# B) 

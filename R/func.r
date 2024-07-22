@@ -1,22 +1,71 @@
 #################### 
 ####################
-pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes)
+pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x)
 #
+####################
+####################
+# Function to make the first cleaning for the initial posteriors to estimate individual learning slopes or intercepts
+#' @title tidy_post_df
+#' @param df to select the posteriors to use. Options: choice or errors
+#' @param effect to select whether we want the intercept or the slopes. Options: slope or intercept
+tidy_post_df <- function(df, effect) {
+  if(df == "choice") {
+    
+    data <- posteriors_choice
+    label_df <- "choice_"
+  } else if(df == "errors") {
+    data <- posteriors_errors
+    label_df <- "errors_"
+  } else {
+    stop("df not valid")
+  }
+  if(effect == "slope") {
+    label_effect <- "day"
+    label_df <- paste0(label_df, "slope_")
+    pattern <- "^r_lizard_id\\[\\d+,day\\]$"
+  } else if(effect == "intercept") {
+    label_effect <- "Intercept"
+    label_df <- paste0(label_df, "intercept_")
+    pattern <- "^r_lizard_id\\.\\d+\\.Intercept\\."
+    data <- data %>%
+      select(b_Intercept, matches("^r_lizard.*Intercept]$")) %>%
+      mutate(across(-b_Intercept, ~ . + b_Intercept)) %>%
+    data.frame()
+  } else {
+    stop("effect not valid")
+  }
+  tidy_post_1 <- data %>%
+    select(matches(pattern)) %>%
+    summarise(across(everything(), list(
+      mean = ~ mean(.x, na.rm = TRUE),
+      sd = ~ sd(.x, na.rm = TRUE),
+      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x))
+    ))) %>%
+  data.frame()
+  tidy_post_2 <- tidy_post_1 %>%
+    pivot_longer(cols = everything(),
+              names_to = "lizard_id", 
+              values_to = "value") %>% # Extract the relevant columns and reshape them
+    mutate(lizard_id = gsub("r_lizard_id\\.", "", lizard_id),  # Remove prefix
+           lizard_id = gsub(paste0(label_effect, "\\."), "", lizard_id)) %>%      # Replace all remaining dots with underscores
+    separate(lizard_id, into = c("lizard_id", "stat"),
+            sep = "\\.", extra = "merge", fill = "right") %>% # Separate the parameter names to get lizard_id, statistic type, and effect type
+    pivot_wider(names_from = stat, values_from = value, names_prefix = label_df) %>% # Split the colum stats into mean, sd, and se
+    data.frame()
+  return(tidy_post_2)
+}
 ####################
 ####################
 # Extract sample size per group
 #' @title sample
 #' @description Estract sample size per group
+#' @param df To select the df
 #' @param sp To select the species of interest ("deli"/"guich")
-#' @param bias To select group depending on the colour assigned as correct for each task ("blue"/"red")
 #' @param corti To select cort treatment ("CORT"/"Control")
 #' @param therm To select temp treatment ("Cold"/"Hot")
-sample <- function(sp, bias, corti, therm){
-  #Specify database
-  data <- data_asso
-  # Count sample
-  sample_size <- data %>%
-                filter(species == sp, group == bias, cort == corti, temp == therm, Associative_Trial == 1) %>%
+sample <- function(df, sp, corti, therm){
+  sample_size <- df %>%
+                filter(species == sp, cort == corti, temp == therm, trial_reversal == 1) %>%
                 group_by(lizard_id) %>%
                 summarise(n = n()) %>%
                 summarise(total_count = sum(n)) %>%
@@ -28,35 +77,24 @@ sample <- function(sp, bias, corti, therm){
 # Fit models and extract posteriors both per each treatment:
 #' @title fit_m Function
 #' @description Fit brm models for different the associative task
-#' @param type To define if we are analysing the associative ("asso) or the reversal ("rev")
+#' @param df To select the df
 #' @param sp To select the species of interest ("deli"/"guich")
-#' @param bias To select group depending on the colour assigned as correct for each task ("blue"/"red")
-#' @param refir To choose whether to refit the models (TRUE, default) or use the ones already made (FALSE)
+#' @param com To select whether the analyses are done for the full dataset ("complete") or for only those lizards 
+# that met the learning criterion ("suppl")
+#' @param refit To choose whether to refit the models (TRUE, default) or use the ones already made (FALSE)
 #' @return Raw posteriors of fitted brm model for each treatment, species, and group (df)
-fit_m <- function(type, sp, bias, refit = TRUE) {
-  #Specify the type
-  if (type == "asso"){
-    data <- data_asso
-    formula <- FC_associative ~ Associative_Trial*cort*temp + (1 + Associative_Trial|lizard_id)
-  }else{
-    if(type == "rev"){
-      data <- data_rev
-      formula <- FC_reversal ~ trial_reversal*cort*temp + (1 + trial_reversal|lizard_id)
-    } else {
-      stop("Type not valid")
-      return(NULL)  # Return NULL in case of an invalid option
-    }
-  }
+fit_m <- function(df, sp, com, refit = TRUE) {
+  formula <- (FC_reversal ~ trial_reversal*cort*temp + (1 + trial_reversal|lizard_id) + (1|clutch)) 
   #Specify species
     if (sp == "deli"){
-      sp_data <- data %>%
+      sp_data <- df %>%
             group_by(lizard_id) %>%
             filter(species == "delicata") %>%
             ungroup() %>%
       data.frame() 
     } else {
       if(sp == "guich"){
-        sp_data <- data %>%
+        sp_data <- df %>%
               group_by(lizard_id) %>%
               filter(species == "guichenoti") %>%
               ungroup() %>%
@@ -65,36 +103,18 @@ fit_m <- function(type, sp, bias, refit = TRUE) {
         stop("Species not valid")
       }
     }
-  #Specify bias/group
-    if (bias == "blue"){
-      sub_data <- sp_data %>%
-            group_by(lizard_id) %>%
-            filter(group == "Blue") %>%
-            ungroup() %>%
-      data.frame() 
-    } else {
-      if(bias == "red"){
-        sub_data <- sp_data %>%
-              group_by(lizard_id) %>%
-              filter(group == "Red") %>%
-              ungroup() %>%
-        data.frame()
-      } else {
-        stop("Group/colour not valid")
-      }
-    }
   #Fit the model only if it has not been fit yet (if refit=TRUE)
   if(refit){
     # Fit the model
     model <- brm(formula,
-                data = sub_data,
+                data = sp_data,
                 family = bernoulli(link = "logit"),
                 chains = 4, cores = 4, iter = 3000, warmup = 1000, control = list(adapt_delta = 0.99))
     # Write the model to a file
-    saveRDS(model, file = paste0(here("output/models/"), type, "_", sp, "_", bias, ".rds"))
+    saveRDS(model, file = paste0(here("output/models/"), sp, com, ".rds"))
   } else {
       # Read the model from a file
-      model <- readRDS(file = paste0(here("output/models/"), type, "_", sp, "_", bias, ".rds"))
+      model <- readRDS(file = paste0(here("output/models/"), sp, com, ".rds"))
   } 
   # Extract posteriors
   posteriors <- as_draws_df(model)
@@ -123,7 +143,7 @@ return(new_df)
 }
 ####################
 ####################
-# Estimate p-values using pmcm
+# Estimate pmcm
 #' @title pMCMC Function
 #' @param x The vector for the posterior distribution. Note that this will test the null hypothesis that the parameter of interest is significantly different from 0. 
 #' @param null A numeric value decsribing what the null hypothesis should be
@@ -146,11 +166,187 @@ pmcmc <- function(x, null = 0, twotail = TRUE, dir){
 }
 ####################
 ####################
-# Function to format numbers with 2 decimal places
+# Function to format numbers with n decimal places
 #' @title format_dec
 #' @param x The object
 #' @param n The number of decimals
 format_dec <- function(x, n) {
   z <- sprintf(paste0("%.",n,"f"), x)
-  return(as.numeric(z))
+  return(z)
+}
+####################
+####################
+# Function to format p_values with n decimal places
+#' @title format_p
+#' @param x The object
+#' @param n The number of decimals
+format_p <- function(x, n) {
+  z <- sprintf(paste0("%.",n,"f"), x)
+  tmp <- ifelse(as.numeric(z) <= 0.001, "< 0.001",
+         ifelse(as.numeric(z) <= 0.05 & as.numeric(z) > 0.001, "< 0.05",
+                paste0("= ", as.character(z))))
+  return(tmp)
+}
+###################
+###################
+# Function to create each df for the slopes figure
+#' @title df_plot_slopes
+#' @param type to select the response variable: "choice" or "errors"
+df_plot_slopes <- function(type){
+  data <- learning_df %>%
+    mutate(Treatment = paste(cort, temp, sep = "-")) %>%
+    mutate(Treatment = factor(Treatment,
+      levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot"),
+      labels = c("CORT-Cold" = "CORT-Cold (n=20)",
+                "Control-Cold" = "Control-Cold (n=20)",
+                "CORT-Hot" = "CORT-Hot (n=19)",
+                "Control-Hot" = "Control-Hot (n=20)")
+    )) %>%
+  data.frame()
+  if(type == "choice"){
+    data_fig <- data %>%
+      select(lizard_id, Treatment, choice_slope__mean, choice_slope__sd, choice_slope__se) %>%
+      rename(slope_mean = choice_slope__mean,
+            slope_sd = choice_slope__sd,
+            slope_se = choice_slope__se) %>%
+    data.frame()
+  } else if(type == "errors") {
+    data_fig <- data %>%
+      select(lizard_id, Treatment, errors_slope__mean, errors_slope__sd, errors_slope__se) %>%
+      rename(slope_mean = errors_slope__mean,
+            slope_sd = errors_slope__sd,
+            slope_se = errors_slope__se) %>%
+    data.frame()
+  } else {
+    stop("type not valid")
+  }
+  data_plot <- data_fig %>%
+    group_by(Treatment) %>%
+    summarize(
+      Mean = mean(slope_mean),
+      SD = mean(slope_sd),
+      SE = mean(slope_se)
+    ) %>%
+    ungroup() %>%
+  data.frame()
+  return(data_plot)
+}
+####################
+####################
+# Function to create the plot for the slopes
+#' @title plot_slopes
+#' @param type to select the df for the violin plot
+plot_slopes <- function(type){
+  data <- learning_df %>%
+    mutate(Treatment = paste(cort, temp, sep = "-")) %>%
+    mutate(Treatment = factor(Treatment,
+      levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot"),
+      labels = c("CORT-Cold" = "CORT-Cold (n=20)",
+                "Control-Cold" = "Control-Cold (n=20)",
+                "CORT-Hot" = "CORT-Hot (n=19)",
+                "Control-Hot" = "Control-Hot (n=20)")
+    )) %>%
+  data.frame()
+  if(type == "choice"){
+    data_fig <- data %>%
+      select(lizard_id, Treatment, choice_slope__mean, choice_slope__sd, choice_slope__se) %>%
+      rename(slope_mean = choice_slope__mean,
+            slope_sd = choice_slope__sd,
+            slope_se = choice_slope__se) %>%
+    data.frame()
+  } else if(type == "errors") {
+    data_fig <- data %>%
+      select(lizard_id, Treatment, errors_slope__mean, errors_slope__sd, errors_slope__se) %>%
+      rename(slope_mean = errors_slope__mean,
+            slope_sd = errors_slope__sd,
+            slope_se = errors_slope__se) %>%
+    data.frame()
+  } else {
+    stop("type not valid")
+  }
+  data_plot <- data_fig %>%
+    group_by(Treatment) %>%
+    summarize(
+      Mean = mean(slope_mean),
+      SD = mean(slope_sd),
+      SE = mean(slope_se)
+    ) %>%
+    ungroup() %>%
+  data.frame()
+#
+  plot2 <- ggplot(data_fig, aes(x = Treatment, y = slope_mean, fill = Treatment)) +
+  geom_flat_violin(alpha = 0.5) +
+  scale_fill_manual(values = c("CORT-Cold (n=20)"="#00008B", "Control-Cold (n=20)"="#68bde1", 
+                    "CORT-Hot (n=19)"="#b50101", "Control-Hot (n=20)"="#fa927d")) +
+  geom_point(data = data_plot, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
+  geom_segment(data = data_plot, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  ylim(-0.015, max(data_fig$slope_mean)) +
+  coord_flip() +
+  theme_classic() +
+  labs(y = "Slope estimates", x = "Treatments") +
+  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm"),
+    axis.text.y = element_blank(),   # Remove y-axis labels
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "right",
+    legend.title = element_text(size = 12, family = "Times"),
+    legend.text = element_text(size = 11, family = "Times")
+    )
+  return(plot2)
+}
+####################
+####################
+# Function to create the plot per species (A-B or C-D) for fig-results
+#' @title plotting
+#' @param sp to select the species for the labels
+#' @param df_prob to select the df for probability 
+#' @param df_violin to select the df for the violin plot
+#' @param df_points to select the df for the points and geom_bars
+plotting <- function(sp, df_prob, df_violin, df_points){
+  # Specify labels depending on species and relevel the factor treatment for the legend
+    df_violin$Treatment <- factor(df_violin$Treatment,
+      levels = c("Control-Hot (n =  20 )", "CORT-Hot (n =  20 )", "Control-Cold (n = 19 )", "CORT-Cold (n = 20 )"))
+    img <- readPNG("./Others/Deli.png")
+    note <- paste("L. delicata")
+  # First part of the plot, the probabilities of choosing right over trial
+  plot1 <- ggplot(df_prob, aes(x = Trial, y = Mean_Predicted_prob, color = Treatment)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CORT-Cold"="#00008B", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
+  geom_ribbon(aes(ymin = Mean_Predicted_prob - SE_Predicted_prob, ymax = Mean_Predicted_prob + SE_Predicted_prob, fill = Treatment), color = NA, alpha = 0.075) + 
+  scale_fill_manual(values = c("CORT-Cold"="darkblue", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
+  theme_classic() +
+  labs(y = "Predicted probability of correct choice", x = "Trial") +
+  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
+  theme(
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "none"
+  )
+  #
+  # Second part of the plot: the estimates of each treatment in violin plot
+  plot2 <- ggplot(df_violin, aes(x = Treatment, y = Value, fill = Treatment)) +
+  geom_flat_violin(alpha = 0.5) +
+  scale_fill_manual(values = c("CORT-Cold"="#00008B", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
+  geom_point(data = df_points, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
+  geom_segment(data = df_points, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  ylim(-0.015, max(df_violin$Value)) +
+  coord_flip() +
+  theme_classic() +
+  labs(y = "Slope estimates", x = "Treatments") +
+  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm"),
+    axis.text.y = element_blank(),   # Remove y-axis labels
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "right",
+    legend.title = element_text(size = 12, family = "Times"),
+    legend.text = element_text(size = 11, family = "Times")
+    )
+  #
+  # Combine them
+  plot <- plot_grid(plot1, plot2, labels = lab, nrow = 1, rel_widths = c(0.45, 0.45)) +
+    annotation_custom(rasterGrob(img), xmin = 0.73, xmax = 0.98, ymin = 0.73, ymax = 0.98) +
+    annotate("text", x = 0.5, y = 0.05, label = note, size = 5, color = "black", fontface = "italic")
+  return(plot)
 }
