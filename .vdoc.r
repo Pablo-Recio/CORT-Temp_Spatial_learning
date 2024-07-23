@@ -1,47 +1,47 @@
----
-docx: 
-bibliography: "./bib/refs.bib"
-csl: "./bib/biology-letters.csl"
-reference-doc: "./bib/tmpl.docx"
-execute:
-  echo: false
-  error: false
-  cache: false
-  warning: false
-link-citations: true
-crossref:  
-  fig-title: Fig    # (default is "Figure")
-  title-delim: —     # (default is ":")
-  fig-prefix: Fig.   # (default is "Figure")
-  tbl-prefix: Table  # (default is "Table")
-editor_options: 
-  chunk_output_type: console
----
-
-```{r}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #| label: setup
 pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x, PupillometryR, cowplot, png, grid)
-```
-
-## Introduction
-
-
-## Methods  
-
-#### Husbandry  
-*Breeding colony* -- The study was conducted with juveniles of the Delicate skink (_Lamprophpolis delicata_) from a breeding colony kept in the lab since 2019. The colony is composed by a total of 270 adults housed in big containers (41.5 L x 30.5 W x 21 H cm) with six lizards (2 males and 4 females) per enclosure. Enclosures are provided with non-stick matting, shelter, and several small water dishes. Water is given daily, and they are fed approx. 40 mid-size crickets (*Acheta domestica*) per enclosure three days a week. Crickets are dusted with calcium weekly and multivitamin and calcium biweekly. To ensure a temperature gradient, we employ a heat chord and a heat lamp following a 12 h light:12 h dark cycle. Room temperatures are set to 22-24 Celsius, and warm side of enclosures is usually at 32 Celsius.  
-
-*Eggs collection and incubation* -- Between mid-October 2022 to the end of February 2023, we provided females with a place to lay the eggs by means of small boxes (12.5 L x 8.3 W x 5 H cm) with moist vermiculite inside, that were placed in one extreme of the communal enclosures (see above). We checked for the presence of eggs in the boxes three days a week. After collection, we measured length and width of eggs with a digital caliper to the nearest 0.1 mm and weight them with a (OHAUS, Model spx123) digital scale ± 0.001g error. Then eggs were treated with CORT or vehicle (see CORT and Temperature manipulation below) and were placed in individual cups (80 mL) with moist vermiculite (12 parts water to 4 parts vermiculite). The cups were covered with cling wrap to retain moisture and left in LATWIT 2X5D-R1160 incubators at two different temperatures (see CORT and Temperature manipulation below) until hatching.  
-
-*Hatchlings* -- Eggs in the incubator were checked three times a week for hatchlings. After hatchling, we measured juveniles' SVL and Tail Length (TL) with a rule to the nearest mm and weighted them with a (OHAUS, Model spx123) digital scale ± 0.001g error. We then placed hatchlings in individual enclosures (18.7L x 13.2W x 6.3H cm) and provided them with non-stick matting and a small water dish. During this period, they were sprayed water every day and received 3-6 small *A. domestica* crickets three times a week. All care otherwise follows similar protocols to adults (see above).  
-Two weeks before we started the training phase (see below), lizards were moved to the experimental arena for acclimatation. The arenas were individual medium size (41 L x 29.7 W x 22 H cm) plastic containers with a shelter (9 L x 6 W x 1.5 H cm) on one of the extremes and a water dish on the other. These new enclosures were placed in two rooms in 7 different racks associated to 7 different CCTV systems (device model DVR-HP210475) that allowed us to record their behaviour during the experiment (see details below). The number of lizards per species and treatment in each rack was counterbalanced to control for any effect of the room or the position of the lizard in the rack. During acclimatation and all the experiment, lizards were fed with only one cricket per day dusted with calcium and multivitamin (see protocol below), and water was supplied *ad libitum*. We provided a temperature gradient by means of a heat cord and heat lamps in a 12 h light: 12 h dark cycle. The rooms temperature was set to between 22-24 Celsius.  
-
-#### CORT and Temperature manipulation  
-To test empirically the effect of early environment we manipulated CORT concentration in eggs and incubated them under one of two temperature regimes ('Cold' -- 23ºC ± 3ºC or 'Hot' -- 30ºC ± 3ºC) in a 2x2 factorial design (@fig-Methods A). We first allocated eggs to one of two different treatments: CORT treatment, where eggs were topically supplied with 5µL of CORT dissolved in 70% Ethanol and 30% DMSO (vehicle) at a final (10 pg CORT/mL) concentration (CORT treatment); and a Control treatment, where eggs received an equal volume of the vehicle. CORT concentration employed in the CORT treatment represents 2 standard deviations above the mean natural concentration obtained in eggs from both species (non-published data). Then, eggs were incubated in one of the two previously mentioned temperature regimes ('Cold' or 'Hot') until hatching. The number of eggs per clutch assigned to each hormone and temperature treatment were counterbalanced in both species.  
-
-#### Learning  
-
-```{r, fig-Methods}  
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 ```{r, fig-Methods}
 #| label: fig-Methods
@@ -49,11 +49,11 @@ To test empirically the effect of early environment we manipulated CORT concentr
 
 knitr::include_graphics("./Others/SPAL_METH.svg")
 
-```
-
-#### Statistical analyses  
-
-```{r, data_metrics}
+#
+#
+#
+#
+#
 #| label: data_metrics
 # Using the raw learning database, I calculate here some basic metrics mentioned later in the Methdos (see below).
 data <- read.csv(here("./data/Spatial_learn.csv"))
@@ -73,23 +73,23 @@ individuals_per_clutch <- data %>%
   distinct(lizard_id, clutch) %>%
   group_by(clutch) %>%
   summarize(individual_count = n())
-```
-
-We also considered individuals to be reinforced if the cricket was eaten after the test independently of whether their initial choice was correct or not.  
-**As such, we run a total of different 8 models employing Bayesian multilevel models using the brm function from the brms package (@burkner2017brms) in Quarto (@Allaire_Quarto_2022). Each model consisted of four parallel chains of 3000 iterations, with a warm up interval of 1000 iterations.'Choice', i.e. whether the individual chose correct (1) or not (0) was used as the response variable. The fixed effects of the model included a triple interaction between: trial ('Associative trial' or 'Reversal trial') as a numeric variable, and hormone treatmet ('CORT' versus 'Control') and the temperature at which eggs were incubated ('Cold' versus 'Hot') as factors. For the random effects, we employed lizard identity as a random intercept, and as a random slope we included the variable trial ('Associative' or 'Reversal') within each level of lizard identity. We used the resulting posterior of these models to evaluate learning differences between treatments within and between species and colour assigned. More specifically, we calculated learning slopes by using the estimates of the trial variable per each level of the hormone-temperature interaction ('Treatments'); values bigger from zero were considered as evidence of learning, while those less or equal to zero not. We used the pmcmc method to test whether those slopes or the comparissons between 'Treatments' (e.g. slope for 'CORT-Cold' lizards minus 'CORT-Hot' lizards) were different from zero (two-tailed tests). We considered statistical significance if p-value < 0.05.**  
-
-There are a total of  `r total_individuals`, and `r total_clutches` clutches in the database. The average number of individuals per clutch is `r mean(individuals_per_clutch$individual_count)`, with a minimum of `r min(individuals_per_clutch$individual_count)` individuals per clutch (`r sum(individuals_per_clutch$individual_count == min(individuals_per_clutch$individual_count))` clutches) and a maximum of `r max(individuals_per_clutch$individual_count)` (`r sum(individuals_per_clutch$individual_count == max(individuals_per_clutch$individual_count))` clutches). Clutches with only one individual do not contribute to the estimation of within-clutch variability. Including these clutches might lead to misleading variance estimates and convergence issues in the hierarchical model. Therefore, we initially fit the model without the clutch effect to obtain stable estimates at the individual level.
-
-## Results
-
-```{r, data_processing}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #| label: data_processing
 # The result will be the final df with the data for the analysis. To do so, we first estimate the learning slope (choice and errors) for each individual and then merge the data with the mitochondrial data, extracted using the script in extract.R and extraction_finc.R (see R folder). The final df will be saved in (here("output/databases_clean/data_complete.csv") 
 refit = FALSE
 source(here("R", "data_process.R"))
-```
-
-```{r, sampleSize}
+#
+#
+#
 #| label: sampleSize
 # List with the sample sizes from the database (here("output/databases_clean/data_complete.csv") as the sample size per species and group is the same on each task. We used function sample (see func.R) to estimate the sample size per treatment and species.
 source(here("R", "func.R"))
@@ -110,11 +110,11 @@ for(i in 1:length(specie)){
     }
   }
 }
-```
-
-Originally, we started with 96 lizards, 48 per species and 12 per treatment per species. However, due to natural mortality (n = 11), no completion of the training stage (n = 1), or no motivation during the learning tasks (n = 3; see above), we ended up with a total of 81 lizards. Final sample sizes per treatment and species are disclosed on @tbl-data. 
-
-```{r, models}
+#
+#
+#
+#
+#
 #| label: models
 # Fitting the model and extraction of posteriors for both types of task and species using fit_m function (see func.r in R folder). The result everytime the function is used is a df with the posteriors of the model. The functions saves the model automatically in output/models; and when the parameter refit = FALSE then the posteriors are extracted from the model previously written instead of fitting the model again each time.
 source(here("R", "func.R"))
@@ -124,9 +124,9 @@ source(here("R", "func.R"))
 fchoice <- (choice_slope__mean + choice_slope__sd ~ cort*temp)
 ferrors <- (errors_slope__mean + errors_slope__sd ~ cort*temp)
 fROS <- 
-```
-
-```{r, resultsRev}
+#
+#
+#
 # Rename some of the posteriors and make new estimates for the learning rate for the Reversal task doing the same thing we did in the chunk above.
 ## 1) L. delicata
 ### Group = red
@@ -150,9 +150,9 @@ grb_CORTCold <- guich_rev_blue$b_trial_reversal
 grb_ControlCold <- (guich_rev_blue$'b_trial_reversal:cortControl' + guich_rev_blue$b_trial_reversal)
 grb_CORTHot <- (guich_rev_blue$'b_trial_reversal:tempHot' + guich_rev_blue$b_trial_reversal)
 grb_ControlHot <- (guich_rev_blue$'b_trial_reversal:cortControl:tempHot' + guich_rev_blue$b_trial_reversal + guich_rev_blue$'b_trial_reversal:cortControl' + guich_rev_blue$'b_trial_reversal:tempHot')
-```
-
-```{r, tbl-data}
+#
+#
+#
 #| label: tbl-data
 #| tbl-cap: "Estimates of Associative learning slope for all the different treatments per each task, species and group. Mean shows the aritmetic mean of the estimates obtained from the posteriors of the model, and 95% CI indicates the 95% confidence interval of the mean. All p-values were obtained using pmcmc and test the hypothesis that the mean is equal to zero. In bold, those values that are significant (p-value <0.05)"
 source(here("R", "func.R"))
@@ -270,9 +270,9 @@ real_table <- flextable(new_table_data) %>%
     vline(j=c(3,6), part = "header") %>% # To make some vertical lines on header
     autofit() 
 real_table
-```
-
-```{r, fig-learning}
+#
+#
+#
 #| label: fig-learning
 #| fig.cap: "Results for L. delicata (A,B) and L. guichenoti (C, D). Panels A and C show the predicted probability of choosing the correct feeder first over trials. The lines represent the mean predicted probability of choosing the correct feeder first on each trial, and the shaded areas indicate the standard deviation of the mean; both were obtained by using the slope and intercept estimates from the posterior distributions. The different colours indicate the different treatments. Panels B and D show the distribution of the estimates of slopes per each treatment. The x-axis represents the slope estimate, and in the y-axis are the density of the estimates. The different colours indicate the different treatments. Points and bars represent the mean and standard deviation of the mean of the estimates, respectively."
 #
@@ -406,33 +406,33 @@ fig_results_errors <- plot_grid(fig_errors, fig_slope_errors, nrow = 1) +
     annotation_custom(rasterGrob(img), xmin = 0.73, xmax = 0.98, ymin = 0.73, ymax = 0.98)
 ggsave("./output/figures/fig_results_errors.png", plot=fig_results_errors, width = 25, height = 18, units = "cm", dpi = 600)
 knitr::include_graphics("./output/figures/fig_results.png")
-``` 
-
-```{r, ROS-learning}
+#
+#
+#
 #| label: ROS-learning
 #
-plot_ROS_choice <- ggplot(data = clean_df, aes(x = arith.mean_ROS, y = choice_slope__mean)) +
+plot_ROS_choice <- ggplot(data = clean_df, aes(x = arith.mean_ROS, y = log(choice_slope__mean))) +
   geom_smooth(method = "lm")
 print(plot_ROS_choice)
 #
-plot_ROS_errors <- ggplot(data = clean_df, aes(x = arith.mean_ROS, y = errors_slope__mean)) +
+plot_ROS_errors <- ggplot(data = clean_df, aes(x = arith.mean_ROS, y = log(errors_slope__mean))) +
   geom_smooth(method = "lm")
 print(plot_ROS_errors)
-```
-
-## Discussion
-
-## References
-<div id="refs"></div>
-
-```{r, results='asis', echo=FALSE}
+#
+#
+#
+#
+#
+#
+#
+#
 cat("\\newpage")
-```
-
-# Suplementary Material
-
-#### Checking the models plots  
-```{r, residuals}
+#
+#
+#
+#
+#
+#
 # Chunk for calling all the models and making the residuals
 # Associative task
 ## L. delicata
@@ -464,41 +464,43 @@ resid_grr <- residuals(mod_grr)
 ### Blue
 mod_grb <- readRDS(here("output/models/rev_guich_blue.rds"))
 resid_grb <- residuals(mod_grb)
-```
-
-Model formula for the reversal task is:  
-Choice  ~ trial_reversal*cort*temp + (1 + trial_reversal|lizard_id)  
-Plots for the different models of the associative task:  
-1.- _L. delicata_  
-  1.a.- Red  
-```{r , plotmod_drr, out.width="70%", fig.align="center"}
+#
+#
+#
+#
+#
+#
+#
+#
 plot(mod_drr)
-```
-
-```{r, results='asis', echo=FALSE}
+#
+#
+#
 cat("\\newpage")
-```
-
-  1.b.- Blue  
-```{r , plotmod_drb, out.width="70%", fig.align="center"}  
+#
+#
+#
+#
 plot(mod_drb)
-```
-
-```{r, results='asis', echo=FALSE}
+#
+#
+#
 cat("\\newpage")
-```
-
-2.- _L. guichenoti_  
-  2.a.- Red  
-```{r , plotmod_grr, out.width="70%", fig.align="center"}
+#
+#
+#
+#
+#
 plot(mod_grr)
-```
-
-```{r, results='asis', echo=FALSE}
+#
+#
+#
 cat("\\newpage")
-```
-
-  2.b.- Blue  
-```{r , plotmod_grb, out.width="70%", fig.align="center"}
+#
+#
+#
+#
 plot(mod_grb)
-```
+#
+#
+#

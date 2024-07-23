@@ -46,7 +46,7 @@ if(refit==TRUE){
     # Read the model from a file
     model_choice <- readRDS(file = paste0(here("output/models/model_choice.rds")))
     model_errors <- readRDS(file = paste0(here("output/models/model_errors.rds")))
-  } 
+} 
 #
 ## Extract posteriors
 posteriors_choice <- as_draws_df(model_choice)
@@ -67,13 +67,42 @@ learning_posteriors <- merge(post_choice_slope, post_errors_slope, by = "lizard_
 #
 #
 #### A.5) Merging initial df with posteriors to get the final learning df with individual learning slopes and treatments
-  mod_spal <- data_spal %>%
-    group_by(lizard_id) %>%
-      filter(day == 1) %>%
-    select(lizard_id, clutch, age, temp, cort) %>% # We modify here the spal df to merge it with the estiamates per invidual
-  data.frame()
+mod_spal <- data_spal %>%
+  group_by(lizard_id) %>%
+    filter(day == 1) %>%
+  select(lizard_id, clutch, age, temp, cort) %>% # We modify here the spal df to merge it with the estiamates per invidual
+data.frame()
 learning_df <- merge(mod_spal, learning_posteriors, by = "lizard_id")
 #
 #
 #
-# B) 
+# B) PROCESSING THE PHYSIOLOGY DF
+#### B.1) Modify the mit_df ("./data/mit_data.csv") and merge with the ()
+mit_data <- read.csv(here("./data/mit_data.csv"))
+mit_df <- mit_data %>%
+  filter(experiment == "medial cortex") %>%
+data.frame()
+euth <- read.csv(here("./data/Euthanasia.csv"))
+physio_df <- merge(mit_df, euth, by = c("plate", "tube"))
+#
+#### B.2) Modify the data base to merge it with learning_df
+mod_physio_df <- physio_df %>%
+  filter(type != "control", ch == "percp.cy5.5"| ch == "apc") %>%
+  mutate(ch = recode(ch, "percp.cy5.5" = "ROS", "apc" = "Mit_density")) %>%
+  select(tube, lizard_id, ch, geo.mean, arith.mean) %>%
+  group_by(lizard_id, ch) %>%
+  summarize(geo.mean = mean(geo.mean, na.rm = TRUE), 
+            arith.mean = mean(arith.mean, na.rm = TRUE),
+            .groups = 'drop') %>%
+  pivot_wider(
+    names_from = ch,
+    values_from = c(geo.mean, arith.mean)
+  ) %>%
+data.frame()
+write.csv(mod_physio_df, file = "./output/Checking/physio_df.csv")
+#
+#
+#
+# C) MERGING THE DF TO GET THE FINAL ONE
+clean_df <- merge(learning_df, mod_physio_df, by = c("lizard_id"))
+write.csv(clean_df, file = "./output/databases_clean/clean_df.csv")

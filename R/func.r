@@ -10,7 +10,6 @@ pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4,
 #' @param effect to select whether we want the intercept or the slopes. Options: slope or intercept
 tidy_post_df <- function(df, effect) {
   if(df == "choice") {
-    
     data <- posteriors_choice
     label_df <- "choice_"
   } else if(df == "errors") {
@@ -187,57 +186,39 @@ format_p <- function(x, n) {
                 paste0("= ", as.character(z))))
   return(tmp)
 }
-###################
-###################
-# Function to create each df for the slopes figure
-#' @title df_plot_slopes
-#' @param type to select the response variable: "choice" or "errors"
-df_plot_slopes <- function(type){
-  data <- learning_df %>%
-    mutate(Treatment = paste(cort, temp, sep = "-")) %>%
-    mutate(Treatment = factor(Treatment,
-      levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot"),
-      labels = c("CORT-Cold" = "CORT-Cold (n=20)",
-                "Control-Cold" = "Control-Cold (n=20)",
-                "CORT-Hot" = "CORT-Hot (n=19)",
-                "Control-Hot" = "Control-Hot (n=20)")
-    )) %>%
-  data.frame()
-  if(type == "choice"){
-    data_fig <- data %>%
-      select(lizard_id, Treatment, choice_slope__mean, choice_slope__sd, choice_slope__se) %>%
-      rename(slope_mean = choice_slope__mean,
-            slope_sd = choice_slope__sd,
-            slope_se = choice_slope__se) %>%
-    data.frame()
-  } else if(type == "errors") {
-    data_fig <- data %>%
-      select(lizard_id, Treatment, errors_slope__mean, errors_slope__sd, errors_slope__se) %>%
-      rename(slope_mean = errors_slope__mean,
-            slope_sd = errors_slope__sd,
-            slope_se = errors_slope__se) %>%
-    data.frame()
-  } else {
-    stop("type not valid")
-  }
-  data_plot <- data_fig %>%
-    group_by(Treatment) %>%
-    summarize(
-      Mean = mean(slope_mean),
-      SD = mean(slope_sd),
-      SE = mean(slope_se)
-    ) %>%
-    ungroup() %>%
-  data.frame()
-  return(data_plot)
-}
 ####################
 ####################
 # Function to create the plot for the slopes
 #' @title plot_slopes
 #' @param type to select the df for the violin plot
 plot_slopes <- function(type){
-  data <- learning_df %>%
+  if(type == "choice") {
+    data <- posteriors_choice
+    label_df <- "choice_"
+  } else if(type == "errors") {
+    data <- posteriors_errors
+    label_df <- "errors_"
+  } else {
+    stop("df not valid")
+  }
+  label_effect <- "day"
+  pattern <- "^r_lizard_id\\[\\d+,day\\]$"
+  tidy_post <- data %>%
+    select(matches(pattern)) %>%
+    pivot_longer(cols = everything(),
+              names_to = "lizard_id", 
+              values_to = "value") %>% # Extract the relevant columns and reshape them
+    mutate(lizard_id = gsub("r_lizard_id\\[|,day\\]", "", lizard_id)) %>%  # Remove prefix
+  data.frame()
+  mod_spal <- data_spal %>%
+    group_by(lizard_id) %>%
+      filter(day == 1) %>%
+    select(lizard_id, clutch, age, temp, cort) %>% # We modify here the spal df to merge it with the estiamates per invidual
+    mutate(lizard_id = as.character(lizard_id)) %>%
+  data.frame()
+  tidy_post_fig <- merge(mod_spal, tidy_post, by = "lizard_id")
+###
+  data_fig <- tidy_post_fig %>%
     mutate(Treatment = paste(cort, temp, sep = "-")) %>%
     mutate(Treatment = factor(Treatment,
       levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot"),
@@ -247,41 +228,27 @@ plot_slopes <- function(type){
                 "Control-Hot" = "Control-Hot (n=20)")
     )) %>%
   data.frame()
-  if(type == "choice"){
-    data_fig <- data %>%
-      select(lizard_id, Treatment, choice_slope__mean, choice_slope__sd, choice_slope__se) %>%
-      rename(slope_mean = choice_slope__mean,
-            slope_sd = choice_slope__sd,
-            slope_se = choice_slope__se) %>%
-    data.frame()
-  } else if(type == "errors") {
-    data_fig <- data %>%
-      select(lizard_id, Treatment, errors_slope__mean, errors_slope__sd, errors_slope__se) %>%
-      rename(slope_mean = errors_slope__mean,
-            slope_sd = errors_slope__sd,
-            slope_se = errors_slope__se) %>%
-    data.frame()
-  } else {
-    stop("type not valid")
-  }
   data_plot <- data_fig %>%
     group_by(Treatment) %>%
     summarize(
-      Mean = mean(slope_mean),
-      SD = mean(slope_sd),
-      SE = mean(slope_se)
+      Mean = mean(value),
+      SD = sd(value),
+      SE = sd(value)/sqrt(length(value))
     ) %>%
     ungroup() %>%
   data.frame()
+write.csv(data_plot, here("output/Checking/data_plot.csv"))
+write.csv(data_fig, here("output/Checking/data_fig.csv"))
 #
-  plot2 <- ggplot(data_fig, aes(x = Treatment, y = slope_mean, fill = Treatment)) +
+# Make the plot
+  plot2 <- ggplot(data_fig, aes(x = Treatment, y = value, fill = Treatment)) +
   geom_flat_violin(alpha = 0.5) +
   scale_fill_manual(values = c("CORT-Cold (n=20)"="#00008B", "Control-Cold (n=20)"="#68bde1", 
                     "CORT-Hot (n=19)"="#b50101", "Control-Hot (n=20)"="#fa927d")) +
   geom_point(data = data_plot, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
   geom_segment(data = data_plot, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-  ylim(-0.015, max(data_fig$slope_mean)) +
+  ylim(min(data_fig$value), max(data_fig$value)) +
   coord_flip() +
   theme_classic() +
   labs(y = "Slope estimates", x = "Treatments") +
