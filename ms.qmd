@@ -121,9 +121,34 @@ source(here("R", "func.R"))
 # 
 # df got from data_process.R
 #
-fchoice <- (choice_slope__mean + choice_slope__sd ~ cort*temp)
-ferrors <- (errors_slope__mean + errors_slope__sd ~ cort*temp)
-fROS <- 
+fchoice <- bf(choice_slope_mean + choice_slope_se ~ cort*temp)
+ferrors <- bf(errors_slope_mean + errors_slope_se ~ cort*temp)
+fROS <- bf(ROS ~ Mit_density + cort*temp)
+#
+refit <- FALSE
+if(refit==TRUE){
+  # Choice
+  model_choice_2 <- brm(fchoice + fROS,
+                data = clean_df,
+                family = gaussian,
+                chains = 4, cores = 4, iter = 8000, warmup = 2000, 
+                control = list(adapt_delta = 0.99, max_treedepth = 12))
+  # Errors
+  model_errors_2 <- brm(ferrors + fROS,
+                data = clean_df,
+                family = gaussian,
+                chains = 4, cores = 4, iter = 8000, warmup = 2000,
+                control = list(adapt_delta = 0.99, max_treedepth = 12))
+  # Write the models to two files
+  saveRDS(model_choice_2, file = paste0(here("output/models/model_choice_2.rds")))
+  saveRDS(model_errors_2, file = paste0(here("output/models/model_errors_2.rds")))
+  } else {
+    # Read the model from a file
+    model_choice_2 <- readRDS(file = paste0(here("output/models/model_choice_2.rds")))
+    model_errors_2 <- readRDS(file = paste0(here("output/models/model_errors_2.rds")))
+} 
+post_gen <- as_draws_df(model_errors_2)
+write.csv(post_gen, file= "./output/Checking/post_gen.csv")
 ```
 
 ```{r, resultsRev}
@@ -277,7 +302,6 @@ real_table
 #| fig.cap: "Results for L. delicata (A,B) and L. guichenoti (C, D). Panels A and C show the predicted probability of choosing the correct feeder first over trials. The lines represent the mean predicted probability of choosing the correct feeder first on each trial, and the shaded areas indicate the standard deviation of the mean; both were obtained by using the slope and intercept estimates from the posterior distributions. The different colours indicate the different treatments. Panels B and D show the distribution of the estimates of slopes per each treatment. The x-axis represents the slope estimate, and in the y-axis are the density of the estimates. The different colours indicate the different treatments. Points and bars represent the mean and standard deviation of the mean of the estimates, respectively."
 #
 #
-img <- readPNG("./Others/Deli.png")
 ####### A) Probability of choosing correct figure
 ## A.1) Get the df with the estimated probability of choosing the correct feeder first over trials (using learning_df from data_process.R)
 # Get the df for the intercepts
@@ -364,10 +388,8 @@ fig_slope_choice <- plot_slopes("choice")
 #
 #
 ## A.4) Combine plots of probability and slopes to have the "choice" figure
-fig_results_choice <- plot_grid(fig_prob_choice, fig_slope_choice, nrow = 1) +
-    annotation_custom(rasterGrob(img), xmin = 0.73, xmax = 0.98, ymin = 0.73, ymax = 0.98)
-ggsave("./output/figures/fig_results_choice.png", plot=fig_results_choice, width = 25, height = 18, units = "cm", dpi = 600)
-knitr::include_graphics("./output/figures/fig_results.png")
+fig_results_choice <- plot_grid(fig_prob_choice, fig_slope_choice, nrow = 1) 
+ggsave("./output/figures/fig_results_choice.png", plot=fig_results_choice, width = 25, height = 15, units = "cm", dpi = 600)
 #
 #
 #
@@ -402,22 +424,100 @@ fig_slope_errors <- plot_slopes("errors")
 #
 #
 ## B.3) Combine plots of probability and slopes to have the "choice" figure
-fig_results_errors <- plot_grid(fig_errors, fig_slope_errors, nrow = 1) +
-    annotation_custom(rasterGrob(img), xmin = 0.73, xmax = 0.98, ymin = 0.73, ymax = 0.98)
-ggsave("./output/figures/fig_results_errors.png", plot=fig_results_errors, width = 25, height = 18, units = "cm", dpi = 600)
-knitr::include_graphics("./output/figures/fig_results.png")
+fig_results_errors <- plot_grid(fig_errors, fig_slope_errors, nrow = 1) 
+ggsave("./output/figures/fig_results_errors.png", plot=fig_results_errors, width = 25, height = 15, units = "cm", dpi = 600)
 ``` 
 
 ```{r, ROS-learning}
 #| label: ROS-learning
+tidy_post_fig_ROS <- post_gen %>%
+  mutate(CORT_Cold = b_ROS_Intercept,
+      Control_Cold = b_ROS_Intercept + b_ROS_cortControl,
+      CORT_Hot = b_ROS_Intercept + b_ROS_tempHot,
+      Control_Hot = b_ROS_Intercept + b_ROS_cortControl + b_ROS_tempHot + `b_ROS_cortControl:tempHot`) %>%
+  select(CORT_Cold, Control_Cold, CORT_Hot, Control_Hot) %>%
+  pivot_longer(cols = c(CORT_Cold, Control_Cold, CORT_Hot, Control_Hot), names_to = "Treatment", values_to = "ROS") %>%
+  mutate(Treatment = factor(Treatment,
+    levels = c("CORT_Cold", "Control_Cold", "CORT_Hot", "Control_Hot"),
+    labels = c("CORT_Cold" = "CORT-Cold (n=20)",
+              "Control_Cold" = "Control-Cold (n=20)",
+              "CORT_Hot" = "CORT-Hot (n=18)",
+              "Control_Hot" = "Control-Hot (n=20)")
+  )) %>%
+data.frame()
 #
-plot_ROS_choice <- ggplot(data = clean_df, aes(x = arith.mean_ROS, y = choice_slope__mean)) +
-  geom_smooth(method = "lm")
-print(plot_ROS_choice)
+data_plot_ROS <- tidy_post_fig_ROS %>%
+  group_by(Treatment) %>%
+  summarize(
+    Mean = mean(ROS),
+    SD = sd(ROS),
+    SE = sd(ROS)/sqrt(length(ROS))
+  ) %>%
+  ungroup() %>%
+data.frame()
+write.csv(data_plot_ROS, here("output/Checking/data_plot_ROS.csv"))
 #
-plot_ROS_errors <- ggplot(data = clean_df, aes(x = arith.mean_ROS, y = errors_slope__mean)) +
-  geom_smooth(method = "lm")
-print(plot_ROS_errors)
+fig_ROS <- ggplot(tidy_post_fig_ROS, aes(x = Treatment, y = ROS, fill = Treatment)) +
+  geom_flat_violin(alpha = 0.5) +
+  scale_fill_manual(values = c("CORT-Cold (n=20)"="#00008B", "Control-Cold (n=20)"="#68bde1", 
+                    "CORT-Hot (n=18)"="#b50101", "Control-Hot (n=20)"="#fa927d")) +
+  geom_point(data = data_plot_ROS, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
+  geom_segment(data = data_plot_ROS, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
+  geom_hline(yintercept = mean(data_plot_ROS$Mean), linetype = "dashed", color = "black") +
+  ylim(min(tidy_post_fig_ROS$ROS), max(tidy_post_fig_ROS$ROS)) +
+  coord_flip() +
+  theme_classic() +
+  labs(y = "Slope estimates", x = "Treatments") +
+  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm"),
+    axis.text.y = element_blank(),   # Remove y-axis labels
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "right",
+    legend.title = element_text(size = 12, family = "Times"),
+    legend.text = element_text(size = 11, family = "Times")
+    )
+ggsave("./output/figures/fig_ROS.png", plot=fig_ROS, width = 15, height = 15, units = "cm", dpi = 600)
+#
+#
+r_choice <- cor.test(clean_df$ROS, clean_df$choice_slope_mean, method = "pearson")
+r_choice_text <- paste("r = ", round(r_choice$estimate, 2),
+              " [", round(r_choice$conf.int[1], 2), ", ", round(r_choice$conf.int[2], 2), "]",
+              sep = "")
+#
+r_errors <- cor.test(clean_df$ROS, clean_df$errors_slope_mean, method = "pearson")
+r_errors_text <- paste("r = ", round(r_errors$estimate, 2),
+              " [", round(r_errors$conf.int[1], 2), ", ", round(r_errors$conf.int[2], 2), "]",
+              sep = "")
+#
+plot_ROS_choice <- ggplot(data = clean_df, aes(x = ROS, y = choice_slope_mean)) +
+  geom_smooth(method = "lm", color = "#8D0001", fill = "#FFC3C3") +
+  theme_classic() +
+  labs(y = "Estimated learning slope (Choice)", x = "ROS in medial cortex") +
+  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
+  theme(
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "none"
+  ) +
+annotate("text", x = Inf, y = Inf, label = r_choice_text, 
+           hjust = 1.05, vjust = 1.95, size = 4.5, color = "#8D0001")
+#
+plot_ROS_errors <- ggplot(data = clean_df, aes(x = ROS, y = errors_slope_mean)) +
+  geom_smooth(method = "lm", color = "#8D0001", fill = "#FFC3C3") +
+  theme_classic() +
+  labs(y = "Estimated learning slope (Errors)", x = "ROS in medial cortex") +
+  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
+  theme(
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "none"
+  ) +
+annotate("text", x = Inf, y = Inf, label = r_errors_text, 
+           hjust = 1.05, vjust = 1.95, size = 4.5, color = "#8D0001")
+#
+fig_ROS_learning <- plot_grid(plot_ROS_choice, plot_ROS_errors, nrow = 1) 
+ggsave("./output/figures/fig_ROS_learning.png", plot=fig_ROS_learning, width = 25, height = 15, units = "cm", dpi = 600)
+
 ```
 
 ## Discussion

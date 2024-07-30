@@ -31,8 +31,7 @@ if(refit==TRUE){
                 data = data_spal,
                 family = bernoulli(link = "logit"),
                 chains = 4, cores = 4, iter = 8000, warmup = 2000, 
-                control = list(adapt_delta = 0.99, max_treedepth = 12),
-                prior = custom_priors)
+                control = list(adapt_delta = 0.99, max_treedepth = 12))
   # Errors
   model_errors <- brm(errors ~ 1 + (1 + day|lizard_id) + (1|clutch),
                 data = data_spal,
@@ -89,20 +88,20 @@ physio_df <- merge(mit_df, euth, by = c("plate", "tube"))
 mod_physio_df <- physio_df %>%
   filter(type != "control", ch == "percp.cy5.5"| ch == "apc") %>%
   mutate(ch = recode(ch, "percp.cy5.5" = "ROS", "apc" = "Mit_density")) %>%
-  select(tube, lizard_id, ch, geo.mean, arith.mean) %>%
-  group_by(lizard_id, ch) %>%
-  summarize(geo.mean = mean(geo.mean, na.rm = TRUE), 
-            arith.mean = mean(arith.mean, na.rm = TRUE),
+  select(tube, lizard_id, sex, ch, arith.mean) %>%
+  group_by(lizard_id, ch, sex) %>%
+  summarize(arith.mean = mean(arith.mean, na.rm = TRUE),
             .groups = 'drop') %>%
   pivot_wider(
     names_from = ch,
-    values_from = c(geo.mean, arith.mean)
+    values_from = arith.mean
   ) %>%
 data.frame()
-write.csv(mod_physio_df, file = "./output/Checking/physio_df.csv")
 #
 #
 #
 # C) MERGING THE DF TO GET THE FINAL ONE
-clean_df <- merge(learning_df, mod_physio_df, by = c("lizard_id"))
+clean_df <- merge(learning_df, mod_physio_df, by = c("lizard_id")) %>%
+  rename("choice_slope_mean" = "choice_slope__mean", "choice_slope_se" = "choice_slope__se",
+        "errors_slope_mean" = "errors_slope__mean", "errors_slope_se" = "errors_slope__se")
 write.csv(clean_df, file = "./output/databases_clean/clean_df.csv")

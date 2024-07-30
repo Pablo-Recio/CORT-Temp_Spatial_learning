@@ -38,7 +38,8 @@ tidy_post_df <- function(df, effect) {
     summarise(across(everything(), list(
       mean = ~ mean(.x, na.rm = TRUE),
       sd = ~ sd(.x, na.rm = TRUE),
-      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x))
+      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x)),
+      pmcmc = ~ pmcmc(mean(.x), null = 0)
     ))) %>%
   data.frame()
   tidy_post_2 <- tidy_post_1 %>%
