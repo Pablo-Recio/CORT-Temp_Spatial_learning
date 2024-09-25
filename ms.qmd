@@ -508,16 +508,16 @@ plot_ROS_errors <- ggplot(data = clean_df, aes(x = ROS, y = errors_slope_mean)) 
   labs(y = "Estimated learning slope (Errors)", x = "ROS in medial cortex") +
   theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
   theme(
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
+    axis.title = element_text(size = 14, family = "Times"),
+    axis.text = element_text(size = 12, family = "Times"),
     legend.position = "none"
   ) +
 annotate("text", x = Inf, y = Inf, label = r_errors_text, 
-           hjust = 1.05, vjust = 1.95, size = 4.5, color = "#8D0001")
+           hjust = 1.28, vjust = 1.95, size = 4.5, color = "#8D0001")
 #
 fig_ROS_learning <- plot_grid(plot_ROS_choice, plot_ROS_errors, nrow = 1) 
 ggsave("./output/figures/fig_ROS_learning.png", plot=fig_ROS_learning, width = 25, height = 15, units = "cm", dpi = 600)
-
+ggsave("./output/figures/fig_ROS_learning_2.png", plot=plot_ROS_errors, width = 15, height = 10, units = "cm", dpi = 600)
 ```
 
 ## Discussion
