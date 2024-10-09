@@ -94,20 +94,14 @@ source(here("R", "data_process.R"))
 # List with the sample sizes from the database (here("output/databases_clean/data_complete.csv") as the sample size per species and group is the same on each task. We used function sample (see func.R) to estimate the sample size per treatment and species.
 source(here("R", "func.R"))
 #
-specie <- c("delicata", "guichenoti")
-groups <- c("Red", "Blue")
 hormone <- c("CORT", "Control")
 temperature <- c("Cold", "Hot")
 #
 n_list <- list()
 #
-for(i in 1:length(specie)){
-  for(j in 1:length(groups)){
-    for(k in 1:length(hormone)){
-      for(l in 1:length(temperature)){
-        n_list[[paste(specie[i], groups[j], hormone[k], temperature[l], sep = "_")]] <- sample(specie[i], groups[j], hormone[k], temperature[l])
-      }
-    }
+for(k in 1:length(hormone)){
+  for(l in 1:length(temperature)){
+    n_list[[paste(hormone[k], temperature[l], sep = "_")]] <- sample(hormone[k], temperature[l])
   }
 }
 ```
@@ -467,7 +461,7 @@ fig_ROS <- ggplot(tidy_post_fig_ROS, aes(x = Treatment, y = ROS, fill = Treatmen
   ylim(min(tidy_post_fig_ROS$ROS), max(tidy_post_fig_ROS$ROS)) +
   coord_flip() +
   theme_classic() +
-  labs(y = "Slope estimates", x = "Treatments") +
+  labs(y = "ROS", x = "Treatments") +
   theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm"),
     axis.text.y = element_blank(),   # Remove y-axis labels
     axis.title = element_text(size = 12, family = "Times"),
