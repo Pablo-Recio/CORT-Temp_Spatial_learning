@@ -24,7 +24,20 @@ pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4,
 ```
 
 ## Introduction
+**Corticosterone is the major GC produced by
+adrenal steroidogenic cells in reptiles, and an increase in
+its plasma concentration is a frequent indicator of stress
+(Anderson et al. 2014 General and Comparative Endocrinology). In nature,
+GCs in the developing embryos seem to be largely of
+maternal origin (Uller et al. 2009, The Journal of Experimental Biology) and are probably transferred to the growing oocytes through vitellogenesis (Elf et al.,
+2002, 2003 General and Comparative Endocrinology (both)).**
 
+Mechanistically, a change in body size requires
+a change in cell number and/or cell size, and there is evidence that
+body size and cell size undergo coordinated evolutionary (Arendt,
+2007; Starostová et al., 2005; Stevenson et al., 1995) or
+phenotypically plastic changes (Arendt, 2007; Czarnoleski et al.,
+2013; Hessen et al., 2013).
 
 ## Methods  
 
@@ -40,8 +53,6 @@ Two weeks before we started the training phase (see below), lizards were moved t
 To test empirically the effect of early environment we manipulated CORT concentration in eggs and incubated them under one of two temperature regimes ('Cold' -- 23ºC ± 3ºC or 'Hot' -- 30ºC ± 3ºC) in a 2x2 factorial design (@fig-Methods A). We first allocated eggs to one of two different treatments: CORT treatment, where eggs were topically supplied with 5µL of CORT dissolved in 70% Ethanol and 30% DMSO (vehicle) at a final (10 pg CORT/mL) concentration (CORT treatment); and a Control treatment, where eggs received an equal volume of the vehicle. CORT concentration employed in the CORT treatment represents 2 standard deviations above the mean natural concentration obtained in eggs from both species (non-published data). Then, eggs were incubated in one of the two previously mentioned temperature regimes ('Cold' or 'Hot') until hatching. The number of eggs per clutch assigned to each hormone and temperature treatment were counterbalanced in both species.  
 
 #### Learning  
-
-```{r, fig-Methods}  
 
 ```{r, fig-Methods}
 #| label: fig-Methods
