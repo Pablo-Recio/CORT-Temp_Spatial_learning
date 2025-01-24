@@ -71,6 +71,13 @@ knitr::include_graphics("./Others/SPAL_METH.svg")
 
 ```
 
+#### Brain extraction
+
+#### Brain mitochondrial activity
+Two months after the completion of the tests, we euthanises lizards usin an injectable anaesthetic followed by decapitation. We injected peritoneally 10 mg/kg of a 10 mg/mL alfaxan solution (**REF?**). After some minutes, we evaluated the lizards response by turning it upside down, and by testing the pinching relfex in the hand. Lizards were decapitated once they were not responsive.
+
+**After decapitation, the head was opened and the brain dissected. We focused on two main regions of the brain, the olfactory bulbs and the optic tecta, as they are associated with lizards' chemical and visual perception, respectively (Wynecken, 2007).**
+
 #### Statistical analyses  
 
 ```{r, data_metrics}
