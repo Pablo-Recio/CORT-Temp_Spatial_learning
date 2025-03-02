@@ -23,6 +23,38 @@ editor_options:
 pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x, PupillometryR, cowplot, png, grid)
 ```
 
+
+
+```{r, data_processing}
+#| label: data_processing
+# The result will be the final df with the data for the analysis. To do so, we first estimate the learning slope (choice and errors) for each individual and then merge the data with the mitochondrial data, extracted using the script in extract.R and extraction_finc.R (see R folder). The final df will be saved in (here("output/databases_clean/data_complete.csv") 
+refit <- FALSE
+source(here("R", "data_process.R"))
+```
+
+```{r, data_metrics}
+#| label: data_metrics
+# Using the raw learning database, I calculate here some basic metrics mentioned later in the Methdos (see below).
+data <- read.csv(here("./data/Spatial_learn.csv"))
+#
+# Total number of clutches
+total_clutches <- data %>% 
+  distinct(clutch) %>% 
+  count() %>% 
+  pull(n)
+# Calculate total number of individuals
+total_individuals <- data %>% 
+  distinct(lizard_id) %>% 
+  count() %>% 
+  pull(n)
+# Calculate number of individuals per clutch
+individuals_per_clutch <- data %>%
+  distinct(lizard_id, clutch) %>%
+  group_by(clutch) %>%
+  summarize(individual_count = n())
+```
+
+
 ## Introduction
 **Corticosterone is the major GC produced by
 adrenal steroidogenic cells in reptiles, and an increase in
@@ -80,42 +112,12 @@ Two months after the completion of the tests, we euthanises lizards usin an inje
 
 #### Statistical analyses  
 
-```{r, data_metrics}
-#| label: data_metrics
-# Using the raw learning database, I calculate here some basic metrics mentioned later in the Methdos (see below).
-data <- read.csv(here("./data/Spatial_learn.csv"))
-#
-# Total number of clutches
-total_clutches <- data %>% 
-  distinct(clutch) %>% 
-  count() %>% 
-  pull(n)
-# Calculate total number of individuals
-total_individuals <- data %>% 
-  distinct(lizard_id) %>% 
-  count() %>% 
-  pull(n)
-# Calculate number of individuals per clutch
-individuals_per_clutch <- data %>%
-  distinct(lizard_id, clutch) %>%
-  group_by(clutch) %>%
-  summarize(individual_count = n())
-```
-
 We also considered individuals to be reinforced if the cricket was eaten after the test independently of whether their initial choice was correct or not.  
 **As such, we run a total of different 8 models employing Bayesian multilevel models using the brm function from the brms package (@burkner2017brms) in Quarto (@Allaire_Quarto_2022). Each model consisted of four parallel chains of 3000 iterations, with a warm up interval of 1000 iterations.'Choice', i.e. whether the individual chose correct (1) or not (0) was used as the response variable. The fixed effects of the model included a triple interaction between: trial ('Associative trial' or 'Reversal trial') as a numeric variable, and hormone treatmet ('CORT' versus 'Control') and the temperature at which eggs were incubated ('Cold' versus 'Hot') as factors. For the random effects, we employed lizard identity as a random intercept, and as a random slope we included the variable trial ('Associative' or 'Reversal') within each level of lizard identity. We used the resulting posterior of these models to evaluate learning differences between treatments within and between species and colour assigned. More specifically, we calculated learning slopes by using the estimates of the trial variable per each level of the hormone-temperature interaction ('Treatments'); values bigger from zero were considered as evidence of learning, while those less or equal to zero not. We used the pmcmc method to test whether those slopes or the comparissons between 'Treatments' (e.g. slope for 'CORT-Cold' lizards minus 'CORT-Hot' lizards) were different from zero (two-tailed tests). We considered statistical significance if p-value < 0.05.**  
 
 There are a total of  `r total_individuals`, and `r total_clutches` clutches in the database. The average number of individuals per clutch is `r mean(individuals_per_clutch$individual_count)`, with a minimum of `r min(individuals_per_clutch$individual_count)` individuals per clutch (`r sum(individuals_per_clutch$individual_count == min(individuals_per_clutch$individual_count))` clutches) and a maximum of `r max(individuals_per_clutch$individual_count)` (`r sum(individuals_per_clutch$individual_count == max(individuals_per_clutch$individual_count))` clutches). Clutches with only one individual do not contribute to the estimation of within-clutch variability. Including these clutches might lead to misleading variance estimates and convergence issues in the hierarchical model. Therefore, we initially fit the model without the clutch effect to obtain stable estimates at the individual level.
 
 ## Results
-
-```{r, data_processing}
-#| label: data_processing
-# The result will be the final df with the data for the analysis. To do so, we first estimate the learning slope (choice and errors) for each individual and then merge the data with the mitochondrial data, extracted using the script in extract.R and extraction_finc.R (see R folder). The final df will be saved in (here("output/databases_clean/data_complete.csv") 
-refit = FALSE
-source(here("R", "data_process.R"))
-```
-
 ```{r, sampleSize}
 #| label: sampleSize
 # List with the sample sizes from the database (here("output/databases_clean/data_complete.csv") as the sample size per species and group is the same on each task. We used function sample (see func.R) to estimate the sample size per treatment and species.
