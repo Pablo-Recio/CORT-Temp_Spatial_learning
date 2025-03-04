@@ -20,10 +20,8 @@ editor_options:
 
 ```{r}
 #| label: setup
-pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x, PupillometryR, cowplot, png, grid)
+pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x, cowplot, fitdistrplus, MASS, goftest, forcats, nortest, fitdistrplus, ggh4x, PupillometryR, png, grid, remotes, ggthemes, bayestestR, HDInterval, DiagrammeR, magick)
 ```
-
-
 
 ```{r, data_processing}
 #| label: data_processing
@@ -451,97 +449,6 @@ fig_results_errors <- plot_grid(fig_errors, fig_slope_errors, nrow = 1)
 ggsave("./output/figures/fig_results_errors.png", plot=fig_results_errors, width = 25, height = 15, units = "cm", dpi = 600)
 ``` 
 
-```{r, ROS-learning}
-#| label: ROS-learning
-tidy_post_fig_ROS <- post_gen %>%
-  mutate(CORT_Cold = b_ROS_Intercept,
-      Control_Cold = b_ROS_Intercept + b_ROS_cortControl,
-      CORT_Hot = b_ROS_Intercept + b_ROS_tempHot,
-      Control_Hot = b_ROS_Intercept + b_ROS_cortControl + b_ROS_tempHot + `b_ROS_cortControl:tempHot`) %>%
-  select(CORT_Cold, Control_Cold, CORT_Hot, Control_Hot) %>%
-  pivot_longer(cols = c(CORT_Cold, Control_Cold, CORT_Hot, Control_Hot), names_to = "Treatment", values_to = "ROS") %>%
-  mutate(Treatment = factor(Treatment,
-    levels = c("CORT_Cold", "Control_Cold", "CORT_Hot", "Control_Hot"),
-    labels = c("CORT_Cold" = "CORT-Cold (n=20)",
-              "Control_Cold" = "Control-Cold (n=20)",
-              "CORT_Hot" = "CORT-Hot (n=18)",
-              "Control_Hot" = "Control-Hot (n=20)")
-  )) %>%
-data.frame()
-#
-data_plot_ROS <- tidy_post_fig_ROS %>%
-  group_by(Treatment) %>%
-  summarize(
-    Mean = mean(ROS),
-    SD = sd(ROS),
-    SE = sd(ROS)/sqrt(length(ROS))
-  ) %>%
-  ungroup() %>%
-data.frame()
-write.csv(data_plot_ROS, here("output/Checking/data_plot_ROS.csv"))
-#
-fig_ROS <- ggplot(tidy_post_fig_ROS, aes(x = Treatment, y = ROS, fill = Treatment)) +
-  geom_flat_violin(alpha = 0.5) +
-  scale_fill_manual(values = c("CORT-Cold (n=20)"="#00008B", "Control-Cold (n=20)"="#68bde1", 
-                    "CORT-Hot (n=18)"="#b50101", "Control-Hot (n=20)"="#fa927d")) +
-  geom_point(data = data_plot_ROS, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
-  geom_segment(data = data_plot_ROS, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
-  geom_hline(yintercept = mean(data_plot_ROS$Mean), linetype = "dashed", color = "black") +
-  ylim(min(tidy_post_fig_ROS$ROS), max(tidy_post_fig_ROS$ROS)) +
-  coord_flip() +
-  theme_classic() +
-  labs(y = "ROS", x = "Treatments") +
-  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm"),
-    axis.text.y = element_blank(),   # Remove y-axis labels
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "right",
-    legend.title = element_text(size = 12, family = "Times"),
-    legend.text = element_text(size = 11, family = "Times")
-    )
-ggsave("./output/figures/fig_ROS.png", plot=fig_ROS, width = 15, height = 15, units = "cm", dpi = 600)
-#
-#
-r_choice <- cor.test(clean_df$ROS, clean_df$choice_slope_mean, method = "pearson")
-r_choice_text <- paste("r = ", round(r_choice$estimate, 2),
-              " [", round(r_choice$conf.int[1], 2), ", ", round(r_choice$conf.int[2], 2), "]",
-              sep = "")
-#
-r_errors <- cor.test(clean_df$ROS, clean_df$errors_slope_mean, method = "pearson")
-r_errors_text <- paste("r = ", round(r_errors$estimate, 2),
-              " [", round(r_errors$conf.int[1], 2), ", ", round(r_errors$conf.int[2], 2), "]",
-              sep = "")
-#
-plot_ROS_choice <- ggplot(data = clean_df, aes(x = ROS, y = choice_slope_mean)) +
-  geom_smooth(method = "lm", color = "#8D0001", fill = "#FFC3C3") +
-  theme_classic() +
-  labs(y = "Estimated learning slope (Choice)", x = "ROS in medial cortex") +
-  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
-  theme(
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "none"
-  ) +
-annotate("text", x = Inf, y = Inf, label = r_choice_text, 
-           hjust = 1.05, vjust = 1.95, size = 4.5, color = "#8D0001")
-#
-plot_ROS_errors <- ggplot(data = clean_df, aes(x = ROS, y = errors_slope_mean)) +
-  geom_smooth(method = "lm", color = "#8D0001", fill = "#FFC3C3") +
-  theme_classic() +
-  labs(y = "Estimated learning slope (Errors)", x = "ROS in medial cortex") +
-  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
-  theme(
-    axis.title = element_text(size = 14, family = "Times"),
-    axis.text = element_text(size = 12, family = "Times"),
-    legend.position = "none"
-  ) +
-annotate("text", x = Inf, y = Inf, label = r_errors_text, 
-           hjust = 1.28, vjust = 1.95, size = 4.5, color = "#8D0001")
-#
-fig_ROS_learning <- plot_grid(plot_ROS_choice, plot_ROS_errors, nrow = 1) 
-ggsave("./output/figures/fig_ROS_learning.png", plot=fig_ROS_learning, width = 25, height = 15, units = "cm", dpi = 600)
-ggsave("./output/figures/fig_ROS_learning_2.png", plot=plot_ROS_errors, width = 15, height = 10, units = "cm", dpi = 600)
-```
 
 ## Discussion
 
@@ -553,75 +460,556 @@ cat("\\newpage")
 ```
 
 # Suplementary Material
+#### Results of preliminary models 
 
-#### Checking the models plots  
-```{r, residuals}
-# Chunk for calling all the models and making the residuals
-# Associative task
-## L. delicata
-### Red
-mod_dar <- readRDS(here("output/models/asso_deli_red.rds"))
-resid_dar <- residuals(mod_dar)
-### Blue
-mod_dab <- readRDS(here("output/models/asso_deli_blue.rds"))
-resid_dab <- residuals(mod_dab)
-## L. guichenoti
-### Red
-mod_gar <- readRDS(here("output/models/asso_guich_red.rds"))
-resid_gar <- residuals(mod_gar)
-### Blue
-mod_gab <- readRDS(here("output/models/asso_guich_blue.rds"))
-resid_gab <- residuals(mod_gab)
-# Reversal task
-## L. delicata
-### Red
-mod_drr <- readRDS(here("output/models/rev_deli_red.rds"))
-resid_drr <- residuals(mod_drr)
-### Blue
-mod_drb <- readRDS(here("output/models/rev_deli_blue.rds"))
-resid_drb <- residuals(mod_drb)
-## L. guichenoti
-### Red
-mod_grr <- readRDS(here("output/models/rev_guich_red.rds"))
-resid_grr <- residuals(mod_grr)
-### Blue
-mod_grb <- readRDS(here("output/models/rev_guich_blue.rds"))
-resid_grb <- residuals(mod_grb)
+```{r, models_preliminary}
+#| label: models_preliminary
+# Fitting preliminary models to see if sex and age are relevant for our models
+source(here("R", "func.R"))
+#
+#
+var_m <- c("mit_density", "mit_potential", "ROS", "DNAdamage", "peroxidation")
+formula_list_ <- list()
+for (p in var_m){
+  formula_list_[[p]] <- paste0(p, "~ cort*temp + age + sex + (1|clutch)")
+  pmodel_name <- paste0("m_prel_", p)
+  assign(pmodel_name, fit_m(df = clean_df,
+                             cat = "prel",
+                             var = p,
+                             formula = formula_list_[[p]],
+                             fam = gaussian(),
+                             refit = FALSE),
+          envir = .GlobalEnv)  # Assign to the global environment
+}
+#
+#
+# Run model behaviour (stimuli separated)
+formula_learn <- slope_mean + slope_sd ~ cort*temp + age + sex + (1|clutch)
+m_prel_learn <- fit_m(df = clean_df,
+                      cat = "prel",
+                      var = "slope_mean",
+                      formula = formula_learn,
+                      fam = gaussian(),
+                      refit = FALSE)
 ```
 
-Model formula for the reversal task is:  
-Choice  ~ trial_reversal*cort*temp + (1 + trial_reversal|lizard_id)  
-Plots for the different models of the associative task:  
-1.- _L. delicata_  
-  1.a.- Red  
-```{r , plotmod_drr, out.width="70%", fig.align="center"}
-plot(mod_drr)
+Table S1. Preliminary results of the models testing for Mitochondrial Density.
+
+```{r, results_preliminary_mitdensity}
+#| tbl-cap: "Preliminary results of the models testing for Mitochondrial Density"
+#| label: results_preliminary_mitdensity
+#
+sum_mitdensity_prel <- m_prel_mit_density %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws()  %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_mitdensity_prel)
+```
+
+Model formula: mit_density ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S2.  Preliminary results of the models testing for Mitochondrial Potential.
+```{r, results_preliminary_potential}
+#| tbl-cap: "Preliminary results of the models testing for Mitochondrial Potential"
+#| label: results_preliminary_potential
+#
+sum_potential_prel <- m_prel_mit_potential %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_potential_prel)
+```
+
+Model formula: mit_potential ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S4. Preliminary results of the models testing for ROS.
+```{r, results_preliminary_ros}
+#| tbl-cap: "Preliminary results of the models testing for ROS"
+#| label: results_preliminary_ros
+#
+sum_m_ros_prel <- m_prel_ROS %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_m_ros_prel)
+```
+
+Model formula: ROS ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S6. Preliminary results of the models testing for DNA damage.
+```{r, results_preliminary_dnadamage}
+#| tbl-cap: "Preliminary results of the models testing for DNA damage"
+#| label: results_preliminary_dnadamage
+#
+sum_m_dnadamage_prel <- m_prel_DNAdamage %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_m_dnadamage_prel)
+```
+
+Model formula: DNAdamage ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates an effect of sex and age, so they were included in the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S8. Preliminary results of the models testing for lipid peroxidation.
+```{r, results_preliminary_peroxidation}
+#| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
+#| label: results_preliminary_peroxidation
+#
+sum_m_peroxidation_prel <- m_prel_peroxidation %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_m_peroxidation_prel)
+```
+
+Model formula: peroxidation ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex, so it was discarded from the final models. However, we saw an effect of age and we included it in our final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+
+
+#### Results of the final models
+
+Table S**13**. R^2^ values of the final models.
+```{r, table_bayesR2}
+#| label: table_bayesR2
+#| tbl-cap: "BayesR2 values of the final models"
+#
+data_bayes <- data.frame(
+  Model = character(0),
+  Mean = numeric(0),
+  Error = numeric(0),
+  Q2_5 = numeric(0),
+  Q97_5 = numeric(0)
+)
+models <- c("mean_mitodensity_def_OB",
+            "mean_potential_def_OB",
+            "mean_ros_def_OB",
+            "mean_dnadamage_def_OB",
+            "mean_peroxidation_def_OB",
+            "t_D_def_Chemical",
+            "mean_mitodensity_def_OT",
+            "mean_potential_def_OT",
+            "mean_ros_def_OT",
+            "mean_dnadamage_def_OT",
+            "mean_peroxidation_def_OT",
+            "t_D_def_Visual")
+#
+for (m in models){
+  mod <- readRDS(here("output/models/", paste0(m, ".rds")))
+  bayes <- bayes_R2(mod)
+  data_bayes <- rbind(data_bayes, data.frame(
+    Model = m,
+    Mean = format_dec(bayes[1], 3),
+    Error = format_dec(bayes[2], 3),
+    Q2_5 = format_dec(bayes[3], 3),
+    Q97_5 = format_dec(bayes[4], 3)
+  ))
+}
+#
+bayes_table_df <- data_bayes %>%
+  mutate(Region = gsub(".*_", "", Model)    # Extract everything after the last "_"
+  ) %>%
+  mutate(Model = factor(Model,
+                        levels = c("mean_mitodensity_def_OB",
+                                  "mean_potential_def_OB",
+                                  "mean_ros_def_OB",
+                                  "mean_dnadamage_def_OB",
+                                  "mean_peroxidation_def_OB",
+                                  "t_D_def_Chemical",
+                                  "mean_mitodensity_def_OT",
+                                  "mean_potential_def_OT",
+                                  "mean_ros_def_OT",
+                                  "mean_dnadamage_def_OT",
+                                  "mean_peroxidation_def_OT",
+                                  "t_D_def_Visual"),
+                        labels = c("m_def_mean_mitodensity_OB" = "Mit density",
+                                  "m_def_mean_potential_OB" = "Mit potential",
+                                  "m_def_mean_ros_OB" = "ROS",
+                                  "m_def_mean_dnadamage_OB" = "DNA damage",
+                                  "m_def_mean_peroxidation_OB" = "Peroxidation",
+                                  "m_def_t_D_Chemical" = "Detection lat",
+                                  "m_def_mean_mitodensity_OT" = "Mit density",
+                                  "m_def_mean_potential_OT" = "Mit potential",
+                                  "m_def_mean_ros_OT" = "ROS",
+                                  "m_def_mean_dnadamage_OT" = "DNA damage",
+                                  "m_def_mean_peroxidation_OT" = "Peroxidation",
+                                  "m_def_t_D_Visual" = "Detection lat")),
+      Region = factor(Region, levels = c("OB", "Chemical", "OT", "Visual"),
+                      labels = c("OB" = "Olfactory bulbs",
+                                "Chemical" = "Chemical",
+                                "OT" = "Optic tecta",
+                                "Visual" = "Visual"))) %>%
+  dplyr::select(Region, Model, Mean, Error, Q2_5, Q97_5) %>%
+  arrange(Region, Model)
+#
+#
+# Create the table
+#
+## Table format
+set_flextable_defaults(
+ font.family = "Times New Roman",
+ font.size = 10)
+#
+bayes_table <- flextable(bayes_table_df) %>%
+  set_header_labels(
+    Region = "Region/Stimulus",
+    Mean = "Mean",
+    Error = "Error",
+    Q2_5 = "2.5%",
+    Q97_5 = "97.5%") %>%
+  align(align = "center", j = c(3:5), part = "body") %>%
+  align(align = "center", j = c(1:5), part = "header") %>%
+  flextable::compose(i = c(2:5,8:11), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
+  flextable::hline(i = 6, part = "body") %>% 
+  autofit()
+#
+bayes_table
 ```
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
 
-  1.b.- Blue  
-```{r , plotmod_drb, out.width="70%", fig.align="center"}  
-plot(mod_drb)
+Table S**14**. Results of the final models.
+```{r, tbl-results_OB_table}
+#| label: results_OB_table
+#| tbl-cap: "Results of the models testing for Olfactory Bulbs."
+#| tbl-name: "results_OB"
+#| tbl-label: "results_OB"
+source(here("R", "func.R"))
+# 
+# A) Refining the df summarizing the posteriors for OB/Chemical stimulus (post_OB)
+post_OB_refined <- refine_post(post_OB) %>%
+  arrange(Variable, Predictors)
+#
+# B) Create table
+## Table format
+set_flextable_defaults(
+ font.family = "Times New Roman",
+ font.size = 10)
+#
+OB_table <- flextable(post_OB_refined) %>%
+  align(align = "center", j = c(3:5), part = "body") %>%
+  align(align = "center", j = c(1:5), part = "header") %>%
+  bold(~`PMCMC` < 0.05, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors"),
+       bold = TRUE) %>%  # Bold when PMCMC is "<0.05"
+  bold(~`PMCMC` <0.001, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors")) %>%  # Bold when PMCMC is "<0.001"
+  flextable::compose(i = c(2:4,6:8,10:12,14:18,20:23,25:27), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
+  autofit()
+#
+OB_table
 ```
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
 
-2.- _L. guichenoti_  
-  2.a.- Red  
-```{r , plotmod_grr, out.width="70%", fig.align="center"}
-plot(mod_grr)
+
+
+
+#### Final models diagnostics (plots)
+
+```{r , plotmod_mitdensity, out.width="70%", fig.align="center"}
+#| label: plotmod_mitdensity
+#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Olfactory Bulbs."
+#
+mod <- readRDS(here("output/models/mit_density_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX3.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX3.png")
 ```
+
+Fig S1. Posterior predictive checks for the model of Mitochondrial Density in Olfactory Bulbs.
+Formula: mean_mitodensity ~ cort * temp + (1|clutch)
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
 
-  2.b.- Blue  
-```{r , plotmod_grb, out.width="70%", fig.align="center"}
-plot(mod_grb)
+```{r , plotmod_mitdensity_OT, out.width="70%", fig.align="center"}
+#| label: plotmod_mitdensity_OT
+#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Optic Tecta."
+#
+mod <- readRDS(here("output/models/mean_mitodensity_def_OT.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX4.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX4.png")
+```
+
+Fig S2. Posterior predictive checks for the model of Mitochondrial Density in Optic Tecta.
+Formula: mean_mitodensity ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_potential_OB, out.width="70%", fig.align="center"}
+#| label: plotmod_potential_OB
+#| caption: "Posterior predictive checks for the model of Mitochondrial Potential in Olfactory Bulbs."
+#
+mod <- readRDS(here("output/models/mean_potential_def_OB.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX5.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX5.png")
+```
+
+Fig S3. Posterior predictive checks for the model of Mitochondrial Potential in Olfactory Bulbs.
+Formula: mean_potential ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_potential_OT, out.width="70%", fig.align="center"}
+#| label: plotmod_potential_OT
+#| caption: "Posterior predictive checks for the model of Mitochondrial Potential in Optic Tecta."
+#
+mod <- readRDS(here("output/models/mean_potential_def_OT.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX6.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX6.png")
+```
+
+Fig S4. Posterior predictive checks for the model of Mitochondrial Potential in Optic Tecta.
+Formula: mean_potential ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_ros_OB, out.width="70%", fig.align="center"}
+#| label: plotmod_ros_OB
+#| caption: "Posterior predictive checks for the model of ROS Production in Olfactory Bulbs."
+#
+mod <- readRDS(here("output/models/mean_ros_def_OB.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX7.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX7.png")
+```
+
+Fig S5. Posterior predictive checks for the model of ROS Production in Olfactory Bulbs.
+Formula: mean_ros ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_ros_OT, out.width="70%", fig.align="center"}
+#| label: plotmod_ros_OT
+#| caption: "Posterior predictive checks for the model of ROS Production in Optic Tecta."
+#
+mod <- readRDS(here("output/models/mean_ros_def_OT.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX8.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX8.png")
+```
+
+Fig S6. Posterior predictive checks for the model of ROS Production in Optic Tecta.
+Formula: mean_ros ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_dnadamage_OB, out.width="70%", fig.align="center"}
+#| label: plotmod_dnadamage_OB
+#| caption: "Posterior predictive checks for the model of DNA Damage in Olfactory Bulbs."
+#
+mod <- readRDS(here("output/models/mean_dnadamage_def_OB.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX9.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX9.png")
+```
+
+Fig S7. Posterior predictive checks for the model of DNA Damage in Olfactory Bulbs.
+Formula: mean_dnadamage ~ cort * temp + age_euthanasia + sex + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_dnadamage_OT, out.width="70%", fig.align="center"}
+#| label: plotmod_dnadamage_OT
+#| caption: "Posterior predictive checks for the model of DNA Damage in Optic Tecta."
+#
+mod <- readRDS(here("output/models/mean_dnadamage_def_OT.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX10.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX10.png")
+```
+
+Fig S8. Posterior predictive checks for the model of DNA Damage in Optic Tecta.
+Formula: mean_dnadamage ~ cort * temp + sex + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_peroxidation_OB, out.width="70%", fig.align="center"}
+#| label: plotmod_peroxidation_OB
+#| caption: "Posterior predictive checks for the model of Lipid Peroxidation in Olfactory Bulbs."
+#
+mod <- readRDS(here("output/models/mean_peroxidation_def_OB.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX11.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX11.png")
+```
+
+Fig S9. Posterior predictive checks for the model of Lipid Peroxidation in Olfactory Bulbs.
+Formula: mean_peroxidation ~ cort * temp + age_euthanasia + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_peroxidation_OT, out.width="70%", fig.align="center"}
+#| label: plotmod_peroxidation_OT
+#| caption: "Posterior predictive checks for the model of Lipid Peroxidation in Optic Tecta."
+#
+mod <- readRDS(here("output/models/mean_peroxidation_def_OT.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX12.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX12.png")
+```
+
+Fig S10. Posterior predictive checks for the model of Lipid Peroxidation in Optic Tecta.
+Formula: mean_peroxidation ~ cort * temp + age_euthanasia + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_tD_Chemical, out.width="70%", fig.align="center"}
+#| label: plotmod_tD_Chemical
+#| caption: "Posterior predictive checks for the model of Detection Latency (t_D) in Chemical trials."
+#
+mod <- readRDS(here("output/models/t_D_def_Chemical.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX1.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX1.png")
+```
+
+Fig S11. Posterior predictive checks for the model of Detection Latency (t_D) in Chemical trials.
+Formula: t_D~ cort * temp + motivation + cort:motivation + (1|clutch) + (1|lizard_id)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_tD_Visual, out.width="70%", fig.align="center"}
+#| label: plotmod_tD_Visual
+#| caption: "Posterior predictive checks for the model of Detection Latency (t_D) in Visual trials."
+#
+mod <- readRDS(here("output/models/t_D_def_Visual.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_SX2.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_SX2.png")
+```
+
+Fig S12. Posterior predictive checks for the model of Detection Latency (t_D) in Visual trials.
+Formula: t_D~ cort * temp + (1|clutch) + (1|lizard_id)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
 ```

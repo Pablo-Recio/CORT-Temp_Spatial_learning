@@ -4,58 +4,6 @@ pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4,
 #
 ####################
 ####################
-# Function to make the first cleaning for the initial posteriors to estimate individual learning slopes or intercepts
-#' @title tidy_post_df
-#' @param df to select the posteriors to use. Options: choice or errors
-#' @param effect to select whether we want the intercept or the slopes. Options: slope or intercept
-tidy_post_df <- function(df, effect) {
-  if(df == "choice") {
-    data <- posteriors_choice
-    label_df <- "choice_"
-  } else if(df == "errors") {
-    data <- posteriors_errors
-    label_df <- "errors_"
-  } else {
-    stop("df not valid")
-  }
-  if(effect == "slope") {
-    label_effect <- "day"
-    label_df <- paste0(label_df, "slope_")
-    pattern <- "^r_lizard_id\\[\\d+,day\\]$"
-  } else if(effect == "intercept") {
-    label_effect <- "Intercept"
-    label_df <- paste0(label_df, "intercept_")
-    pattern <- "^r_lizard_id\\.\\d+\\.Intercept\\."
-    data <- data %>%
-      select(b_Intercept, matches("^r_lizard.*Intercept]$")) %>%
-      mutate(across(-b_Intercept, ~ . + b_Intercept)) %>%
-    data.frame()
-  } else {
-    stop("effect not valid")
-  }
-  tidy_post_1 <- data %>%
-    select(matches(pattern)) %>%
-    summarise(across(everything(), list(
-      mean = ~ mean(.x, na.rm = TRUE),
-      sd = ~ sd(.x, na.rm = TRUE),
-      se = ~ sd(.x, na.rm = TRUE)/sqrt(length(.x)),
-      pmcmc = ~ pmcmc(mean(.x), null = 0)
-    ))) %>%
-  data.frame()
-  tidy_post_2 <- tidy_post_1 %>%
-    pivot_longer(cols = everything(),
-              names_to = "lizard_id", 
-              values_to = "value") %>% # Extract the relevant columns and reshape them
-    mutate(lizard_id = gsub("r_lizard_id\\.", "", lizard_id),  # Remove prefix
-           lizard_id = gsub(paste0(label_effect, "\\."), "", lizard_id)) %>%      # Replace all remaining dots with underscores
-    separate(lizard_id, into = c("lizard_id", "stat"),
-            sep = "\\.", extra = "merge", fill = "right") %>% # Separate the parameter names to get lizard_id, statistic type, and effect type
-    pivot_wider(names_from = stat, values_from = value, names_prefix = label_df) %>% # Split the colum stats into mean, sd, and se
-    data.frame()
-  return(tidy_post_2)
-}
-####################
-####################
 # Extract sample size per group
 #' @title sample
 #' @description Estract sample size per group
@@ -78,47 +26,68 @@ sample <- function(df, sp, corti, therm){
 #' @title fit_m Function
 #' @description Fit brm models for different the associative task
 #' @param df To select the df
-#' @param sp To select the species of interest ("deli"/"guich")
-#' @param com To select whether the analyses are done for the full dataset ("complete") or for only those lizards 
-# that met the learning criterion ("suppl")
+#' @param cat To select whether the analyses are preliminary ("prel") or finel ("fin")
 #' @param refit To choose whether to refit the models (TRUE, default) or use the ones already made (FALSE)
+#' @param fam To specify the family of the model
+#' @param var To specify the response variable
+#' @param for To specify the formula
 #' @return Raw posteriors of fitted brm model for each treatment, species, and group (df)
-fit_m <- function(df, sp, com, refit = TRUE) {
-  formula <- (FC_reversal ~ trial_reversal*cort*temp + (1 + trial_reversal|lizard_id) + (1|clutch)) 
-  #Specify species
-    if (sp == "deli"){
-      sp_data <- df %>%
-            group_by(lizard_id) %>%
-            filter(species == "delicata") %>%
-            ungroup() %>%
-      data.frame() 
-    } else {
-      if(sp == "guich"){
-        sp_data <- df %>%
-              group_by(lizard_id) %>%
-              filter(species == "guichenoti") %>%
-              ungroup() %>%
-        data.frame()
-      } else {
-        stop("Species not valid")
-      }
-    }
+fit_m <- function(df, cat, fam, var, formula, refit = TRUE) {
   #Fit the model only if it has not been fit yet (if refit=TRUE)
   if(refit){
     # Fit the model
     model <- brm(formula,
-                data = sp_data,
-                family = bernoulli(link = "logit"),
-                chains = 4, cores = 4, iter = 3000, warmup = 1000, control = list(adapt_delta = 0.99))
+                data = df,
+                family = fam,
+                chains = 4, cores = 4, iter = 8000, warmup = 2000, control = list(adapt_delta = 0.99))
     # Write the model to a file
-    saveRDS(model, file = paste0(here("output/models/"), sp, com, ".rds"))
+    saveRDS(model, file = paste0(here("output/models/"), var, "_", cat, ".rds"))
   } else {
       # Read the model from a file
-      model <- readRDS(file = paste0(here("output/models/"), sp, com, ".rds"))
+      model <- readRDS(file = paste0(here("output/models/"), var, "_", cat, ".rds"))
   } 
   # Extract posteriors
   posteriors <- as_draws_df(model)
   return(posteriors)
+}
+####################
+####################
+# Function to generate four Q-Q plots for one variable
+#' @title qq_plots_single 
+#' @description Generate four Q-Q plots for one variable
+#' @param df Database
+#' @param vle Variable chosen
+#' @param label Label assigned to each variable
+#' @return fig_qq
+qq_plots_single <- function(df, vle, label) {
+  # Remove NAs
+  plot_df <- data.frame(value = na.omit(df[[vle]])) 
+
+    # Normal Q-Q Plot
+    p1 <- ggplot(plot_df, aes(sample = value)) +
+      stat_qq() + 
+      stat_qq_line(color = "red") +
+      ggtitle(paste(label, "- Normal Q-Q Plot")) +
+      theme_classic()
+
+    # Log-Normal Q-Q Plot
+    p2 <- ggplot(plot_df, aes(sample = log(value +1))) +
+      stat_qq() + 
+      stat_qq_line(color = "red") +
+      ggtitle(paste(label, "- Log-Normal Q-Q Plot")) +
+      theme_classic()
+
+    # Exponential Q-Q Plot
+    p3 <- ggplot(plot_df, aes(sample = value)) +
+      stat_qq(distribution = qexp, dparams = list(rate = 1/mean(plot_df$value))) +
+      stat_qq_line(distribution = qexp, dparams = list(rate = 1/mean(plot_df$value)), color = "red") +
+      ggtitle(paste(label, "- Exponential Q-Q Plot")) +
+      theme_classic()
+
+    # Arrange plots in a grid
+    fig_qq <- plot_grid(p1, p2, p3, nrow = 1, rel_widths = c(0.33, 0.34, 0.33))
+    
+  return(fig_qq)
 }
 ###################
 ###################
@@ -225,7 +194,7 @@ plot_slopes <- function(type){
       levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot"),
       labels = c("CORT-Cold" = "CORT-Cold (n=20)",
                 "Control-Cold" = "Control-Cold (n=20)",
-                "CORT-Hot" = "CORT-Hot (n=19)",
+                "CORT-Hot" = "CORT-Hot (n=20)",
                 "Control-Hot" = "Control-Hot (n=20)")
     )) %>%
   data.frame()
