@@ -89,27 +89,6 @@ qq_plots_single <- function(df, vle, label) {
     
   return(fig_qq)
 }
-###################
-###################
-# Tidy estimates from fit_m
-#' @title tidy_post
-#' @description The df obtained by fit_m contains the estimates of the Intercept and fixed effects of "Choice ~ trial (1 + lizard)"
-#' for each treatment, species, and group,but it extracts the estimates of the four chains, each chain in a column, here we want to
-#' tidy up to two columns (Intercept and trial), plus the ones indicating species, group, tand treatment
-#' @param df Dataframe used
-#' @return Same df but tidy
-tidy_post <- function(df) {
-  # Select data
-  data <- df
-  # Split original df into four by chain, and give the columns a common name
-  res1 <- data%>%select(matches("^X1.b_"),treatment_level, species_level,bias_level)%>%rename_all(~sub("^X1.b_", "", .))
-  res2 <- data%>%select(matches("^X2.b_"),treatment_level, species_level,bias_level)%>%rename_all(~sub("^X2.b_", "", .))
-  res3 <- data%>%select(matches("^X3.b_"),treatment_level, species_level,bias_level)%>%rename_all(~sub("^X3.b_", "", .))
-  res4 <- data%>%select(matches("^X4.b_"),treatment_level, species_level,bias_level)%>%rename_all(~sub("^X4.b_", "", .))
-  # Bind data again
-  new_df <- bind_rows(res1, res2,res3,res4)
-return(new_df) 
-}
 ####################
 ####################
 # Estimate pmcm
@@ -160,37 +139,10 @@ format_p <- function(x, n) {
 ####################
 # Function to create the plot for the slopes
 #' @title plot_slopes
-#' @param type to select the df for the violin plot
-plot_slopes <- function(type){
-  if(type == "choice") {
-    data <- posteriors_choice
-    label_df <- "choice_"
-  } else if(type == "errors") {
-    data <- posteriors_errors
-    label_df <- "errors_"
-  } else {
-    stop("df not valid")
-  }
-  label_effect <- "day"
-  pattern <- "^r_lizard_id\\[\\d+,day\\]$"
-  tidy_post <- data %>%
-    select(matches(pattern)) %>%
-    pivot_longer(cols = everything(),
-              names_to = "lizard_id", 
-              values_to = "value") %>% # Extract the relevant columns and reshape them
-    mutate(lizard_id = gsub("r_lizard_id\\[|,day\\]", "", lizard_id)) %>%  # Remove prefix
-  data.frame()
-  mod_spal <- data_spal %>%
-    group_by(lizard_id) %>%
-      filter(day == 1) %>%
-    select(lizard_id, clutch, age, temp, cort) %>% # We modify here the spal df to merge it with the estiamates per invidual
-    mutate(lizard_id = as.character(lizard_id)) %>%
-  data.frame()
-  tidy_post_fig <- merge(mod_spal, tidy_post, by = "lizard_id")
-###
-  data_fig <- tidy_post_fig %>%
-    mutate(Treatment = paste(cort, temp, sep = "-")) %>%
-    mutate(Treatment = factor(Treatment,
+#' @param df to select the df for the violin plot
+plot_slopes <- function(df){
+  data_fig <- df %>%
+    mutate(treatment = factor(treatment,
       levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot"),
       labels = c("CORT-Cold" = "CORT-Cold (n=20)",
                 "Control-Cold" = "Control-Cold (n=20)",
@@ -199,11 +151,11 @@ plot_slopes <- function(type){
     )) %>%
   data.frame()
   data_plot <- data_fig %>%
-    group_by(Treatment) %>%
+    group_by(treatment) %>%
     summarize(
-      Mean = mean(value),
-      SD = sd(value),
-      SE = sd(value)/sqrt(length(value))
+      Mean = mean(slopes),
+      SD = sd(slopes),
+      SE = sd(slopes)/sqrt(length(slopes))
     ) %>%
     ungroup() %>%
   data.frame()
@@ -211,14 +163,16 @@ write.csv(data_plot, here("output/Checking/data_plot.csv"))
 write.csv(data_fig, here("output/Checking/data_fig.csv"))
 #
 # Make the plot
-  plot2 <- ggplot(data_fig, aes(x = Treatment, y = value, fill = Treatment)) +
+  plot2 <- ggplot(data_fig, aes(x = treatment, y = slopes, fill = treatment)) +
   geom_flat_violin(alpha = 0.5) +
-  scale_fill_manual(values = c("CORT-Cold (n=20)"="#00008B", "Control-Cold (n=20)"="#68bde1", 
-                    "CORT-Hot (n=19)"="#b50101", "Control-Hot (n=20)"="#fa927d")) +
-  geom_point(data = data_plot, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
-  geom_segment(data = data_plot, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
+  scale_fill_manual(values = c("CORT-Cold (n=20)"="#00008B",
+                              "Control-Cold (n=20)"="#68bde1",
+                              "CORT-Hot (n=20)"="#b50101",
+                              "Control-Hot (n=20)"="#fa927d")) +
+  geom_point(data = data_plot, aes(y = Mean, x = treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
+  geom_segment(data = data_plot, aes(y = Mean - SD, yend = Mean + SD, x = treatment, xend = treatment), size = 1.5, color = "black") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-  ylim(min(data_fig$value), max(data_fig$value)) +
+  ylim(min(data_fig$slopes), max(data_fig$slopes)) +
   coord_flip() +
   theme_classic() +
   labs(y = "Slope estimates", x = "Treatments") +
@@ -234,9 +188,8 @@ write.csv(data_fig, here("output/Checking/data_fig.csv"))
 }
 ####################
 ####################
-# Function to create the plot per species (A-B or C-D) for fig-results
+# Function to create the plot A for fig-results_learning
 #' @title plotting
-#' @param sp to select the species for the labels
 #' @param df_prob to select the df for probability 
 #' @param df_violin to select the df for the violin plot
 #' @param df_points to select the df for the points and geom_bars

@@ -16,8 +16,8 @@ learning_df <- read.csv(here("./data/Spatial_learn.csv")) %>%
       levels = c("23", "28"),
       labels = c("23" = "Cold", "28" = "Hot"))) %>%
     mutate(cort = factor(cort,
-      levels = c("B", "A"),
-      labels = c("B" = "CORT", "A" = "Control"))) %>%
+      levels = c("A", "B"),
+      labels = c("A" = "Control", "B" = "CORT"))) %>%
   ungroup() %>%
 data.frame()
 write.csv(learning_df, here("./output/databases_clean/learning_df.csv"))
@@ -26,7 +26,7 @@ write.csv(learning_df, here("./output/databases_clean/learning_df.csv"))
 #
 ## Fit the model only if it has not been fit yet (if refit = TRUE)
 if(refit){
-  model_errors <- brm(errors ~ 1 + (1 + day|lizard_id),
+  model_errors <- brm(errors ~ day + (1 + day|lizard_id),
                 data = learning_df,
                 negbinomial(link = "log"),
                 chains = 4, cores = 4, iter = 8000, warmup = 2000,

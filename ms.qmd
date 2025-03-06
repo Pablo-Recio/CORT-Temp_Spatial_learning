@@ -116,306 +116,127 @@ We also considered individuals to be reinforced if the cricket was eaten after t
 There are a total of  `r total_individuals`, and `r total_clutches` clutches in the database. The average number of individuals per clutch is `r mean(individuals_per_clutch$individual_count)`, with a minimum of `r min(individuals_per_clutch$individual_count)` individuals per clutch (`r sum(individuals_per_clutch$individual_count == min(individuals_per_clutch$individual_count))` clutches) and a maximum of `r max(individuals_per_clutch$individual_count)` (`r sum(individuals_per_clutch$individual_count == max(individuals_per_clutch$individual_count))` clutches). Clutches with only one individual do not contribute to the estimation of within-clutch variability. Including these clutches might lead to misleading variance estimates and convergence issues in the hierarchical model. Therefore, we initially fit the model without the clutch effect to obtain stable estimates at the individual level.
 
 ## Results
-```{r, sampleSize}
-#| label: sampleSize
-# List with the sample sizes from the database (here("output/databases_clean/data_complete.csv") as the sample size per species and group is the same on each task. We used function sample (see func.R) to estimate the sample size per treatment and species.
-source(here("R", "func.R"))
-#
-hormone <- c("CORT", "Control")
-temperature <- c("Cold", "Hot")
-#
-n_list <- list()
-#
-for(k in 1:length(hormone)){
-  for(l in 1:length(temperature)){
-    n_list[[paste(hormone[k], temperature[l], sep = "_")]] <- sample(hormone[k], temperature[l])
-  }
-}
-```
 
 Originally, we started with 96 lizards, 48 per species and 12 per treatment per species. However, due to natural mortality (n = 11), no completion of the training stage (n = 1), or no motivation during the learning tasks (n = 3; see above), we ended up with a total of 81 lizards. Final sample sizes per treatment and species are disclosed on @tbl-data. 
 
-```{r, models}
-#| label: models
+```{r, models_mitochondrial}
+#| label: models_mitochondrial
 # Fitting the model and extraction of posteriors for both types of task and species using fit_m function (see func.r in R folder). The result everytime the function is used is a df with the posteriors of the model. The functions saves the model automatically in output/models; and when the parameter refit = FALSE then the posteriors are extracted from the model previously written instead of fitting the model again each time.
 source(here("R", "func.R"))
 # 
-# df got from data_process.R
 #
-fchoice <- bf(choice_slope_mean + choice_slope_se ~ cort*temp)
-ferrors <- bf(errors_slope_mean + errors_slope_se ~ cort*temp)
-fROS <- bf(ROS ~ Mit_density + cort*temp)
-#
-refit <- FALSE
-if(refit==TRUE){
-  # Choice
-  model_choice_2 <- brm(fchoice + fROS,
-                data = clean_df,
-                family = gaussian,
-                chains = 4, cores = 4, iter = 8000, warmup = 2000, 
-                control = list(adapt_delta = 0.99, max_treedepth = 12))
-  # Errors
-  model_errors_2 <- brm(ferrors + fROS,
-                data = clean_df,
-                family = gaussian,
-                chains = 4, cores = 4, iter = 8000, warmup = 2000,
-                control = list(adapt_delta = 0.99, max_treedepth = 12))
-  # Write the models to two files
-  saveRDS(model_choice_2, file = paste0(here("output/models/model_choice_2.rds")))
-  saveRDS(model_errors_2, file = paste0(here("output/models/model_errors_2.rds")))
-  } else {
-    # Read the model from a file
-    model_choice_2 <- readRDS(file = paste0(here("output/models/model_choice_2.rds")))
-    model_errors_2 <- readRDS(file = paste0(here("output/models/model_errors_2.rds")))
+# Run models mitochondrial physiology 
+var_m <- c("mit_density", "mit_potential", "ROS", "DNAdamage", "peroxidation")
+for (p in var_m){ 
+  if (p %in% c("mit_density", "mit_potential", "ROS", "DNAdamage")){
+    formula <- paste0(p, "~ cort*temp + (1|clutch)")
+  } else if (p == "peroxidation"){
+    formula <- paste0(p, "~ cort*temp + age + (1|clutch)")
+  } 
+  pmodel_name <- paste0("m_def_", p)
+  assign(pmodel_name, fit_m(df = clean_df,
+                          cat = "def",
+                          var = p,
+                          formula = formula,
+                          fam = gaussian(),
+                          refit = FALSE),
+        envir = .GlobalEnv)  # Assign to the global environment
 } 
-post_gen <- as_draws_df(model_errors_2)
-write.csv(post_gen, file= "./output/Checking/post_gen.csv")
 ```
 
-```{r, resultsRev}
-# Rename some of the posteriors and make new estimates for the learning rate for the Reversal task doing the same thing we did in the chunk above.
-## 1) L. delicata
-### Group = red
-drr_CORTCold <- deli_rev_red$b_trial_reversal
-drr_ControlCold <- (deli_rev_red$'b_trial_reversal:cortControl' + deli_rev_red$b_trial_reversal)
-drr_CORTHot <- (deli_rev_red$'b_trial_reversal:tempHot' + deli_rev_red$b_trial_reversal)
-drr_ControlHot <- (deli_rev_red$'b_trial_reversal:cortControl:tempHot' + deli_rev_red$b_trial_reversal + deli_rev_red$'b_trial_reversal:cortControl' + deli_rev_red$'b_trial_reversal:tempHot')
-### Group = blue
-drb_CORTCold <- deli_rev_blue$b_trial_reversal
-drb_ControlCold <- (deli_rev_blue$'b_trial_reversal:cortControl' + deli_rev_blue$b_trial_reversal)
-drb_CORTHot <- (deli_rev_blue$'b_trial_reversal:tempHot' + deli_rev_blue$b_trial_reversal)
-drb_ControlHot <- (deli_rev_blue$'b_trial_reversal:cortControl:tempHot' + deli_rev_blue$b_trial_reversal + deli_rev_blue$'b_trial_reversal:cortControl' + deli_rev_blue$'b_trial_reversal:tempHot')
-## 2) L. guichenoti
-### Group = red
-grr_CORTCold <- guich_rev_red$b_trial_reversal
-grr_ControlCold <- (guich_rev_red$'b_trial_reversal:cortControl' + guich_rev_red$b_trial_reversal)
-grr_CORTHot <- (guich_rev_red$'b_trial_reversal:tempHot' + guich_rev_red$b_trial_reversal)
-grr_ControlHot <- (guich_rev_red$'b_trial_reversal:cortControl:tempHot' + guich_rev_red$b_trial_reversal + guich_rev_red$'b_trial_reversal:cortControl' + guich_rev_red$'b_trial_reversal:tempHot')
-### Group = blue
-grb_CORTCold <- guich_rev_blue$b_trial_reversal
-grb_ControlCold <- (guich_rev_blue$'b_trial_reversal:cortControl' + guich_rev_blue$b_trial_reversal)
-grb_CORTHot <- (guich_rev_blue$'b_trial_reversal:tempHot' + guich_rev_blue$b_trial_reversal)
-grb_ControlHot <- (guich_rev_blue$'b_trial_reversal:cortControl:tempHot' + guich_rev_blue$b_trial_reversal + guich_rev_blue$'b_trial_reversal:cortControl' + guich_rev_blue$'b_trial_reversal:tempHot')
+```{r, models_learning}
+#| label: models_learning
+#
+formula_learn <- errors ~ day*cort*temp + (1 + day|lizard_id) + (1|clutch)
+m_def_learn <- fit_m(df = learning_df,
+                      cat = "def",
+                      var = "learning",
+                      formula = formula_learn,
+                      fam = negbinomial(link = "log"),
+                      refit = FALSE)
 ```
 
-```{r, tbl-data}
-#| label: tbl-data
-#| tbl-cap: "Estimates of Associative learning slope for all the different treatments per each task, species and group. Mean shows the aritmetic mean of the estimates obtained from the posteriors of the model, and 95% CI indicates the 95% confidence interval of the mean. All p-values were obtained using pmcmc and test the hypothesis that the mean is equal to zero. In bold, those values that are significant (p-value <0.05)"
-source(here("R", "func.R"))
+```{r, learning_results_names}
+#| label: learning_results_names
+# Rename some of the posteriors and make new estimates for the learning rate 
 #
-############################## CREATING BIG DF FOR TABLE ##############################
-# Building the vectors for titles of rows and columns
-specie <- c("L. delicata", "L. guichenoti")
-groups <- c("Red", "Blue")
-test <- c("Associative", "Reversal")
-treatments <- c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")
-values <- c("Mean", "95% CI", "p-value")
-# Building the vectors for estimated means, co.intervals(95%), and p-values for the slopes obtained from posteriors. p-values are obtained using pmcmc function (see func.R), assuming a two-tailed test that testes the hypothesis that the value (slopes in this case) is 0.
-#First get estimates for both tasks
-estimates_asso <- list(
-  dar_CORTCold, dar_ControlCold, dar_CORTHot, dar_ControlHot, 
-  dab_CORTCold, dab_ControlCold, dab_CORTHot, dab_ControlHot, 
-  gar_CORTCold, gar_ControlCold, gar_CORTHot, gar_ControlHot, 
-  gab_CORTCold, gab_ControlCold, gab_CORTHot, gab_ControlHot
-)
-#
-estimates_rev <- list(
-  drr_CORTCold, drr_ControlCold, drr_CORTHot, drr_ControlHot, 
-  drb_CORTCold, drb_ControlCold, drb_CORTHot, drb_ControlHot, 
-  grr_CORTCold, grr_ControlCold, grr_CORTHot, grr_ControlHot, 
-  grb_CORTCold, grb_ControlCold, grb_CORTHot, grb_ControlHot
-)
-# Then get the mean, co.intervals(95%), and p-values
-asso_mean <- format_dec(sapply(estimates_asso, mean), 3)
-asso_interval_025 <- format_dec(sapply(estimates_asso, function(x) quantile(x,0.025)), 3)
-asso_interval_975 <- format_dec(sapply(estimates_asso, function(x) quantile(x,0.975)), 3)
-asso_intervals <- paste(asso_interval_025, asso_interval_975, sep = " , ")
-asso_pvalue <- format_dec(sapply(estimates_asso, pmcmc), 3)
-#
-rev_mean <- format_dec(sapply(estimates_rev, mean), 3)
-rev_interval_025 <- format_dec(sapply(estimates_rev, function(x) quantile(x,0.025)), 3)
-rev_interval_975 <- format_dec(sapply(estimates_rev, function(x) quantile(x,0.975)), 3)
-rev_intervals <- paste(rev_interval_025, rev_interval_975, sep = " , ")
-rev_pvalue <- format_dec(sapply(estimates_rev, pmcmc), 3)
-#
-# Building the df for the associative
-asso_df <- data.frame(
-  Specie = rep(specie, each = length(groups) * length(treatments)),
-  Group = rep(rep(groups, each = length(treatments)), times = length(specie)),
-  Treatment = rep(rep(treatments, each = 1), times = length(groups) * length(specie)),
-  Mean = rep(asso_mean, each = 1),
-  CI = rep(asso_intervals, each = 1),
-  PValue = rep(asso_pvalue, each = 1),
-  Task = rep("Associative", length(asso_mean))
-)
-# Building the df for the reversal
-rev_df <- data.frame(
-  Specie = rep(specie, each = length(groups) * length(treatments)),
-  Group = rep(rep(groups, each = length(treatments)), times = length(specie)),
-  Treatment = rep(rep(treatments, each = 1), times = length(groups) * length(specie)),
-  Mean = rep(rev_mean, each = 1),
-  CI = rep(rev_intervals, each = 1),
-  PValue = rep(rev_pvalue, each = 1),
-  Task = rep("Reversal", length(rev_mean))
-)
-# Joining both dfs
-table_data <- rbind(asso_df, rev_df)
-table_data[, sapply(table_data, is.numeric)] <- lapply(table_data[, sapply(table_data, is.numeric)], function(x) format(x, scientific = FALSE))
-#
-############################## ADDING SAMPLE SIZE TO DF FOR TABLE ##############################
-# Make n_list into a df
-n_df <- as.data.frame(do.call(rbind, n_list)) %>%
-  rename("n" = V1) %>%
-  rownames_to_column("model") %>%
-  separate(model, into = c("Specie", "Group", "cort", "temp"), sep = "_") %>%
-  unite("Treatment", c("cort", "temp"), sep = "-") %>%
-  mutate(Specie = factor(Specie,
-                  labels = c(delicata = "L. delicata", guichenoti = "L. guichenoti")),
-        Treatment = factor(Treatment,
-                   levels = c("CORT-Cold", "Control-Cold", "CORT-Hot","Control-Hot")))
-# Merge both dfs, put sample size together with the treatment, and organize the new df to make it look like the table
-new_table_data <- merge(table_data, n_df) %>%
-  rename('p-value' = 'PValue', '95% CI' = 'CI') %>% #Change the names of the columns for the table
-  pivot_wider(names_from = Task, values_from = c(Mean, `95% CI`, `p-value`)) %>% # to split between Asociative and Reversal
-  select(Specie, Group, Treatment, Mean_Associative, `95% CI_Associative`, `p-value_Associative`, Mean_Reversal, `95% CI_Reversal`, `p-value_Reversal`, n) %>% #To order the columns in the way I want for the table
-  mutate(Specie = factor(Specie,
-                  levels = c("L. delicata", "L. guichenoti")),
-        Group = factor(Group,
-                  levels = c("Red", "Blue")),
-        Treatment = factor(Treatment, 
-                  levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")))%>%
-  arrange(Specie, Group, Treatment) %>% # To arrange the rows the way I want
-  unite("Treatment", c("Treatment", "n"), sep = " (n = ") %>%
-  mutate(Treatment = paste0(Treatment, ")"))
-write.csv(new_table_data, file= "./output/Checking/new_table_data.csv")
-#
-############################## MAKING THE TABLE ##############################
-## Table format
-set_flextable_defaults(
- font.family = "Times New Roman",
- fint.size = 10)
-# Split the table_data df by task
-real_table <- flextable(new_table_data) %>%
-    bold(~ `p-value_Associative` < 0.05, ~ `p-value_Associative` + Mean_Associative + `95% CI_Associative`) %>%
-    bold(~ `p-value_Reversal` < 0.05, ~ `p-value_Reversal` + Mean_Reversal + `95% CI_Reversal`) %>%
-    set_table_properties(width = 1) %>%
-    align(align="center", part="all") %>% 
-    add_header_row(values = c("", "Associative task", "Reversal task"), colwidths = c(3, 3, 3)) %>%
-    set_header_labels(Mean_Associative = "Mean",
-                      `95% CI_Associative` = "95% CI",
-                      `p-value_Associative` = "p-value",
-                      Mean_Reversal = "Mean",
-                      `95% CI_Reversal` = "95% CI",
-                      `p-value_Reversal` = "p-value") %>%
-    italic(j = 1, italic = TRUE, part = "body") %>% # To have names od species in italics
-    flextable::compose(i = c(2:8,10:16), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
-    flextable::compose(i = c(2:4,6:8,10:12,14:16), j = 2, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the second column
-    hline(i = c(4,12), j = c(2:9), part = "body") %>% # To make some horizontal lines
-    hline(i = c(8), j = c(1:9), part = "body") %>% # To make some horizontal lines
-    vline(i = (1:16), j = c(3,6), part = "body") %>% # To make some vertical lines on body
-    vline(j=c(3,6), part = "header") %>% # To make some vertical lines on header
-    autofit() 
-real_table
+### Slopes
+slope_ControlCold <- m_def_learn$b_day
+slope_CORTCold <- m_def_learn$b_day + m_def_learn$`b_day:cortCORT`
+slope_ControlHot <- m_def_learn$b_day + m_def_learn$`b_day:tempHot`
+slope_CORTHot <- m_def_learn$b_day + m_def_learn$`b_day:cortCORT:tempHot` + m_def_learn$`b_day:cortCORT` + m_def_learn$`b_day:tempHot`
+### Intercepts (for figure)
+int_ControlCold <- m_def_learn$b_Intercept
+int_CORTCold <- m_def_learn$b_Intercept + m_def_learn$`b_cortCORT`
+int_ControlHot <- m_def_learn$b_Intercept + m_def_learn$`b_tempHot`
+int_CORTHot <- m_def_learn$b_Intercept + m_def_learn$`b_cortCORT:tempHot` + m_def_learn$`b_cortCORT` + m_def_learn$`b_tempHot`
 ```
 
 ```{r, fig-learning}
 #| label: fig-learning
-#| fig.cap: "Results for L. delicata (A,B) and L. guichenoti (C, D). Panels A and C show the predicted probability of choosing the correct feeder first over trials. The lines represent the mean predicted probability of choosing the correct feeder first on each trial, and the shaded areas indicate the standard deviation of the mean; both were obtained by using the slope and intercept estimates from the posterior distributions. The different colours indicate the different treatments. Panels B and D show the distribution of the estimates of slopes per each treatment. The x-axis represents the slope estimate, and in the y-axis are the density of the estimates. The different colours indicate the different treatments. Points and bars represent the mean and standard deviation of the mean of the estimates, respectively."
-#
-#
-####### A) Probability of choosing correct figure
-## A.1) Get the df with the estimated probability of choosing the correct feeder first over trials (using learning_df from data_process.R)
-# Get the df for the intercepts
+#| fig.cap: "Learning results"
 source(here("R", "func.R"))
-post_choice_intercept <- tidy_post_df("choice", "intercept")
-# Merge slope and intercept dfs for choice 
-learning_df_prob <- merge(learning_df, post_choice_intercept, by = "lizard_id", all = TRUE)
-# Create a vector with treatments
-treatments <- c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")
-# Create new matrix and new dfs
-treat_matrix <- matrix(NA, nrow = 20, ncol = 40)
-fig_df <- data.frame()
-# Loop through treatments
-for(t in treatments){
-  if(t == "CORT-Cold"){
-    df <- learning_df_prob %>%
-      filter(cort=="CORT", temp=="Cold") %>%
-      data.frame()
-  } else if(t == "Control-Cold"){
-    df <- learning_df_prob %>%
-      filter(cort=="Control", temp=="Cold") %>%
-      data.frame()
-  } else if(t == "CORT-Hot"){
-    df <- learning_df_prob %>%
-      filter(cort=="CORT", temp=="Hot") %>%
-      data.frame()
-  } else if(t == "Control-Hot"){
-    df <- learning_df_prob %>%
-      filter(cort=="Control", temp=="Hot") %>%
-      data.frame()
-  } else {
-    stop("loop wrong")
-  }
+#
+#
+####### A) Create df
+# Slopes df (employed in fig-learning B)
+slope_list <- list(`Control-Cold` = slope_ControlCold,
+                 `CORT-Cold` = slope_CORTCold,
+                 `Control-Hot` = slope_ControlHot,
+                 `CORT-Hot` = slope_CORTHot)
+data_fig_learning_slopes <- do.call(rbind, lapply(names(slope_list), function(x) {
+  data.frame(treatment = x, slopes = slope_list[[x]])
+}))
+# Intercepst df (only for fig-learning A)
+intercept_list <- list(`Control-Cold` = int_ControlCold,
+                 `CORT-Cold` = int_CORTCold,
+                 `Control-Hot` = int_ControlHot,
+                 `CORT-Hot` = int_CORTHot)
+data_fig_learning_intercepts <- do.call(rbind, lapply(names(intercept_list), function(x) {
+  data.frame(treatment = x, intercepts = intercept_list[[x]])
+})) %>% 
+  group_by(treatment) %>%
+  summarize(se_int = sd(intercepts)/sqrt(length(intercepts)),
+            intercepts = mean(intercepts))
+# df fig-learning A
+data_fig_learning_slopesA <- data_fig_learning_slopes %>%
+  group_by(treatment) %>%
+  summarize(se_slope = sd(slopes)/sqrt(length(slopes)),
+            slopes = mean(slopes),)
+data_fig_learningB <- merge(data_fig_learning_slopesB, data_fig_learning_intercepts, by = "treatment")
+treatment <- unique(data_fig_learningB$treatment)
+fig_A_df <- data.frame()
+for(t in treatment){ # Loop per treatment
+  df <- data_fig_learningB %>%
+    filter(treatment == t) %>%
+    data.frame()
   # Variables selected
-  m <- df$choice_slope__mean
-  u <- df$choice_intercept__mean
+  m <- df$slopes
+  u <- df$intercepts
   # Loop per treatment
   num_individuals <- length(u)
   for(x in 0:40){
-    for(j in 1:num_individuals){
-      value <- exp(u[j] + m[j] * x) / (1 + exp(u[j] + m[j] * x))
-      treat_matrix[j, x] <- value
+    if (x == 0){
+      standard <- df$se_int
+    } else {
+      standard <- df$se_slope
     }
+    value <- exp(u + m * x)
+    temp_df <- data.frame(trial = rep(x, length(value)),
+                          treatment = rep(t, length(value)),
+                          errors = value,
+                          se = standard)
+    fig_A_df <- rbind(fig_A_df, temp_df)
   }
-  treat_df <- as.data.frame(treat_matrix)
-  colnames(treat_df) <- paste0("X", 1:40)  # Adjust column names
-  treat_df <- gather(treat_df, key = "Trial", value = "Value")  # Reshape data frame
-  treat_df$Treatment <- t
-  fig_df <- rbind(fig_df, treat_df)
 }
-# Transform the database for better use
-fig_choice_df <- fig_df %>%
-  mutate(Trial = gsub("X", "", Trial)) %>%
-  mutate(Trial = as.numeric(Trial)) %>%
-  group_by(Trial, Treatment) %>%
-  summarize(
-    Mean_Predicted_prob = mean(Value),
-    SE_Predicted_prob = sd(Value)/sqrt(length(Value))
-    ) %>%
-  ungroup() %>%
-  mutate(
-    Treatment = factor(Treatment,
-                        levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")),
-    ) %>%
-data.frame()
-#
-## A.2) Make the plot for the probability of choosing the correct feeder first over trials
-fig_prob_choice <- ggplot(fig_choice_df, aes(x = Trial, y = Mean_Predicted_prob, color = Treatment)) +
-  geom_line(linewidth = 1) +
-  scale_color_manual(values = c("CORT-Cold"="#00008B", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
-  geom_ribbon(aes(ymin = Mean_Predicted_prob - SE_Predicted_prob, ymax = Mean_Predicted_prob + SE_Predicted_prob, fill = Treatment), color = NA, alpha = 0.075) + 
-  scale_fill_manual(values = c("CORT-Cold"="darkblue", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
-  theme_classic() +
-  labs(y = "Predicted probability of correct choice", x = "Trial") +
-  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
-  theme(
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "none"
-  )
-#
-## A.3) Make the the plot for the mean slope per treatment using the probability of choosing the correct feeder
-fig_slope_choice <- plot_slopes("choice")
+# 
+#### C) Plot the fig-learning A and fig-learning B separately 
+fig_learningA <- plot_errors(fig_A_df)
+fig_learningB <- plot_slopes(data_fig_learning_slopes)
 #
 #
-## A.4) Combine plots of probability and slopes to have the "choice" figure
-fig_results_choice <- plot_grid(fig_prob_choice, fig_slope_choice, nrow = 1) 
-ggsave("./output/figures/fig_results_choice.png", plot=fig_results_choice, width = 25, height = 15, units = "cm", dpi = 600)
-#
-#
-#
-####### B) Errors figure
-## B.1) Plot the errors using data_spal
+
+
 errors_df <- data_spal %>%
   mutate(Treatment = paste(cort, temp, sep = "-")) %>%
     mutate(Treatment = factor(Treatment,
@@ -428,8 +249,8 @@ errors_df <- data_spal %>%
   ) %>%
   ungroup() %>%
   data.frame()
-fig_errors <- ggplot(errors_df, aes(x = day, y = mean_errors, color = Treatment, fill = Treatment)) +
-  geom_smooth(method = "lm", se = TRUE, linewidth = 1, alpha = 0.075) +
+fig_errors <- ggplot(learn_df, aes(x = Trial, y = Value, color = Treatment, fill = Treatment)) +
+  geom_smooth(se = TRUE, linewidth = 1, alpha = 0.075) +
   scale_color_manual(values = c("CORT-Cold" = "#00008B", "Control-Cold" = "#68bde1", "CORT-Hot" = "#b50101", "Control-Hot" = "#fa927d")) +
   scale_fill_manual(values = c("CORT-Cold" = "darkblue", "Control-Cold" = "#68bde1", "CORT-Hot" = "#b50101", "Control-Hot" = "#fa927d")) +
   theme_classic() +
@@ -459,141 +280,7 @@ ggsave("./output/figures/fig_results_errors.png", plot=fig_results_errors, width
 cat("\\newpage")
 ```
 
-# Suplementary Material
-#### Results of preliminary models 
-
-```{r, models_preliminary}
-#| label: models_preliminary
-# Fitting preliminary models to see if sex and age are relevant for our models
-source(here("R", "func.R"))
-#
-#
-var_m <- c("mit_density", "mit_potential", "ROS", "DNAdamage", "peroxidation")
-formula_list_ <- list()
-for (p in var_m){
-  formula_list_[[p]] <- paste0(p, "~ cort*temp + age + sex + (1|clutch)")
-  pmodel_name <- paste0("m_prel_", p)
-  assign(pmodel_name, fit_m(df = clean_df,
-                             cat = "prel",
-                             var = p,
-                             formula = formula_list_[[p]],
-                             fam = gaussian(),
-                             refit = FALSE),
-          envir = .GlobalEnv)  # Assign to the global environment
-}
-#
-#
-# Run model behaviour (stimuli separated)
-formula_learn <- slope_mean + slope_sd ~ cort*temp + age + sex + (1|clutch)
-m_prel_learn <- fit_m(df = clean_df,
-                      cat = "prel",
-                      var = "slope_mean",
-                      formula = formula_learn,
-                      fam = gaussian(),
-                      refit = FALSE)
-```
-
-Table S1. Preliminary results of the models testing for Mitochondrial Density.
-
-```{r, results_preliminary_mitdensity}
-#| tbl-cap: "Preliminary results of the models testing for Mitochondrial Density"
-#| label: results_preliminary_mitdensity
-#
-sum_mitdensity_prel <- m_prel_mit_density %>%
-  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
-  summarise_draws()  %>%
-  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
-#
-flextable(sum_mitdensity_prel)
-```
-
-Model formula: mit_density ~ cort * temp + age + sex + (1|clutch).
-Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-Table S2.  Preliminary results of the models testing for Mitochondrial Potential.
-```{r, results_preliminary_potential}
-#| tbl-cap: "Preliminary results of the models testing for Mitochondrial Potential"
-#| label: results_preliminary_potential
-#
-sum_potential_prel <- m_prel_mit_potential %>%
-  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
-  summarise_draws() %>%
-  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
-#
-flextable(sum_potential_prel)
-```
-
-Model formula: mit_potential ~ cort * temp + age + sex + (1|clutch).
-Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-Table S4. Preliminary results of the models testing for ROS.
-```{r, results_preliminary_ros}
-#| tbl-cap: "Preliminary results of the models testing for ROS"
-#| label: results_preliminary_ros
-#
-sum_m_ros_prel <- m_prel_ROS %>%
-  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
-  summarise_draws() %>%
-  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
-#
-flextable(sum_m_ros_prel)
-```
-
-Model formula: ROS ~ cort * temp + age + sex + (1|clutch).
-Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-Table S6. Preliminary results of the models testing for DNA damage.
-```{r, results_preliminary_dnadamage}
-#| tbl-cap: "Preliminary results of the models testing for DNA damage"
-#| label: results_preliminary_dnadamage
-#
-sum_m_dnadamage_prel <- m_prel_DNAdamage %>%
-  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
-  summarise_draws() %>%
-  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
-#
-flextable(sum_m_dnadamage_prel)
-```
-
-Model formula: DNAdamage ~ cort * temp + age + sex + (1|clutch).
-Model convergence was checked through rhat and ess_bulk values. Summary indicates an effect of sex and age, so they were included in the final models.
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-Table S8. Preliminary results of the models testing for lipid peroxidation.
-```{r, results_preliminary_peroxidation}
-#| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
-#| label: results_preliminary_peroxidation
-#
-sum_m_peroxidation_prel <- m_prel_peroxidation %>%
-  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
-  summarise_draws() %>%
-  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
-#
-flextable(sum_m_peroxidation_prel)
-```
-
-Model formula: peroxidation ~ cort * temp + age + sex + (1|clutch).
-Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex, so it was discarded from the final models. However, we saw an effect of age and we included it in our final models.
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
+# Suplementary Material  
 
 
 #### Results of the final models
@@ -732,6 +419,286 @@ OB_table
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
+
+```{r, tbl-contrasts}
+#| label: tbl-contrasts
+#| tbl-cap: "Estimates of Associative learning slope for all the different treatments per each task, species and group. Mean shows the aritmetic mean of the estimates obtained from the posteriors of the model, and 95% CI indicates the 95% confidence interval of the mean. All p-values were obtained using pmcmc and test the hypothesis that the mean is equal to zero. In bold, those values that are significant (p-value <0.05)"
+source(here("R", "func.R"))
+#
+############################## CREATING BIG DF FOR TABLE ##############################
+# Building the vectors for titles of rows and columns
+specie <- c("L. delicata", "L. guichenoti")
+groups <- c("Red", "Blue")
+test <- c("Associative", "Reversal")
+treatments <- c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")
+values <- c("Mean", "95% CI", "p-value")
+# Building the vectors for estimated means, co.intervals(95%), and p-values for the slopes obtained from posteriors. p-values are obtained using pmcmc function (see func.R), assuming a two-tailed test that testes the hypothesis that the value (slopes in this case) is 0.
+#First get estimates for both tasks
+estimates_asso <- list(
+  dar_CORTCold, dar_ControlCold, dar_CORTHot, dar_ControlHot, 
+  dab_CORTCold, dab_ControlCold, dab_CORTHot, dab_ControlHot, 
+  gar_CORTCold, gar_ControlCold, gar_CORTHot, gar_ControlHot, 
+  gab_CORTCold, gab_ControlCold, gab_CORTHot, gab_ControlHot
+)
+#
+estimates_rev <- list(
+  drr_CORTCold, drr_ControlCold, drr_CORTHot, drr_ControlHot, 
+  drb_CORTCold, drb_ControlCold, drb_CORTHot, drb_ControlHot, 
+  grr_CORTCold, grr_ControlCold, grr_CORTHot, grr_ControlHot, 
+  grb_CORTCold, grb_ControlCold, grb_CORTHot, grb_ControlHot
+)
+# Then get the mean, co.intervals(95%), and p-values
+asso_mean <- format_dec(sapply(estimates_asso, mean), 3)
+asso_interval_025 <- format_dec(sapply(estimates_asso, function(x) quantile(x,0.025)), 3)
+asso_interval_975 <- format_dec(sapply(estimates_asso, function(x) quantile(x,0.975)), 3)
+asso_intervals <- paste(asso_interval_025, asso_interval_975, sep = " , ")
+asso_pvalue <- format_dec(sapply(estimates_asso, pmcmc), 3)
+#
+rev_mean <- format_dec(sapply(estimates_rev, mean), 3)
+rev_interval_025 <- format_dec(sapply(estimates_rev, function(x) quantile(x,0.025)), 3)
+rev_interval_975 <- format_dec(sapply(estimates_rev, function(x) quantile(x,0.975)), 3)
+rev_intervals <- paste(rev_interval_025, rev_interval_975, sep = " , ")
+rev_pvalue <- format_dec(sapply(estimates_rev, pmcmc), 3)
+#
+# Building the df for the associative
+asso_df <- data.frame(
+  Specie = rep(specie, each = length(groups) * length(treatments)),
+  Group = rep(rep(groups, each = length(treatments)), times = length(specie)),
+  Treatment = rep(rep(treatments, each = 1), times = length(groups) * length(specie)),
+  Mean = rep(asso_mean, each = 1),
+  CI = rep(asso_intervals, each = 1),
+  PValue = rep(asso_pvalue, each = 1),
+  Task = rep("Associative", length(asso_mean))
+)
+# Building the df for the reversal
+rev_df <- data.frame(
+  Specie = rep(specie, each = length(groups) * length(treatments)),
+  Group = rep(rep(groups, each = length(treatments)), times = length(specie)),
+  Treatment = rep(rep(treatments, each = 1), times = length(groups) * length(specie)),
+  Mean = rep(rev_mean, each = 1),
+  CI = rep(rev_intervals, each = 1),
+  PValue = rep(rev_pvalue, each = 1),
+  Task = rep("Reversal", length(rev_mean))
+)
+# Joining both dfs
+table_data <- rbind(asso_df, rev_df)
+table_data[, sapply(table_data, is.numeric)] <- lapply(table_data[, sapply(table_data, is.numeric)], function(x) format(x, scientific = FALSE))
+#
+############################## ADDING SAMPLE SIZE TO DF FOR TABLE ##############################
+# Make n_list into a df
+n_df <- as.data.frame(do.call(rbind, n_list)) %>%
+  rename("n" = V1) %>%
+  rownames_to_column("model") %>%
+  separate(model, into = c("Specie", "Group", "cort", "temp"), sep = "_") %>%
+  unite("Treatment", c("cort", "temp"), sep = "-") %>%
+  mutate(Specie = factor(Specie,
+                  labels = c(delicata = "L. delicata", guichenoti = "L. guichenoti")),
+        Treatment = factor(Treatment,
+                   levels = c("CORT-Cold", "Control-Cold", "CORT-Hot","Control-Hot")))
+# Merge both dfs, put sample size together with the treatment, and organize the new df to make it look like the table
+new_table_data <- merge(table_data, n_df) %>%
+  rename('p-value' = 'PValue', '95% CI' = 'CI') %>% #Change the names of the columns for the table
+  pivot_wider(names_from = Task, values_from = c(Mean, `95% CI`, `p-value`)) %>% # to split between Asociative and Reversal
+  select(Specie, Group, Treatment, Mean_Associative, `95% CI_Associative`, `p-value_Associative`, Mean_Reversal, `95% CI_Reversal`, `p-value_Reversal`, n) %>% #To order the columns in the way I want for the table
+  mutate(Specie = factor(Specie,
+                  levels = c("L. delicata", "L. guichenoti")),
+        Group = factor(Group,
+                  levels = c("Red", "Blue")),
+        Treatment = factor(Treatment, 
+                  levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")))%>%
+  arrange(Specie, Group, Treatment) %>% # To arrange the rows the way I want
+  unite("Treatment", c("Treatment", "n"), sep = " (n = ") %>%
+  mutate(Treatment = paste0(Treatment, ")"))
+write.csv(new_table_data, file= "./output/Checking/new_table_data.csv")
+#
+############################## MAKING THE TABLE ##############################
+## Table format
+set_flextable_defaults(
+ font.family = "Times New Roman",
+ fint.size = 10)
+# Split the table_data df by task
+real_table <- flextable(new_table_data) %>%
+    bold(~ `p-value_Associative` < 0.05, ~ `p-value_Associative` + Mean_Associative + `95% CI_Associative`) %>%
+    bold(~ `p-value_Reversal` < 0.05, ~ `p-value_Reversal` + Mean_Reversal + `95% CI_Reversal`) %>%
+    set_table_properties(width = 1) %>%
+    align(align="center", part="all") %>% 
+    add_header_row(values = c("", "Associative task", "Reversal task"), colwidths = c(3, 3, 3)) %>%
+    set_header_labels(Mean_Associative = "Mean",
+                      `95% CI_Associative` = "95% CI",
+                      `p-value_Associative` = "p-value",
+                      Mean_Reversal = "Mean",
+                      `95% CI_Reversal` = "95% CI",
+                      `p-value_Reversal` = "p-value") %>%
+    italic(j = 1, italic = TRUE, part = "body") %>% # To have names od species in italics
+    flextable::compose(i = c(2:8,10:16), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
+    flextable::compose(i = c(2:4,6:8,10:12,14:16), j = 2, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the second column
+    hline(i = c(4,12), j = c(2:9), part = "body") %>% # To make some horizontal lines
+    hline(i = c(8), j = c(1:9), part = "body") %>% # To make some horizontal lines
+    vline(i = (1:16), j = c(3,6), part = "body") %>% # To make some vertical lines on body
+    vline(j=c(3,6), part = "header") %>% # To make some vertical lines on header
+    autofit() 
+real_table
+```
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+
+#### Results of preliminary models  
+
+```{r, models_preliminary}
+#| label: models_preliminary
+# Fitting preliminary models to see if sex and age are relevant for our models
+source(here("R", "func.R"))
+#
+#
+var_m <- c("mit_density", "mit_potential", "ROS", "DNAdamage", "peroxidation")
+formula_list_ <- list()
+for (p in var_m){
+  formula_list_[[p]] <- paste0(p, "~ cort*temp + age + sex + (1|clutch)")
+  pmodel_name <- paste0("m_prel_", p)
+  assign(pmodel_name, fit_m(df = clean_df,
+                             cat = "prel",
+                             var = p,
+                             formula = formula_list_[[p]],
+                             fam = gaussian(),
+                             refit = FALSE),
+          envir = .GlobalEnv)  # Assign to the global environment
+}
+#
+#
+# Run model learning including the effect of sex and interaction
+formula_learn <- errors ~ day*cort*temp + sex + age + (1 + day|lizard_id) + (1|clutch)
+m_prel_learn <- fit_m(df = learning_df,
+                      cat = "prel",
+                      var = "learning",
+                      formula = formula_learn,
+                      fam = negbinomial(link = "log"),
+                      refit = FALSE)
+```
+
+Table S1. Preliminary results of the models testing for Mitochondrial Density.
+
+```{r, results_preliminary_mitdensity}
+#| tbl-cap: "Preliminary results of the models testing for Mitochondrial Density"
+#| label: results_preliminary_mitdensity
+#
+sum_mitdensity_prel <- m_prel_mit_density %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws()  %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_mitdensity_prel)
+```
+
+Model formula: mit_density ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S2.  Preliminary results of the models testing for Mitochondrial Potential.
+```{r, results_preliminary_potential}
+#| tbl-cap: "Preliminary results of the models testing for Mitochondrial Potential"
+#| label: results_preliminary_potential
+#
+sum_potential_prel <- m_prel_mit_potential %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_potential_prel)
+```
+
+Model formula: mit_potential ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S3. Preliminary results of the models testing for ROS.
+```{r, results_preliminary_ros}
+#| tbl-cap: "Preliminary results of the models testing for ROS"
+#| label: results_preliminary_ros
+#
+sum_m_ros_prel <- m_prel_ROS %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_m_ros_prel)
+```
+
+Model formula: ROS ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S4. Preliminary results of the models testing for DNA damage.
+```{r, results_preliminary_dnadamage}
+#| tbl-cap: "Preliminary results of the models testing for DNA damage"
+#| label: results_preliminary_dnadamage
+#
+sum_m_dnadamage_prel <- m_prel_DNAdamage %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_m_dnadamage_prel)
+```
+
+Model formula: DNAdamage ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S5. Preliminary results of the models testing for lipid peroxidation.
+```{r, results_preliminary_peroxidation}
+#| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
+#| label: results_preliminary_peroxidation
+#
+sum_m_peroxidation_prel <- m_prel_peroxidation %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_m_peroxidation_prel)
+```
+
+Model formula: peroxidation ~ cort * temp + age + sex + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex, so it was discarded from the final models. However, we saw an effect of age and we included it in our final models.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S6. Preliminary results of the models testing for learning.
+```{r, results_preliminary_learning}
+#| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
+#| label: results_preliminary_peroxidation
+#
+sum_m_learn_prel <- m_prel_learn %>%
+  dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
+  summarise_draws() %>%
+  mutate(across(where(is.numeric), ~ as.numeric(format_dec(.x, 3))))
+#
+flextable(sum_m_learn_prel)
+```
+
+Model formula: errors ~ day * cort * temp + sex + age+ (1 + day | lizard_id) + (1|clutch).
+Model convergence was checked through rhat and ess_bulk values. **Summary indicates no effect of sex, so it was discarded from the final models. However, we saw an effect of age and we included it in our final models.**
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
 
 
 

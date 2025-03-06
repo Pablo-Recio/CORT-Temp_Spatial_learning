@@ -115,3 +115,18 @@ ggsave(here("./output/figures/exploratory/fig_qqplots.png"), final_qq_plot, widt
 #
 # Log-Normal: DNA Damage, Lipid Peroxidation
 # Normal: Mitochondrial Density, Mitochondrial Potential, ROS Production, Learning slopes 
+#
+#
+# C) Check overdisperssion for errors
+mean_errors <- mean(learning_df$errors, na.rm = TRUE)
+var_errors <- var(learning_df$errors, na.rm = TRUE)
+overdispersion_ratio <- var_errors / mean_errors # if this is > 1, there is overdispersion, so we need a negative binomial
+#
+# Overdispersion ratio is 4.152071, so we can't use a Poisson model
+# Can we fit neg_binomial?
+zeroes <- sum(learning_df$errors == 0, na.rm = TRUE)
+n <- length(learning_df$errors)
+prop_zeroes <- zeroes / n
+#
+# Proportion of zeroes is 0.2414557 so we should use a zero-inflated model ---> fam = zero_inflated_negbinomial()
+#
