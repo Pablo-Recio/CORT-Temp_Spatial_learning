@@ -52,44 +52,64 @@ individuals_per_clutch <- data %>%
   summarize(individual_count = n())
 ```
 
+```{r, sampleSize}
+#| label: sampleSize
+# List with the sample sizes from the main database.
+source(here("R", "func.R"))
+#
+hormone <- c("CORT", "Control")
+temperature <- c("Cold", "Hot")
+#
+n_list <- list()
+#
+for(k in 1:length(hormone)){
+  for(l in 1:length(temperature)){
+    list_name <- paste0(hormone[k], "_", temperature[l])
+    n_list[[list_name]] <- sample(df = clean_df, corti = hormone[k], therm = temperature[l])
+  }
+}
+#
+df_damage <- clean_df %>%
+  filter(DNAdamage != "NA")
+n_damage <- list()
+for(k in 1:length(hormone)){
+  for(l in 1:length(temperature)){
+    list_name <- paste0(hormone[k], "_", temperature[l])
+    n_damage[[list_name]] <- sample(df = df_damage, corti = hormone[k], therm = temperature[l])
+  }
+}
+```
 
 ## Introduction
-**Corticosterone is the major GC produced by
-adrenal steroidogenic cells in reptiles, and an increase in
-its plasma concentration is a frequent indicator of stress
-(Anderson et al. 2014 General and Comparative Endocrinology). In nature,
-GCs in the developing embryos seem to be largely of
-maternal origin (Uller et al. 2009, The Journal of Experimental Biology) and are probably transferred to the growing oocytes through vitellogenesis (Elf et al.,
-2002, 2003 General and Comparative Endocrinology (both)).**
 
-Mechanistically, a change in body size requires
-a change in cell number and/or cell size, and there is evidence that
-body size and cell size undergo coordinated evolutionary (Arendt,
-2007; Starostová et al., 2005; Stevenson et al., 1995) or
-phenotypically plastic changes (Arendt, 2007; Czarnoleski et al.,
-2013; Hessen et al., 2013).
+Cognition encompasses processes such as perception, learning, memory, and decision-making, which allow animals to gather, retain, and use environmental information [@shettleworth]. These processes are fundamental for survival and reproduction, influencing behaviours like foraging, mate selection, or antipredatory strategies [@dukas_evolutionary_2004]. Learning - the acquisition and consolidation of new information [@dukas_evolutionary_2004] - enables individuals to create new associations between events, which can be essential for coping with environmental changes [@dukas_evolutionary_2004; @leal_behavioural_2012; @buchanan_condition_2013]. However, the capacity to form these associations varies among individuals, potentially affecting their responses to environmental challenges [@ward2016ecological; @welklin2024spatial]. Animals that learn faster may exploit novel resources better or may start responding to new threats more efficiently than slow learners [@ward2016ecological]. Consequently, individual differences in learning abilities can have profound effects on survival and reproductive output, ultimately influencing population growth rates and stability [@ward2016ecological; @welklin2024spatial].  Understanding the mechanisms that drive these differences is therefore crucial for predicting how populations will respond to novel conditions.  
+
+Factors like age, sex, or early- life conditions can have important effects on learning abilities [@szuran_water_1994; @lemaire_prenatal_2000; @zhu_prenatal_2004; @amiel_hotter_2012; @amiel_egg_2014; @carazo_sex_2014; @noble_age-dependent_2014]. Early developmental environment is particularly influential, as the brain is highly sensitive to environmental inputs during this period [@zhu_prenatal_2004]. Early experiences can alter neurotransmitter production [@amani2021perinatal], gene expression [@zhou2020effects], or brain structure [@amiel_effects_2017], with lasting effects on cognition. Among the physiological mechanisms underlying learning, mitochondrial activity has emerged as a key factor influencing brain function [@siegel1994basic; @du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. The neural processes involved learning impose substantial energetic demands [@mcnay_decreases_2000; @mann_coupling_2021; @alexandrov_neuronal_2022], making efficient mitochondrial respiration essential [@du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. Additionally, learning depends on a dense network of functional neurons [@lefebvre_taxonomic_2011; @amiel_effects_2017], which can be compromised by excessive oxidative stress byproduct of mitochondrial function [@finkel_oxidants_2000; @zhu_prenatal_2004; @du_dynamic_2009; @gong_chronic_2011; @hoffmann_mitochondrion_2018]. Studies on domestic rats (_Rattus norvegicus_) have shown that the effects of early environment on mitochondrial physiology can have profound consequences for cognitive abilities [@zhu_prenatal_2004; @cao2014ampk]. However, the extent to which these effects are generalizable to other taxa, particularly ectotherms, remains largely unexplored.     
+
+Since mitochondria are maternally inherited, maternal condition plays a fundamental role in shaping offspring mitochondrial activity [@picard_mitochondria_2014]. In particular, maternal stress can strongly influence how mitochondria operate in the offspring [@zhu_prenatal_2004]. Stressful situations elevate glucocorticoids (GCs) [@sapolsky_how_2000], which can be transmitted to the developing embryo [@uller_sex-specific_2009], altering mitochondrial physiology through transgenerational effects [@picard_mitochondria_2014].For instance, maternal stress has been shown to contribute significantly to oxidative stress in the brain of rats (_Rattus norvegicus_) [@zhu_prenatal_2004; @haussmann_embryonic_2012].  
+
+Temperature can be a significant source of maternal stress in ectotherms. Thermal environments outside of the optimal range can elevate GCs in the mother, which can be passed to the offspring [see @Crino_2023]. In addition, temperature can also directly influence offspring development, particularly during early life [@noble_developmental_2018; @crino2024eggs]. The prenatal thermal environment plays a crucial role in shaping mitochondrial function, affecting energy metabolism and oxidative stress [@stier2022experimental; @crino2024eggs]. For instance, hatchlings of the red-eared slider turtle (_Trachemys scripta elegans_) incubated at 26.5 ºC exhibited greater oxidative damage than those incubated at temperatures 0.7 to 1.2 ºC warmer [@treidel2016temperature]. Thus, the combined effects of prenatal GCs and temperature may profoundly influence mitochondrial function, with important consequences for brain development and cognition. However, the extent to which prenatal GCs and temperature interact to shape cognitive abilities via mitochondrial physiology remains largely unknown.  
+
+Here, we examined how prenatal temperature and corticosterone (CORT) — the primary GC in reptiles — affect brain mitochondrial physiology and spatial learning in the delicate skink (_Lampropholis delicata_). We hypothesized that prenatal CORT and temperature would influence learning abilities through their effects on mitochondrial activity in the brain. Specifically, we predicted that prenatal CORT would decrease energy production while increasing oxidative damage [@costantini2011meta; @gong_chronic_2011; but see @crino2024eggs]. Similarly, high temperatures would decrease mitochondrial efficienty [@zavorka_climate_2021; @crino2024eggs], but with the potential to reduce oxidative stress [@treidel2016temperature]. We further predicted that the combined effects of CORT and temperature would lead to complex interactions, with both factors negatively impacting mitochondrial efficiency but having opposite effects on oxidative stress. These effects would lead to differences in learning abilities, that could be affected by the balance between energy production and oxidative stress [@du_dynamic_2009; @picard_energetic_2018; @alexandrov_neuronal_2022]. By examining these interactions, we aim to clarify how prenatal environmental factors shape learning abilities through mitochondrial function, shedding light on the role of early-life conditions in cognitive development and its mechanismsm.  
 
 ## Methods  
 
 #### Animal husbandry  
-*Breeding colony* - We tested _L. delicata_ coming from a breeding colony established in the laboratory since 2019. This colony consisted of 270 adults housed in plastic containers (41.5 L x 30.5 W x 21 H cm) with six lizards (two males and four females) per enclosure. Enclosures were provided with nonstick matting, shelter, and several small water dishes. Water was given daily, and the lizards were fed approx. 40 mid-size crickets (_Acheta domestica_) per enclosure three days a week. Crickets were dusted with calcium weekly and multivitamin and calcium biweekly. Room temperatures were set to 22-24 ºC, but we also provided the enclosures with a heat chord and a heat lamp following a 12 h light:12 h dark cycle keeping warm side of enclosures is usually at 34 ºC.
+*Breeding colony* - Juveniles of _L. delicata_ came from a breeding colony established in the laboratory since 2019. This colony consisted of 270 adults housed in plastic containers (41.5 L x 30.5 W x 21 H cm) with six lizards (two males and four females) per enclosure. Enclosures were provided with shelter, nonstick matting, and several small water dishes. The lizards were fed approx. 40 mid-size crickets (_Acheta domestica_) per enclosure three days a week, and water was given daily. The crickets were dusted with calcium weekly and multivitamin and calcium biweekly. Room temperatures were set to 22-24 ºC, but we also provided the enclosures with a heat chord and a heat lamp following a 12 h light:12 h dark cycle keeping warm side of enclosures is usually at 34 ºC.
 
-*Eggs collection and incubation* - Between mid-November 2023 and mid-January 2024, we provide females with a place to lay the eggs by placing a small box (12.5 L x 8.3 W x 5 H cm) with moist vermiculite in one side of the communal enclosures. These boxes were checked three days a week. After egg collection, we measured length and width with a digital caliper to the nearest 0.1 mm and weighted the eggs with a digital scale ± 0.001g error. Then eggs were treated with CORT or vehicle (see CORT and temperature manipulation below) and were placed in individual cups (80 mL) with moist vermiculite (12 parts water to 4 parts vermiculite). The cups were covered with cling wrap to retain moisture and left in two incubators at two different temperatures (see CORT and temperature manipulation below) until hatching.
+*Eggs collection and incubation* - Between mid-November 2023 to mid-January 2024, we placed a small box (12.5 L x 8.3 W x 5 H cm) with moist vermiculite in one side of the communal enclosures to provide females with a place to lay the eggs. These boxes were checked three days a week. After egg collection, we measured length and width with a digital caliper to the nearest 0.1 mm and weighted the eggs with a digital scale ± 0.001g error. Then eggs were treated with CORT or vehicle (see CORT and temperature manipulation below) and were placed in individual cups (80 mL) with moist vermiculite (12 parts water to 4 parts vermiculite). The cups were covered with cling wrap to retain moisture and left in two incubators at two different temperatures (see CORT and temperature manipulation below) until hatching.
 
-*Hatchlings* - Incubators were checked three times a week for hatchlings. Lizards were measured and weighed immediately after hatching. Snout-vent length (SVL) and tail length (TL) were measured to the nearest millimeter, and weight was recorded using a digital scale with an accuracy of ± 0.001 g. Hatchlings were then placed in individual enclosures (18.7L x 13.2W x 6.3H cm) with nonstick matting and a small water dish. Watering, feeding, and temperature conditions were maintained as for adults (see above).      
+*Hatchlings* - Incubators were checked three times a week for hatchlings. Lizards were measured and weighed immediately after hatching. snout-vent length (SVL) and tail length (TL) were measured to the nearest millimeter, and weight was recorded using a digital scale with an accuracy of ± 0.001 g. Hatchlings were then placed in individual enclosures (18.7L x 13.2W x 6.3H cm) with nonstick matting and a small water dish. Watering, feeding, and temperature conditions were maintained as for adults (see above).      
 
 #### CORT and Temperature manipulation
-To test the interactive effects of CORT and incubation temperature, we manipulated CORT concentrations in eggs and incubated them under one of two temperature regimes (Cold - 23 ± 3 ºC or Hot - 28 ± 3 ºC) in a 2x2 factorial design (@fig). Eggs were assigned to one fo the two hormone treatments: CORT or Control. CORT-treated lizards were topically supplied with 5 µL of crystalline corticosterone (Sigma, Cat. No. C2505) dissolved in 100% ethanol at a final 10 pg CORT/mL concentration (CORT treatment), while Control lizards received an equal volume of 100% Ethanol (Control treatment). We selected doses based on previous studies where CORT treatment increased mean yolk CORT levels ~3.7x higher than control eggs [**ONDI'S PAPER**]. Then, eggs were incubated in one of the two previously mentioned temperature regimes. These temperatures are within the natural limits in _L. delicata_ [@cheetham2011embryonic].   
-The number of eggs per clutch assigned to each hormone and temperature treatment was counterbalanced in a partial split-clutch design. At least one egg per clutch was assigned to each treatment, while in cluthces bigger than four the remaining eggs were randomly assigned to one of the treatments. When we found less than four eggs in a clutch, we assigned each egg randomly to one of the treatments.   
+We tested the combined effects of prenatal CORT and temperature by elevating CORT concentrations in eggs and then incubating them under one of two temperature regimes (Cold - 23 ± 3 ºC or Hot - 28 ± 3 ºC) in a 2x2 factorial design (@fig-Methods **LTTER**). CORT-treated eggs were topically supplied with 5 µL of crystalline corticosterone (Sigma, Cat. No. C2505) dissolved in 100% ethanol at a final 10 pg CORT/mL concentration (CORT treatment), while Control eggs received an equal volume of 100% Ethanol. CORT dose increased mean yolk CORT levels ~3.7x higher than control eggs in previous studies [@crino2024eggs]. Eggs were then incubated in one of the two previously mentioned temperature regimes that are within the natural limits in _L. delicata_ [@cheetham2011embryonic].   
+
+We counterbalanced the number of eggs per clutch assigned to each hormone and temperature using a partial split-clutch design where at least one egg per clutch was assigned to each treatment. For clutches bigger than four, we assigned the remaining eggs randomly to one of the treatments. When we found less than four eggs in a clutch, we assigned each egg randomly to one of the treatments.   
 
 #### Learning  
-The spatial learning task involved training lizards to navigate a 6-arm maze to reach an exit connected to a transport box that allowed us to return the lizards to their enclosure without further contact. The maze was constructed from white polylactic acid (PLA) and featured six arms extending from a hexagonal central starting point (see @fig).  
+The spatial learning task involved training lizards to navigate a 6-arm maze to reach an exit connected to a transport box that allowed us to return the lizards to their enclosure without further contact (see @fig-Methods **LTTER**). In each trial, the lizards were placed by hand in the center of maze and left to acclimate for two minutes (see @fig-Methods **LTTER**). During acclimatation, the central are was surrounded by a yellow device mounted on a pulley system. At the start of each trial, this device was lifted to startle the lizard. If the lizard did not immediately choose an arm, it was gently prodded with a brush at the end of the tail. Once the lizard made a choice, the brush was used to encourage movement but without guiding it towards any specific arm. If the lizard did not choose correctly after 20 errors — at which point it typically ceased responding — the lizard was gently guided to the correct arm.  
 
-In each trial, the lizards were placed by hand in the center of maze and left to acclimate for two minutes  (see @fig). During acclimatation, the central are was surrounded by a yellow 3D-printed PLA device mounted on a pulley system. At the start of each trial, this device was lifted to startle the lizard. If the lizard did not immediately choose an arm, it was gently prodded with a brush at the end of the tail. Once the lizard made a choice, the brush was used to encourage movement but without guiding it towards any specific arm. If the lizard did not choose correctly after 20 errors — at which point it typically ceased responding — the lizard was gently guided to the correct arm.  
-
-Extra-maze cues (but not intra-maze cues) were available to assist with navigation. This design aimed to assess the lizards' ability to learn spatial relationships based on external cues rather than relying on familiar objects within the maze. To avoid confounding effects from chemical cues, the maze was cleaned with 70% ethanol between trials. To control for visual cues related to the correct arm, the maze was rotated every three trials while maintaining the orientation of the correct arm and the maze's position within the room, which remained consistent for each individual.  
-
-To control for potential side biases, the correct arm was randomly assigned to one of the six arms for each trial. We employed four different maze orientations (North-West, South-West, South, and South-East), and the number of lizards assigned to each orientation was counterbalanced across treatments.  
+Extra-maze cues (but not intra-maze cues) were available to assist with navigation (see @fig-Methods **LTTER**). This design aimed to assess the lizards' ability to learn spatial relationships based on external cues rather than relying on familiar objects within the maze. Additionally, to prevent lizards from relying on subtle intra-maze cues, the maze was replaced every three trials with one of four identical mazes. Each replacement preserved the correct arm’s orientation and the maze’s position within the room, ensuring consistency for each individual. The maze was also cleaned with 70% ethanol between trials to avoid the influence of chemical cues. To control for potential side biases, the correct arm was randomly assigned to one of the six arms for each trial. We employed four different maze orientations (North-West, South-West, South, and South-East), and the number of lizards assigned to each orientation was counterbalanced across treatments.  
 
 The task was repeated once daily for 40 consecutive days, and the number of mistakes made by each lizard was recorded. A mistake was defined as the lizard inserting its head into one of the incorrect arms. The primary measure of spatial learning was the total number of errors made before the lizard chose the correct arm.  
 
@@ -101,23 +121,30 @@ knitr::include_graphics("./Others/SPAL_METH.svg")
 
 ```
 
-#### Brain extraction
-
 #### Brain mitochondrial activity
-Two months after the completion of the tests, we euthanises lizards usin an injectable anaesthetic followed by decapitation. We injected peritoneally 10 mg/kg of a 10 mg/mL alfaxan solution (**REF?**). After some minutes, we evaluated the lizards response by turning it upside down, and by testing the pinching relfex in the hand. Lizards were decapitated once they were not responsive.
+Immediately following the completion of the tests, we asessed mitochondrial physiology in the brain of all remaining lizards (see below). We euthanized lizards via peritoneal injection 10 mg/kg of a 10 mg/mL alfaxan solution (a potent anesthetic), followed by decapitation. Before decapitation we evaluated the lizard’s response by turning it upside down and by testing the pinching relfex in one of the front limbs. This protocol was approved by the Animal Ethics Committee of the Australian National University (Protocol number: A2022_33).  
 
-**After decapitation, the head was opened and the brain dissected. We focused on two main regions of the brain, the olfactory bulbs and the optic tecta, as they are associated with lizards' chemical and visual perception, respectively (Wynecken, 2007).**
+After decapitation, we extracted manually the medial cortext in the telencephalon (@fig-Methods **LETTER**). We selected the medial cortex because is considered homologous to the mammalian hippocampus, where spatial cognition is encoded [@rodríguez2002conservation; @naumann2015reptilian]. The tissue was transferred to 1xPBS solutioin and then homogenized mechanically using a 100 µm mesh filter (pluriStrainer). The resultant homogenate was divided into two aliquotes: one was used fresh for mitochondrial density, membrane potential, ROS assays; and the other was cryopreserved for later measurements of oxidative damage (DNA damage, lipid peroxidation).  
 
-#### Statistical analyses  
+Fresh homogenate suspensions were stained with 5 µM MitoTracker Deep Red FM, 2.5 µM MitoTracker Orange CMTMRos, and 50 µM MitoSOX Red. We used these fluorescent probes to assess mitochondrial density, mitochondrial membrane potential, and superoxide (ROS) production, respectively. We also added 5 µL of #µM Hoechst 33342 Nuclear Viability Dye to each sample to differentiate viable cells from debris. After adding all the dyes, the samples were incubated at 32 °C for 30 minutes and then immediately transferred to flow cytometry facilities for data collection, within 2 hours.  
 
-We also considered individuals to be reinforced if the cricket was eaten after the test independently of whether their initial choice was correct or not.  
-**As such, we run a total of different 8 models employing Bayesian multilevel models using the brm function from the brms package (@burkner2017brms) in Quarto (@Allaire_Quarto_2022). Each model consisted of four parallel chains of 3000 iterations, with a warm up interval of 1000 iterations.'Choice', i.e. whether the individual chose correct (1) or not (0) was used as the response variable. The fixed effects of the model included a triple interaction between: trial ('Associative trial' or 'Reversal trial') as a numeric variable, and hormone treatmet ('CORT' versus 'Control') and the temperature at which eggs were incubated ('Cold' versus 'Hot') as factors. For the random effects, we employed lizard identity as a random intercept, and as a random slope we included the variable trial ('Associative' or 'Reversal') within each level of lizard identity. We used the resulting posterior of these models to evaluate learning differences between treatments within and between species and colour assigned. More specifically, we calculated learning slopes by using the estimates of the trial variable per each level of the hormone-temperature interaction ('Treatments'); values bigger from zero were considered as evidence of learning, while those less or equal to zero not. We used the pmcmc method to test whether those slopes or the comparissons between 'Treatments' (e.g. slope for 'CORT-Cold' lizards minus 'CORT-Hot' lizards) were different from zero (two-tailed tests). We considered statistical significance if p-value < 0.05.**  
+The aliquotes reserved for oxidative damage assays, were stained with 20 µL of #µM Hoechst 33342 Nuclear Viability Dye and 20 µL of 100 µM BODIPY 665/676 Lipid Peroxidation Sensor before cryopreservation. These dyes were used to measure cell viability and lipid peroxidation, respectively. The sampled were then fixed in 1% Neutral-Buffered Formalin, washed, and then preserved in a 1X Tris-EDTA solution with 10% DMSO at -20 °C. On the day of the oxidative damage assays, the samples were thawed, and DMSO was removed. Then, cell membranes were permeabilized by incubating the samples in 200 µL of 1X PBS containing 5mM (6.14 mg/mL) digitonin for 20 minutes at 32°C. Following membrane permeabilization we stained the samples with 20µL of 70µM 8-OHdG Polyclonal Antibody, and allowed them to incubate overnight (~12 hours). 8-OHdG Polyclonal Antibody was used to assessed 8-OHdG, a marker of oxidative damage on DNA. The following day we counterstained the cells with 20µL of #µM (100µg/mL) H+G Goat Anti-Rabbit Conjugate Antibody with Alexa-Fluor 488 at 32°C for 20 minutes and performed the flow cytometry. Oxidative damage assays were performed within 6 months of the initial analysis of fresh samples.  
 
-There are a total of  `r total_individuals`, and `r total_clutches` clutches in the database. The average number of individuals per clutch is `r mean(individuals_per_clutch$individual_count)`, with a minimum of `r min(individuals_per_clutch$individual_count)` individuals per clutch (`r sum(individuals_per_clutch$individual_count == min(individuals_per_clutch$individual_count))` clutches) and a maximum of `r max(individuals_per_clutch$individual_count)` (`r sum(individuals_per_clutch$individual_count == max(individuals_per_clutch$individual_count))` clutches). Clutches with only one individual do not contribute to the estimation of within-clutch variability. Including these clutches might lead to misleading variance estimates and convergence issues in the hierarchical model. Therefore, we initially fit the model without the clutch effect to obtain stable estimates at the individual level.
+Flow cytometry assays were performed on a Becton Dickson LSRFortessa X-20 flow cytometer using the default wavelength filters. The detectors and voltage settings for each assay were determined during pilot trials and and remained consistent throughout the experiment to ensure comparability across different plates and samples. Data was processed using FlowJo (v. 10.1) software. We used the geometric mean as our main response variables in analyses. For further details on the homogenization, staining, or flow cytometry assays, see the Supplementary Material.  
 
+#### Statistical analyses
+
+We performed all the analyses using brm models from stan [@stan] on R version 4.4.0 [@R]. We run a series of univariate and miltivariate models to test the effects of early envirnoment on each variable separately plus the relationships between physiology and learning. All models consisted of four MCMC chains of 8000 iterations, with a warm up interval of 2000 iterations. 
+
+Univariate models were used to test the effects of early environment on each of the variables recorded: mitochondrial density, mitochondrial potential, ROS, DNA damage, lipid peroxidation, and the number of errors as a measure of learning. We included in all the models the hormone treatment (CORT vs Control), incubation temperature (Cold vs Hot) and their interaction. Sex and age were included in preliminary models, and excluded from the final models when they were not significant (see Supplementary Material). For all univariate models, clutch identity was included as a random factor. Mitochondrial related variables (density, potential, ROS, DNA damage, and lipid peroxidation) where log-transformed when necessary and all were mean-centered and standardized by dividing them by two times the standard deviation [**REF DAN**]. These variables were considered to follow a normal distribution. The number of errors was modeled as a function of trial, cort, temperature, and the triple interaction. We included in this model the trial within each level of lizard identity as a random slope. The error structure was modelled using a negative binomial distribution with a logit link function [negbinomial(link = "log")]. Otherwise, the procedure was as in the other models.  
+
+We used the posterior distributions of parameters from these models to test for differences between treatments. Learning slopes were obtained using the ‘trial’ estimates and its interaction with hormone and temperature treatments. Slope estimates >0 were considered as evidence of learning. pMCMC were used to test the hypothesis that slopes and slope contrasts are different from zero. We considered an effect statistically significant when pMCMC <0.05.  
+
+To explore links between mitochondrial function and detection latency, we fitted a multivariate model on brm. We included in the model all the variables of interest and their interactions structured following a specific hypothesis (see @fig-SEM). Individual measurements for learning performance were obtained by modelling errors as a function of trial. We included the trial within each level of lizard identity as a random slope, which was used to obtain the learning slopes for each individual. These learning slopes, as well as the rest of variables, were standardized as before (see above). We assumed a gaussian family for all the variables. Factors found as non-significant in the univariate models were excluded. Clutch identity remained a random factor. Direct, indirect, and total effects were derived from posterior estimates following a Structural Equations Modelling approach [@kline2005principles] (see **TABLE** in Supplementary Material). 
+ 
 ## Results
 
-Originally, we started with 96 lizards, 48 per species and 12 per treatment per species. However, due to natural mortality (n = 11), no completion of the training stage (n = 1), or no motivation during the learning tasks (n = 3; see above), we ended up with a total of 81 lizards. Final sample sizes per treatment and species are disclosed on @tbl-data. 
+**Originally, we started with 96 lizards, 48 per species and 12 per treatment per species. However, due to natural mortality (n = 11), no completion of the training stage (n = 1), or no motivation during the learning tasks (n = 3; see above), we ended up with a total of 81 lizards. Final sample sizes per treatment and species are disclosed on @tbl-data.**   
 
 ```{r, models_mitochondrial}
 #| label: models_mitochondrial
@@ -156,8 +183,96 @@ m_def_learn <- fit_m(df = learning_df,
                       refit = FALSE)
 ```
 
-```{r, learning_results_names}
-#| label: learning_results_names
+```{r, organise_posteriors_mit}
+#| label: organise_posteriors_mit
+#
+# Organising the posteriors of the previous models for tables and figures
+#
+source(here("R", "func.R"))
+#
+#
+post_mit <- data.frame()
+# Names posteriors:
+names <- c("m_def_mit_density", "m_def_mit_potential", "m_def_ROS", "m_def_DNAdamage", "m_def_peroxidation")
+#
+# Organising the results
+for (pos in names) {
+  model <- get(pos)      # Get the model from the global environment
+  post_result <- tidy_post(model)        # Apply tidy_post to each model
+  # Add a new column to the rmodel
+  post_result$Model <- pos
+  post_mit <- bind_rows(post_mit, post_result)
+}
+#
+#
+#
+# Extracting the posteriors for the models with mitochondrial variables and the values of interest. Here, I am creating dfs for each of the variables with the values for all the prenatal conditions to make contrasts easier to write.
+#
+MD <- post_values(m_def_mit_density, "none")
+MP <- post_values(m_def_mit_potential, "none")
+ROS <- post_values(m_def_ROS, "none")
+DNA <- post_values(m_def_DNAdamage, "none")
+LP <- post_values(m_def_peroxidation, "none")
+```
+
+```{r, fig-results_mit}
+#| label: fig-results_mit
+#| fig-cap: "Estimates of mitochondial density (A), mitochondrial potential (B), ROS (C), DNA damage (D), and lipid peroxidation (E) in the medial cortex of L. delicata hatchlings as a function of the different prenatal conditions. Black dots indicate the posterior mean, and the bars represent the SD of the estimates. The y-axis represents the posterior estimates of the variable of interest, and the x-axis represents the different prenatal conditions. Lines with asterisks represent significant differences between groups based on pMCMC values (pMCMC < 0.05), no lines indicate no significant differences."
+#| fig-name: "fig-results_oxidative"
+#
+source(here("R", "func.R"))
+#
+# A) Plotting the results for all variables
+plot_mit_density <- plotting(MD, "Mit density")
+plot_mit_potential <- plotting(MP, "Mit potential")
+plot_ros <- plotting(ROS, "ROS")
+#
+plot_legend_top <- plotting(ROS, "ROS") + theme(legend.position = "bottom", legend.title = element_blank())
+gtable <- ggplot_gtable(ggplot_build(plot_legend_top))
+legend_mit_top <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
+#
+plot_dnadamage <- plotting(DNA, "DNA damage")
+plot_peroxidation <- plotting(LP, "Lipid peroxidation")
+#
+plot_legend_bottom <- plotting(DNA, "DNA damage") + theme(legend.position = "bottom", legend.title = element_blank())
+gtable <- ggplot_gtable(ggplot_build(plot_legend_bottom))
+legend_mit_bottom <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
+#
+# B) Organising the plots
+fig_mit_top <- plot_grid(plot_mit_density, plot_mit_potential,
+                        nrow = 1, rel_widths = c(1, 1))
+fig_mit_mid <- plot_grid(plot_ros, NULL,
+                        nrow = 1, rel_widths = c(1, 1))
+fig_mit_bottom <- plot_grid(plot_dnadamage, plot_peroxidation,
+                        nrow = 1, rel_widths = c(1, 1))
+#
+# C) Merging everything in final figure
+# Create the figure grid with extra space for legend
+fig_mit <- plot_grid(
+  fig_mit_top, fig_mit_mid, NULL, fig_mit_bottom, NULL,
+  nrow = 5, rel_heights = c(0.3, 0.3, 0.05, 0.3, 0.05))
+# Final composition: Merge everything, adding images and legend
+final_plot_mit <- ggdraw(fig_mit) +
+  # Insert legend in the middle for ROS and energy variables
+  draw_grob(legend_mit_top, x = 0.49, y = 0.39, width = 0.01, height = 0.01) +
+  # Insert legend in the bottom for DNA damage and lipid peroxidation
+  draw_grob(legend_mit_bottom, x = 0.49, y = 0.03, width = 0.01, height = 0.01) +
+  # Insert title for each plot
+  annotate("text", x = 0.0325, y = 0.985, label = "A", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.531, y = 0.985, label = "B", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.0325, y = 0.682, label = "C", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.0325, y = 0.335, label = "D", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.53, y = 0.335, label = "E", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  # Insert figure brain
+  draw_image(here("./Others/brain_fig.png"), x = 0.5, y = 0.3, width = 0.5, height = 0.5)
+#
+# Print final plot
+ggsave(here("./output/figures/text/results_mit.png"), plot = final_plot_mit, width = 21, height = 21, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/text/results_mit.png")
+```
+
+```{r, organise_posteriors_learning}
+#| label: organise_posteriors_learning
 # Rename some of the posteriors and make new estimates for the learning rate 
 #
 ### Slopes
@@ -196,18 +311,18 @@ data_fig_learning_intercepts <- do.call(rbind, lapply(names(intercept_list), fun
   data.frame(treatment = x, intercepts = intercept_list[[x]])
 })) %>% 
   group_by(treatment) %>%
-  summarize(se_int = sd(intercepts)/sqrt(length(intercepts)),
+  summarize(int_sd = sd(intercepts),
             intercepts = mean(intercepts))
 # df fig-learning A
 data_fig_learning_slopesA <- data_fig_learning_slopes %>%
   group_by(treatment) %>%
-  summarize(se_slope = sd(slopes)/sqrt(length(slopes)),
+  summarize(slope_sd = sd(slopes),
             slopes = mean(slopes),)
-data_fig_learningB <- merge(data_fig_learning_slopesB, data_fig_learning_intercepts, by = "treatment")
-treatment <- unique(data_fig_learningB$treatment)
+data_fig_learningA <- merge(data_fig_learning_slopesA, data_fig_learning_intercepts, by = "treatment")
+treatment <- unique(data_fig_learningA$treatment)
 fig_A_df <- data.frame()
 for(t in treatment){ # Loop per treatment
-  df <- data_fig_learningB %>%
+  df <- data_fig_learningA %>%
     filter(treatment == t) %>%
     data.frame()
   # Variables selected
@@ -217,58 +332,63 @@ for(t in treatment){ # Loop per treatment
   num_individuals <- length(u)
   for(x in 0:40){
     if (x == 0){
-      standard <- df$se_int
+      sd <- df$int_sd
     } else {
-      standard <- df$se_slope
+      q25 <- df$slope_sd
     }
     value <- exp(u + m * x)
     temp_df <- data.frame(trial = rep(x, length(value)),
                           treatment = rep(t, length(value)),
                           errors = value,
-                          se = standard)
+                          sd = sd * value)
     fig_A_df <- rbind(fig_A_df, temp_df)
   }
 }
 # 
 #### C) Plot the fig-learning A and fig-learning B separately 
-fig_learningA <- plot_errors(fig_A_df)
+fig_learningA <- plot_errorsday(fig_A_df)
 fig_learningB <- plot_slopes(data_fig_learning_slopes)
 #
+#### D) Combine plots A and B to have fig-learning
+fig_results_learning <- plot_grid(fig_learningA, fig_learningB, nrow = 1) +
+  # Insert title for each plot
+  annotate("text", x = 0.045, y = 0.935, label = "A", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.545, y = 0.935, label = "B", hjust = 1, vjust = 1, size = 7, fontface = "bold") 
 #
-
-
-errors_df <- data_spal %>%
-  mutate(Treatment = paste(cort, temp, sep = "-")) %>%
-    mutate(Treatment = factor(Treatment,
-      levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")
-    )) %>%
-  group_by(day, Treatment) %>%
-  summarise(
-    mean_errors = mean(errors, na.rm = TRUE),
-    sd_errors = sd(errors, na.rm = TRUE)
-  ) %>%
-  ungroup() %>%
-  data.frame()
-fig_errors <- ggplot(learn_df, aes(x = Trial, y = Value, color = Treatment, fill = Treatment)) +
-  geom_smooth(se = TRUE, linewidth = 1, alpha = 0.075) +
-  scale_color_manual(values = c("CORT-Cold" = "#00008B", "Control-Cold" = "#68bde1", "CORT-Hot" = "#b50101", "Control-Hot" = "#fa927d")) +
-  scale_fill_manual(values = c("CORT-Cold" = "darkblue", "Control-Cold" = "#68bde1", "CORT-Hot" = "#b50101", "Control-Hot" = "#fa927d")) +
-  theme_classic() +
-  labs(y = "Mean amount of errors made", x = "Trial") +
-  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
-  theme(
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "none"
-  )
-## B.2) Make the the plot for the mean slope per treatment using the probability of choosing the correct feeder
-fig_slope_errors <- plot_slopes("errors")
-#
-#
-## B.3) Combine plots of probability and slopes to have the "choice" figure
-fig_results_errors <- plot_grid(fig_errors, fig_slope_errors, nrow = 1) 
-ggsave("./output/figures/fig_results_errors.png", plot=fig_results_errors, width = 25, height = 15, units = "cm", dpi = 600)
+ggsave("./output/figures/text/fig_results_errors.png", plot=fig_results_learning , width = 21, height = 7, units = "cm", dpi = 600)
+knitr::include_graphics("./output/figures/text/fig_results_errors.png")
 ``` 
+
+
+#### SEM
+
+```{r, model_sem}
+#| label: model_sem
+# Making the SEM model by using a multivariate brms. The aim is to test the relationships between mitochondrial physiology and detection latency.
+# Learning here was evaluated obtaining the learning slopes for each individual (see data_process.R).
+# All continue variables were standardized (var/2SD) before running the models (see data_process.R). 
+#
+source(here("R", "func.R"))
+#
+refit <- FALSE
+#
+if(refit){
+  m_SEM <- brm(
+    bf(slope_mean + slope_sd ~ mit_density + mit_potential + DNAdamage + peroxidation + (1|clutch)) +
+    bf(mean_dnadamage ~ ROS + (1|clutch)) +
+    bf(peroxidation ~ ROS + (1|clutch)) +
+    bf(mean_ros ~ mit_density + mit_potential + (1|clutch)) +
+  set_rescor(TRUE),
+  family = gaussian(),
+  data = clean_df, 
+  chains = 4, cores = 4, iter = 8000, warmup = 2000,
+  control = list(adapt_delta = 0.99, max_treedepth = 11))
+  # Save the model
+  saveRDS(m_SEM, file = here("output/models/m_SEM.rds"))
+} else {
+  m_SEM <- readRDS(here("output/models/m_SEM.rds"))
+}
+```
 
 
 ## Discussion
@@ -281,6 +401,7 @@ cat("\\newpage")
 ```
 
 # Suplementary Material  
+
 
 
 #### Results of the final models
@@ -297,18 +418,12 @@ data_bayes <- data.frame(
   Q2_5 = numeric(0),
   Q97_5 = numeric(0)
 )
-models <- c("mean_mitodensity_def_OB",
-            "mean_potential_def_OB",
-            "mean_ros_def_OB",
-            "mean_dnadamage_def_OB",
-            "mean_peroxidation_def_OB",
-            "t_D_def_Chemical",
-            "mean_mitodensity_def_OT",
-            "mean_potential_def_OT",
-            "mean_ros_def_OT",
-            "mean_dnadamage_def_OT",
-            "mean_peroxidation_def_OT",
-            "t_D_def_Visual")
+models <- c("mit_density_def",
+            "mit_potential_def",
+            "ROS_def",
+            "DNAdamage_def",
+            "peroxidation_def",
+            "learning_def")
 #
 for (m in models){
   mod <- readRDS(here("output/models/", paste0(m, ".rds")))
@@ -323,40 +438,21 @@ for (m in models){
 }
 #
 bayes_table_df <- data_bayes %>%
-  mutate(Region = gsub(".*_", "", Model)    # Extract everything after the last "_"
-  ) %>%
   mutate(Model = factor(Model,
-                        levels = c("mean_mitodensity_def_OB",
-                                  "mean_potential_def_OB",
-                                  "mean_ros_def_OB",
-                                  "mean_dnadamage_def_OB",
-                                  "mean_peroxidation_def_OB",
-                                  "t_D_def_Chemical",
-                                  "mean_mitodensity_def_OT",
-                                  "mean_potential_def_OT",
-                                  "mean_ros_def_OT",
-                                  "mean_dnadamage_def_OT",
-                                  "mean_peroxidation_def_OT",
-                                  "t_D_def_Visual"),
-                        labels = c("m_def_mean_mitodensity_OB" = "Mit density",
-                                  "m_def_mean_potential_OB" = "Mit potential",
-                                  "m_def_mean_ros_OB" = "ROS",
-                                  "m_def_mean_dnadamage_OB" = "DNA damage",
-                                  "m_def_mean_peroxidation_OB" = "Peroxidation",
-                                  "m_def_t_D_Chemical" = "Detection lat",
-                                  "m_def_mean_mitodensity_OT" = "Mit density",
-                                  "m_def_mean_potential_OT" = "Mit potential",
-                                  "m_def_mean_ros_OT" = "ROS",
-                                  "m_def_mean_dnadamage_OT" = "DNA damage",
-                                  "m_def_mean_peroxidation_OT" = "Peroxidation",
-                                  "m_def_t_D_Visual" = "Detection lat")),
-      Region = factor(Region, levels = c("OB", "Chemical", "OT", "Visual"),
-                      labels = c("OB" = "Olfactory bulbs",
-                                "Chemical" = "Chemical",
-                                "OT" = "Optic tecta",
-                                "Visual" = "Visual"))) %>%
-  dplyr::select(Region, Model, Mean, Error, Q2_5, Q97_5) %>%
-  arrange(Region, Model)
+                        levels = c("mit_density_def",
+                                  "mit_potential_def",
+                                  "ROS_def",
+                                  "DNAdamage_def",
+                                  "peroxidation_def",
+                                  "learning_def"),
+                        labels = c("mit_density_def" = "Mit density",
+                                  "mit_potential_def" = "Mit potential",
+                                  "ROS_def" = "ROS",
+                                  "DNAdamage_def" = "DNA damage",
+                                  "peroxidation_def" = "Lipid peroxidation",
+                                  "learning_def" = "Learning"))) %>%
+  dplyr::select(Model, Mean, Error, Q2_5, Q97_5) %>%
+  arrange(Model)
 #
 #
 # Create the table
@@ -373,29 +469,29 @@ bayes_table <- flextable(bayes_table_df) %>%
     Error = "Error",
     Q2_5 = "2.5%",
     Q97_5 = "97.5%") %>%
-  align(align = "center", j = c(3:5), part = "body") %>%
+  align(align = "center", j = c(2:5), part = "body") %>%
   align(align = "center", j = c(1:5), part = "header") %>%
-  flextable::compose(i = c(2:5,8:11), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
-  flextable::hline(i = 6, part = "body") %>% 
   autofit()
 #
 bayes_table
 ```
 
+Mean indicates the mean of the R^2^ values obtained from the posteriors of the model, error the estimated SE of the mean and 95% CI indicates the 95% confidence interval around the mean. Model indicates the name of the variable analyzed.  
+
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
 
-Table S**14**. Results of the final models.
-```{r, tbl-results_OB_table}
-#| label: results_OB_table
-#| tbl-cap: "Results of the models testing for Olfactory Bulbs."
-#| tbl-name: "results_OB"
-#| tbl-label: "results_OB"
+Table S**14**. Summary of the final models for all mitochondrial variables.
+```{r, tbl-results_mit_table}
+#| label: results_mit_table
+#| tbl-cap: "Summary of the final models for all mitochondrial variables."
+#| tbl-label: "results_mit_table"
+#
 source(here("R", "func.R"))
 # 
 # A) Refining the df summarizing the posteriors for OB/Chemical stimulus (post_OB)
-post_OB_refined <- refine_post(post_OB) %>%
+post_mit_refined <- refine_post(post_mit) %>%
   arrange(Variable, Predictors)
 #
 # B) Create table
@@ -404,145 +500,149 @@ set_flextable_defaults(
  font.family = "Times New Roman",
  font.size = 10)
 #
-OB_table <- flextable(post_OB_refined) %>%
+mit_table <- flextable(post_mit_refined) %>%
   align(align = "center", j = c(3:5), part = "body") %>%
   align(align = "center", j = c(1:5), part = "header") %>%
   bold(~`PMCMC` < 0.05, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors"),
        bold = TRUE) %>%  # Bold when PMCMC is "<0.05"
   bold(~`PMCMC` <0.001, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors")) %>%  # Bold when PMCMC is "<0.001"
-  flextable::compose(i = c(2:4,6:8,10:12,14:18,20:23,25:27), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
+  flextable::compose(i = c(2:4,6:8,10:12,14:16,18:21), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
   autofit()
 #
-OB_table
+mit_table
 ```
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
 
-```{r, tbl-contrasts}
+Table S **!%**. Contrasts between treatments for all the variables analysed.
+```{r tbl-contrasts}
 #| label: tbl-contrasts
-#| tbl-cap: "Estimates of Associative learning slope for all the different treatments per each task, species and group. Mean shows the aritmetic mean of the estimates obtained from the posteriors of the model, and 95% CI indicates the 95% confidence interval of the mean. All p-values were obtained using pmcmc and test the hypothesis that the mean is equal to zero. In bold, those values that are significant (p-value <0.05)"
+#| tbl-cap: "Contrasts between prenatal conditions for mitochondrial physiology and learning."
+#
 source(here("R", "func.R"))
 #
-############################## CREATING BIG DF FOR TABLE ##############################
-# Building the vectors for titles of rows and columns
-specie <- c("L. delicata", "L. guichenoti")
-groups <- c("Red", "Blue")
-test <- c("Associative", "Reversal")
-treatments <- c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")
-values <- c("Mean", "95% CI", "p-value")
-# Building the vectors for estimated means, co.intervals(95%), and p-values for the slopes obtained from posteriors. p-values are obtained using pmcmc function (see func.R), assuming a two-tailed test that testes the hypothesis that the value (slopes in this case) is 0.
-#First get estimates for both tasks
-estimates_asso <- list(
-  dar_CORTCold, dar_ControlCold, dar_CORTHot, dar_ControlHot, 
-  dab_CORTCold, dab_ControlCold, dab_CORTHot, dab_ControlHot, 
-  gar_CORTCold, gar_ControlCold, gar_CORTHot, gar_ControlHot, 
-  gab_CORTCold, gab_ControlCold, gab_CORTHot, gab_ControlHot
-)
+# A) Modify posteriors df for learning where we only get/compare the slopes
+LEARN <- data.frame(Control_Cold = slope_ControlCold, 
+                  CORT_Cold = slope_CORTCold,
+                  Control_Hot = slope_ControlHot,
+                  CORT_Hot = slope_CORTHot)
+
+# B) Organise df for mit physiology & learning
+var <- c("MD", "MP", "ROS", "DNA", "LP", "LEARN")
+data_table <- data.frame()
+for(x in var){
+  df <- get(x)
+  Temperature <- format_dec(mean(c(df$CORT_Hot, df$Control_Hot)) - mean(c(df$CORT_Cold, df$Control_Cold)), 3)
+  pMCMC_temp <- format_p(pmcmc(c(df$CORT_Hot, df$Control_Hot) - c(df$CORT_Cold, df$Control_Cold)), 3, equal = FALSE)
+  CORT <- format_dec(mean(c(df$Control_Hot, df$Control_Cold)) - mean(c(df$CORT_Hot, df$CORT_Cold)), 3)
+  pMCMC_cort <- format_p(pmcmc(c(df$Control_Hot, df$Control_Cold) - c(df$CORT_Hot, df$CORT_Cold)), 3, equal = FALSE)
+  Interaction <- format_dec((mean(df$Control_Hot) - mean(df$CORT_Hot)) - (mean(df$Control_Cold) - mean(df$CORT_Cold)), 3)
+  pMCMC_int <- format_p(pmcmc((df$Control_Hot - df$CORT_Hot) - (df$Control_Cold - df$CORT_Cold)), 3, equal = FALSE)
+  data_temp <- data.frame(Variable = x,
+                          Temperature = as.numeric(Temperature),
+                          pMCMC_temp = as.numeric(pMCMC_temp),
+                          CORT = as.numeric(CORT),
+                          pMCMC_cort = as.numeric(pMCMC_cort),
+                          Interaction = as.numeric(Interaction),
+                          pMCMC_int = as.numeric(pMCMC_int))
+  data_table <- dplyr::bind_rows(data_table, data_temp)
+}
+# Modify the df
+data_table_final <- data_table %>%
+  pivot_longer(cols = c(Temperature, CORT, Interaction), 
+               names_to = "Predictor", 
+               values_to = "Contrast") %>%
+  mutate(
+    # Extract the pMCMC values from the corresponding columns
+    `pMCMC contrast` = case_when(
+      Predictor == "Temperature" ~ pMCMC_temp,
+      Predictor == "CORT" ~ pMCMC_cort,
+      Predictor == "Interaction" ~ pMCMC_int
+    )
+  ) %>%
+  mutate(
+    Variable = case_when(
+      Variable == "MD" ~ "Mit density",
+      Variable == "MP" ~ "Mit potential",
+      Variable == "ROS" ~ "ROS",
+      Variable == "DNA" ~ "DNA damage",
+      Variable == "LP" ~ "Lipid peroxidation",
+      Variable == "LEARN" ~ "Learning slopes",
+      TRUE ~ Variable
+      )
+    ) %>%
+  dplyr::select(Variable, Predictor, Contrast, `pMCMC contrast`)
 #
-estimates_rev <- list(
-  drr_CORTCold, drr_ControlCold, drr_CORTHot, drr_ControlHot, 
-  drb_CORTCold, drb_ControlCold, drb_CORTHot, drb_ControlHot, 
-  grr_CORTCold, grr_ControlCold, grr_CORTHot, grr_ControlHot, 
-  grb_CORTCold, grb_ControlCold, grb_CORTHot, grb_ControlHot
-)
-# Then get the mean, co.intervals(95%), and p-values
-asso_mean <- format_dec(sapply(estimates_asso, mean), 3)
-asso_interval_025 <- format_dec(sapply(estimates_asso, function(x) quantile(x,0.025)), 3)
-asso_interval_975 <- format_dec(sapply(estimates_asso, function(x) quantile(x,0.975)), 3)
-asso_intervals <- paste(asso_interval_025, asso_interval_975, sep = " , ")
-asso_pvalue <- format_dec(sapply(estimates_asso, pmcmc), 3)
+# C) Make the contrasts table:
 #
-rev_mean <- format_dec(sapply(estimates_rev, mean), 3)
-rev_interval_025 <- format_dec(sapply(estimates_rev, function(x) quantile(x,0.025)), 3)
-rev_interval_975 <- format_dec(sapply(estimates_rev, function(x) quantile(x,0.975)), 3)
-rev_intervals <- paste(rev_interval_025, rev_interval_975, sep = " , ")
-rev_pvalue <- format_dec(sapply(estimates_rev, pmcmc), 3)
-#
-# Building the df for the associative
-asso_df <- data.frame(
-  Specie = rep(specie, each = length(groups) * length(treatments)),
-  Group = rep(rep(groups, each = length(treatments)), times = length(specie)),
-  Treatment = rep(rep(treatments, each = 1), times = length(groups) * length(specie)),
-  Mean = rep(asso_mean, each = 1),
-  CI = rep(asso_intervals, each = 1),
-  PValue = rep(asso_pvalue, each = 1),
-  Task = rep("Associative", length(asso_mean))
-)
-# Building the df for the reversal
-rev_df <- data.frame(
-  Specie = rep(specie, each = length(groups) * length(treatments)),
-  Group = rep(rep(groups, each = length(treatments)), times = length(specie)),
-  Treatment = rep(rep(treatments, each = 1), times = length(groups) * length(specie)),
-  Mean = rep(rev_mean, each = 1),
-  CI = rep(rev_intervals, each = 1),
-  PValue = rep(rev_pvalue, each = 1),
-  Task = rep("Reversal", length(rev_mean))
-)
-# Joining both dfs
-table_data <- rbind(asso_df, rev_df)
-table_data[, sapply(table_data, is.numeric)] <- lapply(table_data[, sapply(table_data, is.numeric)], function(x) format(x, scientific = FALSE))
-#
-############################## ADDING SAMPLE SIZE TO DF FOR TABLE ##############################
-# Make n_list into a df
-n_df <- as.data.frame(do.call(rbind, n_list)) %>%
-  rename("n" = V1) %>%
-  rownames_to_column("model") %>%
-  separate(model, into = c("Specie", "Group", "cort", "temp"), sep = "_") %>%
-  unite("Treatment", c("cort", "temp"), sep = "-") %>%
-  mutate(Specie = factor(Specie,
-                  labels = c(delicata = "L. delicata", guichenoti = "L. guichenoti")),
-        Treatment = factor(Treatment,
-                   levels = c("CORT-Cold", "Control-Cold", "CORT-Hot","Control-Hot")))
-# Merge both dfs, put sample size together with the treatment, and organize the new df to make it look like the table
-new_table_data <- merge(table_data, n_df) %>%
-  rename('p-value' = 'PValue', '95% CI' = 'CI') %>% #Change the names of the columns for the table
-  pivot_wider(names_from = Task, values_from = c(Mean, `95% CI`, `p-value`)) %>% # to split between Asociative and Reversal
-  select(Specie, Group, Treatment, Mean_Associative, `95% CI_Associative`, `p-value_Associative`, Mean_Reversal, `95% CI_Reversal`, `p-value_Reversal`, n) %>% #To order the columns in the way I want for the table
-  mutate(Specie = factor(Specie,
-                  levels = c("L. delicata", "L. guichenoti")),
-        Group = factor(Group,
-                  levels = c("Red", "Blue")),
-        Treatment = factor(Treatment, 
-                  levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot")))%>%
-  arrange(Specie, Group, Treatment) %>% # To arrange the rows the way I want
-  unite("Treatment", c("Treatment", "n"), sep = " (n = ") %>%
-  mutate(Treatment = paste0(Treatment, ")"))
-write.csv(new_table_data, file= "./output/Checking/new_table_data.csv")
-#
-############################## MAKING THE TABLE ##############################
-## Table format
 set_flextable_defaults(
  font.family = "Times New Roman",
- fint.size = 10)
-# Split the table_data df by task
-real_table <- flextable(new_table_data) %>%
-    bold(~ `p-value_Associative` < 0.05, ~ `p-value_Associative` + Mean_Associative + `95% CI_Associative`) %>%
-    bold(~ `p-value_Reversal` < 0.05, ~ `p-value_Reversal` + Mean_Reversal + `95% CI_Reversal`) %>%
-    set_table_properties(width = 1) %>%
-    align(align="center", part="all") %>% 
-    add_header_row(values = c("", "Associative task", "Reversal task"), colwidths = c(3, 3, 3)) %>%
-    set_header_labels(Mean_Associative = "Mean",
-                      `95% CI_Associative` = "95% CI",
-                      `p-value_Associative` = "p-value",
-                      Mean_Reversal = "Mean",
-                      `95% CI_Reversal` = "95% CI",
-                      `p-value_Reversal` = "p-value") %>%
-    italic(j = 1, italic = TRUE, part = "body") %>% # To have names od species in italics
-    flextable::compose(i = c(2:8,10:16), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
-    flextable::compose(i = c(2:4,6:8,10:12,14:16), j = 2, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the second column
-    hline(i = c(4,12), j = c(2:9), part = "body") %>% # To make some horizontal lines
-    hline(i = c(8), j = c(1:9), part = "body") %>% # To make some horizontal lines
-    vline(i = (1:16), j = c(3,6), part = "body") %>% # To make some vertical lines on body
-    vline(j=c(3,6), part = "header") %>% # To make some vertical lines on header
-    autofit() 
-real_table
+ font.size = 10)
+#
+contrast_table <- flextable(data_table_final) %>%
+  align(align = "center", j = c(3,4), part = "body") %>%
+  align(align = "center", j = c(1:4), part = "header") %>%
+  bold(~`pMCMC contrast` < 0.05, j = c("pMCMC contrast", "Contrast", "Predictor"),
+       bold = TRUE) %>%  # Bold when PMCMC is "<0.05"
+  bold(~`pMCMC contrast` <0.001, j = c("pMCMC contrast", "Contrast", "Predictor")) %>%  # Bold when PMCMC is "<0.001"
+  flextable::compose(i = c(2,3,5,6,8,9,11,12,14,15,17,18), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
+  autofit()
+#
+contrast_table
+```
+
+Contrasts were done by:
+_Temperature_: β~Hot~ - β~Cold~
+_CORT_: β~CORT~ - β~Control~
+_Interaction_: (β~Control-Hot~ - β~CORT-Hot~) - (β~Control-Cold~ - β~CORT-Cold~)
+
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r, fig-learning_raw}
+#| label: fig-learning_raw
+#| fig.cap: "Raw data of the learning task."
+#
+source(here("R", "func.R"))
+# Modify the df to plot the raw data
+learning_df_plot <- learning_df %>%
+  mutate(treatment = factor(trt, levels = c("B_23", "A_23", "B_28", "A_28"),
+                      labels = c("B_23" = "CORT-Cold (n=20)",
+                                 "A_23" = "Control-Cold (n=20)",
+                                 "B_28" = "CORT-Hot (n=20)",
+                                 "A_28" = "Control-Hot (n=20)"))) %>%
+  group_by(treatment, day) %>%
+  mutate(mean_raw = mean(na.omit(errors)),
+         sd_raw = sd(na.omit(errors))) %>%
+data.frame()
+# Get the plot and combine it with the modeled data
+fig_raw_learning <- plot_errorsday(fig_A_df) +
+  geom_point(data = learning_df_plot, aes(x = day, y = mean_raw, color = treatment), size = 1.5) +
+  scale_color_manual(values = c("CORT-Cold (n=20)" = "#00008B",
+                                "Control-Cold (n=20)" = "#68bde1",
+                                "CORT-Hot (n=20)" = "#b50101",
+                                "Control-Hot (n=20)" = "#fa927d")) +
+  facet_grid(~treatment) +
+  ylim(c(min(na.omit(learning_df_plot$mean_raw)), max(na.omit(learning_df_plot$mean_raw)))) +  # Adjust y-axis limits
+  theme(
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+ggsave("./output/figures/suppl/fig_learning_raw.png", plot=fig_raw_learning , width = 21, height = 15, units = "cm", dpi = 600)
 ```
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
+
+
+
 
 
 #### Results of preliminary models  

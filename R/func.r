@@ -8,12 +8,11 @@ pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4,
 #' @title sample
 #' @description Estract sample size per group
 #' @param df To select the df
-#' @param sp To select the species of interest ("deli"/"guich")
 #' @param corti To select cort treatment ("CORT"/"Control")
 #' @param therm To select temp treatment ("Cold"/"Hot")
-sample <- function(df, sp, corti, therm){
+sample <- function(df, corti, therm){
   sample_size <- df %>%
-                filter(species == sp, cort == corti, temp == therm, trial_reversal == 1) %>%
+                filter(cort == corti, temp == therm) %>%
                 group_by(lizard_id) %>%
                 summarise(n = n()) %>%
                 summarise(total_count = sum(n)) %>%
@@ -128,12 +127,184 @@ format_dec <- function(x, n) {
 #' @title format_p
 #' @param x The object
 #' @param n The number of decimals
-format_p <- function(x, n) {
+#' @param equal To write whether we want the equal or not
+format_p <- function(x, n, equal) {
+  if (equal == TRUE){
+    label <- "="
+  } else {
+    label <- ""
+  }
   z <- sprintf(paste0("%.",n,"f"), x)
   tmp <- ifelse(as.numeric(z) <= 0.001, "< 0.001",
          ifelse(as.numeric(z) <= 0.05 & as.numeric(z) > 0.001, "< 0.05",
-                paste0("= ", as.character(z))))
+                paste0(label, as.character(z))))
   return(tmp)
+}
+###################
+###################
+# Function to make the first cleaning for the posteriors and create a big df that includes
+# all variables and their predictors
+#' @title tidy_post
+#' @param df to select the posteriors to use. Options: choice or errors
+tidy_post <- function(df) {
+  df <- as.data.frame(df)
+  summary_df <- df %>%
+    dplyr::select(starts_with("b_")) %>%  # Select only parameter estimates
+    pivot_longer(everything(), names_to = "Predictor", values_to = "Estimate") %>%
+    group_by(Predictor) %>%
+    summarise(
+      Mean = format_dec(mean(Estimate), 3),
+      CI_lower = format_dec(quantile(Estimate, 0.05, na.rm = TRUE), 3),
+      CI_upper = format_dec(quantile(Estimate, 0.95, na.rm = TRUE), 3),
+      PMCMC = format_dec(pmcmc(Estimate, null = 0, twotail = TRUE), 3),
+      .groups = "drop"
+    )
+  
+  return(summary_df)
+}
+####################
+####################
+# Function to rename and refine the posterior databases for preparing the tables.
+#' @title refine_post
+#' @param df to select the databse
+refine_post <- function(df) {
+  variable_order <- c("Mit density",
+                     "Mit potential",
+                     "ROS",
+                     "DNA damage",
+                     "Lipid peroxidation")
+  predictor_order <- c("b_Intercept",
+                       "b_cortCORT",
+                       "b_tempHot",
+                       "b_cortCORT:tempHot",
+                       "b_age")
+  df <- df %>%
+    mutate(
+      Model = case_when(
+        Model == "m_def_mit_density" ~ "Mit density",
+        Model == "m_def_mit_potential" ~ "Mit potential",
+        Model == "m_def_ROS" ~ "ROS",
+        Model == "m_def_DNAdamage" ~ "DNA damage",
+        Model == "m_def_peroxidation" ~ "Lipid peroxidation",
+        TRUE ~ Model
+      )
+    ) %>%
+    mutate(CI_95 = paste0("[", CI_lower, " , ", CI_upper, "]")) %>%
+    rename(
+      Variable = Model,
+      Predictors = Predictor,
+      'Estimate Mean' = Mean, 
+      '95% CI' = CI_95, 
+      PMCMC = PMCMC
+    ) %>%
+    dplyr::select(
+      Variable,
+      Predictors,
+      'Estimate Mean',
+      '95% CI',
+      PMCMC) %>%
+    mutate(Variable = factor(Variable, levels = variable_order)) %>%
+    mutate(Predictors = factor(Predictors, levels = predictor_order))
+  
+  return(df)
+}
+####################
+####################
+# Function to get estimates to make the contrasts between treatments
+#' @title post_values
+#' @param df To select the df
+#' @param fac To indicate if there are other parameters to take into account
+post_values <- function(df, fac){
+  df <- as.data.frame(df)
+  #Getting the estimated values per each treatment
+  if(fac == "none"){
+    Control_Cold <- df$b_Intercept
+    Control_Hot <- df$b_Intercept + df$b_tempHot
+    CORT_Cold <- df$b_Intercept + df$b_cortCORT
+    CORT_Hot <- df$b_Intercept + df$b_cortCORT + df$b_tempHot + df$`b_cortCORT:tempHot`
+  } else if (fac == "sex"){
+    # Males
+    Control_Cold_males <- base::sample(df$b_Intercept, size = 12000, replace = FALSE)
+    Control_Hot_males <- base::sample(df$b_Intercept + df$b_tempHot, size = 12000, replace = FALSE)
+    CORT_Cold_males <- base::sample(df$b_Intercept + df$b_cortCORT, size = 12000, replace = FALSE)
+    CORT_Hot_males <- base::sample(df$b_Intercept + df$b_cortCORT + df$b_tempHot +
+                                      df$`b_cortCORT:tempHot`, size = 12000, replace = FALSE)
+    # Females
+    Control_Cold_fem <- base::sample(df$b_Intercept + df$b_sexFemale, size = 12000, replace = FALSE)
+    Control_Hot_fem <- base::sample(df$b_Intercept + df$b_tempHot + df$b_sexFemale, size = 12000, replace = FALSE)
+    CORT_Cold_fem <- base::sample(df$b_Intercept + df$b_cortCORT + df$b_sexFemale, size = 12000,
+                                    replace = FALSE)
+    CORT_Hot_fem <- base::sample(df$b_Intercept + df$b_cortCORT + df$b_tempHot +
+                                    df$`b_cortCORT:tempHot` + df$b_sexFemale, size = 12000, replace = FALSE)
+    # Pool
+    CORT_Cold <- c(CORT_Cold_males, CORT_Cold_fem)
+    CORT_Hot <- c(CORT_Hot_males, CORT_Hot_fem)
+    Control_Cold <- c(Control_Cold_males, Control_Cold_fem)
+    Control_Hot <- c(Control_Hot_males, Control_Hot_fem)
+  }
+  data_values <- data.frame(
+    CORT_Cold = CORT_Cold,
+    CORT_Hot = CORT_Hot,
+    Control_Cold = Control_Cold,
+    Control_Hot = Control_Hot
+  )
+  return(data_values)
+}
+####################
+####################
+# Function to create the plots for mit variables
+#' @title plotting
+#' @param df to select the df (only posteriors)
+#' @param lab to select the appropriate label for axix Y
+plotting <- function(df, lab){
+  if(lab %in% c("DNA damage", "Lipid peroxidation")){
+    n_CORTCold <- paste0("CORT-Cold (n=", n_damage$CORT_Cold, ")")
+    n_CORTHot <- paste0("CORT-Hot (n=", n_damage$CORT_Hot, ")")
+    n_ControlCold <- paste0("Control-Cold (n=", n_damage$Control_Cold, ")")
+    n_ControlHot <- paste0("Control-Hot (n=", n_damage$Control_Hot, ")")
+  } else {
+    n_CORTCold <- paste0("CORT-Cold (n=", n_list$CORT_Cold, ")")
+    n_CORTHot <- paste0("CORT-Hot (n=", n_list$CORT_Hot, ")")
+    n_ControlCold <- paste0("Control-Cold (n=", n_list$Control_Cold, ")")
+    n_ControlHot <- paste0("Control-Hot (n=", n_list$Control_Hot, ")")
+  }
+  # Build db for violin plots
+  db_violin <- data.frame(
+    Treatment = rep(c(n_CORTCold, n_CORTHot, n_ControlCold, n_ControlHot),
+                      each = nrow(df)),
+    Estimate = c(df$CORT_Cold, df$CORT_Hot, df$Control_Cold, df$Control_Hot)
+  ) %>%
+  mutate(Treatment = factor(Treatment,
+                            levels = c(n_ControlHot, n_CORTHot, n_ControlCold, n_CORTCold)))
+  # Build db for geom_bars
+  db_bars <- db_violin %>%
+    group_by(Treatment) %>%
+    summarize(
+      Mean = mean(Estimate),
+      SD = sd(Estimate),
+      SE = sd(Estimate)/sqrt(length(Estimate))
+    )
+  # Making the plot
+  plot <- ggplot(db_violin, aes(x = Treatment, y = Estimate, fill = Treatment)) +
+    geom_flat_violin(alpha = 0.5) +
+    scale_fill_manual(values = set_names(
+      c("#fa927d", "#b50101", "#68bde1", "#00008B"),
+      unique(db_violin$Treatment))) +
+    geom_point(data = db_bars, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
+    geom_segment(data = db_bars, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
+    ylim(min(db_violin$Estimate), max(db_violin$Estimate)) +
+    coord_flip() +
+    theme_classic() +
+    labs(y = lab, x = "Treatments") +
+    theme(plot.margin = margin(3, 3, 3, 3, "mm"),
+      axis.text.y = element_blank(),   # Remove y-axis labels
+      axis.title = element_text(size = 12, family = "Times"),
+      axis.text = element_text(size = 10, family = "Times"),
+     legend.position = "none",
+      legend.title = element_text(size = 12, family = "Times"),
+      legend.text = element_text(size = 11, family = "Times")
+  )
+  return(plot)
 }
 ####################
 ####################
@@ -143,11 +314,11 @@ format_p <- function(x, n) {
 plot_slopes <- function(df){
   data_fig <- df %>%
     mutate(treatment = factor(treatment,
-      levels = c("CORT-Cold", "Control-Cold", "CORT-Hot", "Control-Hot"),
-      labels = c("CORT-Cold" = "CORT-Cold (n=20)",
+      levels = c("CORT-Cold", "Control-Hot", "CORT-Hot", "Control-Cold"),
+      labels = c("Control-Hot" = "Control-Hot (n=20)",
+                "CORT-Hot" = "CORT-Hot (n=19)",
                 "Control-Cold" = "Control-Cold (n=20)",
-                "CORT-Hot" = "CORT-Hot (n=20)",
-                "Control-Hot" = "Control-Hot (n=20)")
+                "CORT-Cold" = "CORT-Cold (n=20)")
     )) %>%
   data.frame()
   data_plot <- data_fig %>%
@@ -159,21 +330,20 @@ plot_slopes <- function(df){
     ) %>%
     ungroup() %>%
   data.frame()
-write.csv(data_plot, here("output/Checking/data_plot.csv"))
-write.csv(data_fig, here("output/Checking/data_fig.csv"))
 #
 # Make the plot
   plot2 <- ggplot(data_fig, aes(x = treatment, y = slopes, fill = treatment)) +
   geom_flat_violin(alpha = 0.5) +
   scale_fill_manual(values = c("CORT-Cold (n=20)"="#00008B",
-                              "Control-Cold (n=20)"="#68bde1",
-                              "CORT-Hot (n=20)"="#b50101",
-                              "Control-Hot (n=20)"="#fa927d")) +
+                            "Control-Cold (n=20)"="#68bde1",
+                            "CORT-Hot (n=19)"="#b50101",
+                            "Control-Hot (n=20)"="#fa927d")) +
   geom_point(data = data_plot, aes(y = Mean, x = treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
   geom_segment(data = data_plot, aes(y = Mean - SD, yend = Mean + SD, x = treatment, xend = treatment), size = 1.5, color = "black") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
   ylim(min(data_fig$slopes), max(data_fig$slopes)) +
   coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE)) +
   theme_classic() +
   labs(y = "Slope estimates", x = "Treatments") +
   theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm"),
@@ -181,7 +351,7 @@ write.csv(data_fig, here("output/Checking/data_fig.csv"))
     axis.title = element_text(size = 12, family = "Times"),
     axis.text = element_text(size = 10, family = "Times"),
     legend.position = "right",
-    legend.title = element_text(size = 12, family = "Times"),
+    legend.title = element_blank(),
     legend.text = element_text(size = 11, family = "Times")
     )
   return(plot2)
@@ -189,54 +359,36 @@ write.csv(data_fig, here("output/Checking/data_fig.csv"))
 ####################
 ####################
 # Function to create the plot A for fig-results_learning
-#' @title plotting
-#' @param df_prob to select the df for probability 
-#' @param df_violin to select the df for the violin plot
-#' @param df_points to select the df for the points and geom_bars
-plotting <- function(sp, df_prob, df_violin, df_points){
-  # Specify labels depending on species and relevel the factor treatment for the legend
-    df_violin$Treatment <- factor(df_violin$Treatment,
-      levels = c("Control-Hot (n =  20 )", "CORT-Hot (n =  20 )", "Control-Cold (n = 19 )", "CORT-Cold (n = 20 )"))
-    img <- readPNG("./Others/Deli.png")
-    note <- paste("L. delicata")
-  # First part of the plot, the probabilities of choosing right over trial
-  plot1 <- ggplot(df_prob, aes(x = Trial, y = Mean_Predicted_prob, color = Treatment)) +
-  geom_line(linewidth = 1) +
-  scale_color_manual(values = c("CORT-Cold"="#00008B", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
-  geom_ribbon(aes(ymin = Mean_Predicted_prob - SE_Predicted_prob, ymax = Mean_Predicted_prob + SE_Predicted_prob, fill = Treatment), color = NA, alpha = 0.075) + 
-  scale_fill_manual(values = c("CORT-Cold"="darkblue", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
-  theme_classic() +
-  labs(y = "Predicted probability of correct choice", x = "Trial") +
-  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
-  theme(
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "none"
-  )
-  #
-  # Second part of the plot: the estimates of each treatment in violin plot
-  plot2 <- ggplot(df_violin, aes(x = Treatment, y = Value, fill = Treatment)) +
-  geom_flat_violin(alpha = 0.5) +
-  scale_fill_manual(values = c("CORT-Cold"="#00008B", "Control-Cold"="#68bde1", "CORT-Hot"="#b50101", "Control-Hot"="#fa927d")) +
-  geom_point(data = df_points, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
-  geom_segment(data = df_points, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-  ylim(-0.015, max(df_violin$Value)) +
-  coord_flip() +
-  theme_classic() +
-  labs(y = "Slope estimates", x = "Treatments") +
-  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm"),
-    axis.text.y = element_blank(),   # Remove y-axis labels
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "right",
-    legend.title = element_text(size = 12, family = "Times"),
-    legend.text = element_text(size = 11, family = "Times")
+#' @title plot_errorsday
+#' @param df to select the df
+plot_errorsday <- function(df){
+  df_prob <- df %>%
+    mutate(treatment = factor(treatment,
+          levels = c("Control-Hot", "CORT-Hot", "Control-Cold", "CORT-Cold"),
+          labels = c("Control-Hot" = "Control-Hot (n=20)",
+                    "CORT-Hot" = "CORT-Hot (n=19)",
+                    "Control-Cold" = "Control-Cold (n=20)",
+                    "CORT-Cold" = "CORT-Cold (n=20)")
+          )) %>%
+  data.frame()
+  plot <- ggplot(df_prob, aes(x = trial, y = errors, color = treatment)) +
+    geom_line(linewidth = 1) +
+    scale_color_manual(values = c("Control-Hot (n=20)"="#fa927d",
+                                "CORT-Hot (n=19)"="#b50101",
+                                "Control-Cold (n=20)"="#68bde1",
+                                "CORT-Cold (n=20)"="#00008B")) +
+    geom_ribbon(aes(ymin = errors - sd, ymax = errors + sd, fill = treatment), color = NA, alpha = 0.08) + 
+    scale_fill_manual(values = c("Control-Hot (n=20)"="#fa927d",
+                                "CORT-Hot (n=19)"="#b50101",
+                                "Control-Cold (n=20)"="#68bde1",
+                                "CORT-Cold (n=20)"="#00008B")) +
+    theme_classic() +
+    labs(y = "Predicted errors", x = "Trial") +
+    theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, "mm")) +
+    theme(
+      axis.title = element_text(size = 12, family = "Times"),
+      axis.text = element_text(size = 10, family = "Times"),
+      legend.position = "none"
     )
-  #
-  # Combine them
-  plot <- plot_grid(plot1, plot2, labels = lab, nrow = 1, rel_widths = c(0.45, 0.45)) +
-    annotation_custom(rasterGrob(img), xmin = 0.73, xmax = 0.98, ymin = 0.73, ymax = 0.98) +
-    annotate("text", x = 0.5, y = 0.05, label = note, size = 5, color = "black", fontface = "italic")
   return(plot)
 }
