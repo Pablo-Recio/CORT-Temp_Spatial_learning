@@ -114,7 +114,7 @@ clean_df <- merge(learning_slopes, final_mito_df, by = "lizard_id") %>%
   dplyr::select(lizard_id, clutch, age, sex, temp, cort,
                 int_mean, int_sd, slope_mean, slope_sd,
                 mit_density, mit_potential, ROS, DNAdamage, peroxidation) %>%
-  mutate(across(where(~ is.double(.) & !is.integer(.)),
-                ~ (. - mean(., na.rm = TRUE)) / (2 * sd(., na.rm = TRUE))))
+  mutate(across(where(~ is.double(.) & !is.integer(.)) & !any_of("slope_sd"),
+                ~ (. - mean(., na.rm = TRUE)) / (2 * sd(., na.rm = TRUE)))) %>%
 data.frame()
 write.csv(clean_df, file = "./output/databases_clean/clean_df.csv")

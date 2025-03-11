@@ -372,15 +372,18 @@ source(here("R", "func.R"))
 #
 refit <- FALSE
 #
+data_SEM <- clean_df %>%
+  mutate(obs = 1:nrow(.),
+        vec = rep(1, length(obs)))
 if(refit){
   m_SEM <- brm(
-    bf(slope_mean + slope_sd ~ mit_density + mit_potential + DNAdamage + peroxidation + (1|clutch)) +
-    bf(mean_dnadamage ~ ROS + (1|clutch)) +
-    bf(peroxidation ~ ROS + (1|clutch)) +
-    bf(mean_ros ~ mit_density + mit_potential + (1|clutch)) +
-  set_rescor(TRUE),
+    bf(slope_mean | se(slope_sd, sigma = FALSE) ~ mit_density + mit_potential + DNAdamage + peroxidation + (1|clutch) + (1|q|obs)) +
+    bf(DNAdamage | se(vec, sigma = FALSE) ~ ROS + (1|clutch)+ (1|p|obs)) +
+    bf(peroxidation | se(vec, sigma = FALSE) ~ ROS + (1|clutch) + (1|p|obs)) +
+    bf(ROS | se(vec, sigma = FALSE) ~ mit_density + mit_potential + (1|clutch) + (1|t|obs)) +
+  set_rescor(FALSE),
   family = gaussian(),
-  data = clean_df, 
+  data = data_SEM, 
   chains = 4, cores = 4, iter = 8000, warmup = 2000,
   control = list(adapt_delta = 0.99, max_treedepth = 11))
   # Save the model
