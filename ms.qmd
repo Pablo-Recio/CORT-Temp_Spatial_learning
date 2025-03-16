@@ -1,4 +1,5 @@
 ---
+title: "Spatial learning and brain mitochondria are robust to prenatal conditions in the delicate skink"
 docx: 
 bibliography: "./bib/refs.bib"
 csl: "./bib/biology-letters.csl"
@@ -80,71 +81,84 @@ for(k in 1:length(hormone)){
 }
 ```
 
+Pablo Recio^1^,$\ddagger$ , Dalton C. Leibold^1^, Ondi L. Crino ^1,2^, Christopher R. Friesen^3^, Daniel W.A. Noble^1^
+
+^1^ Division of Ecology and Evolution, Research School of Biology, The Australian National University, Canberra, ACT 2601, Australia  
+^2^ Flinder's University, College of Science and Engineering, Bedford Park, SA 5042, Australia  
+^3^ University of Wollongong, Wollongong, NSW 2500, Australia  
+$\ddagger$ Corresponding author: pablo.reciosantiago@anu.edu.au  
+
+ORCID: 
+
+Pablo Recio ORCID: 0000-0002-5890-0218  
+Dalton C. Leibold ORCID: 0000-0001-9645-2033  
+Ondi L. Crino ORCID: 0000-0001-5700-1387  
+Christopher R. Friesen ORCID: 0000-0001-5338-7454  
+Daniel W.A. Noble ORCID: 0000-0001-9460-8743  
+
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+## Abstract
+Learning is highly sensitive to environmental conditions, including early thermal environments and prenatal exposure to glucocorticoids. These factors influence mitochondrial activity, which plays a crucial role in neural development and synaptic plasticity, ultimately shaping cognitive abilities. Here, we investigated the interactive effects of prenatal temperature and corticosterone (CORT) — the primary glucocorticoid in reptiles — on spatial learning and brain mitochondrial activity in the delicate skink (_Lampropholis delicata_). We supplemented eggs with either CORT or a control vehicle and incubating them under two thermal regimes: cold (23 ± 3°C) or hot (28 ± 3°C). Juveniles were then tested in a spatial learning task over 40 days, after which mitochondrial activity in the medial cortex was assessed. Our results revealed that both mitochondrial physiology and spatial learning in _L. delicata_ are robust to prenatal temperature and CORT exposure. In addition, we found no significant relationship between mitochondrial function and cognitive abilities. However, mitochondrial potential increased ROS levels, which could impact oxidative stress under high metabolic demands or low antioxidant capacity. These findings highlight the cognitive and physiological resilience of _L. delicata_ to early-life environmental challenges. Future research should explore whether this robustness extends to other brain regions and life stages.
+
+
 ## Introduction
 
-Cognition encompasses processes such as perception, learning, memory, and decision-making, which allow animals to gather, retain, and use environmental information [@shettleworth]. These processes are fundamental for survival and reproduction, influencing behaviours like foraging, mate selection, or antipredatory strategies [@dukas_evolutionary_2004]. Learning - the acquisition and consolidation of new information [@dukas_evolutionary_2004] - enables individuals to create new associations between events, which can be essential for coping with environmental changes [@dukas_evolutionary_2004; @leal_behavioural_2012; @buchanan_condition_2013]. However, the capacity to form these associations varies among individuals, potentially affecting their responses to environmental challenges [@ward2016ecological; @welklin2024spatial]. Animals that learn faster may exploit novel resources better or may start responding to new threats more efficiently than slow learners [@ward2016ecological]. Consequently, individual differences in learning abilities can have profound effects on survival and reproductive output, ultimately influencing population growth rates and stability [@ward2016ecological; @welklin2024spatial].  Understanding the mechanisms that drive these differences is therefore crucial for predicting how populations will respond to novel conditions.  
+Learning - the acquisition and consolidation of new information [@dukas_evolutionary_2004] - enables individuals to create new associations between events, which can be essential for coping with environmental changes [@dukas_evolutionary_2004; @leal_behavioural_2012; @buchanan_condition_2013]. However, the capacity to form these associations varies among individuals, potentially affecting their responses to environmental challenges [@ward2016ecological; @welklin2024spatial]. Animals that learn faster may exploit novel resources better or may start responding to new threats more efficiently than slow learners [@ward2016ecological]. Consequently, individual differences in learning abilities can have profound effects on survival and reproductive output, ultimately influencing population growth rates and stability [@ward2016ecological; @welklin2024spatial]. Understanding the mechanisms that drive these differences is therefore crucial for predicting how populations will respond to novel conditions.  
 
-Factors like age, sex, or early- life conditions can have important effects on learning abilities [@szuran_water_1994; @lemaire_prenatal_2000; @zhu_prenatal_2004; @amiel_hotter_2012; @amiel_egg_2014; @carazo_sex_2014; @noble_age-dependent_2014]. Early developmental environment is particularly influential, as the brain is highly sensitive to environmental inputs during this period [@zhu_prenatal_2004]. Early experiences can alter neurotransmitter production [@amani2021perinatal], gene expression [@zhou2020effects], or brain structure [@amiel_effects_2017], with lasting effects on cognition. Among the physiological mechanisms underlying learning, mitochondrial activity has emerged as a key factor influencing brain function [@siegel1994basic; @du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. The neural processes involved learning impose substantial energetic demands [@mcnay_decreases_2000; @mann_coupling_2021; @alexandrov_neuronal_2022], making efficient mitochondrial respiration essential [@du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. Additionally, learning depends on a dense network of functional neurons [@lefebvre_taxonomic_2011; @amiel_effects_2017], which can be compromised by excessive oxidative stress byproduct of mitochondrial function [@finkel_oxidants_2000; @zhu_prenatal_2004; @du_dynamic_2009; @gong_chronic_2011; @hoffmann_mitochondrion_2018]. Studies on domestic rats (_Rattus norvegicus_) have shown that the effects of early environment on mitochondrial physiology can have profound consequences for cognitive abilities [@zhu_prenatal_2004; @cao2014ampk]. However, the extent to which these effects are generalizable to other taxa, particularly ectotherms, remains largely unexplored.     
+Factors like age, sex, or early- life conditions can have important effects on learning abilities [@szuran_water_1994; @lemaire_prenatal_2000; @zhu_prenatal_2004; @amiel_hotter_2012; @amiel_egg_2014; @carazo_sex_2014; @noble_age-dependent_2014]. Early developmental environment is particularly influential, as the brain is highly sensitive to environmental inputs during this period [@zhu_prenatal_2004]. In fact, early experiences can alter neurotransmitter production [@amani2021perinatal], gene expression [@zhou2020effects], or brain structure [@amiel_effects_2017], with lasting effects on cognition. Among the physiological mechanisms underlying learning, mitochondrial activity is considered a key factor [@siegel1994basic; @du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. The neural processes involved learning impose substantial energetic demands [@mcnay_decreases_2000; @mann_coupling_2021; @alexandrov_neuronal_2022], making efficient mitochondrial respiration essential [@du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. Additionally, learning depends on a dense network of functional neurons [@lefebvre_taxonomic_2011; @amiel_effects_2017], which can be compromised by excessive oxidative stress byproduct of mitochondrial function [@finkel_oxidants_2000; @zhu_prenatal_2004; @du_dynamic_2009; @gong_chronic_2011; @hoffmann_mitochondrion_2018]. Studies on mammals have shown the pervassive effects of mitochondrial physiology on cognitive abilities [@zhu_prenatal_2004; @hara_presynaptic_2014; @cao2014ampk]. However, the extent to which these effects are generalizable to other taxa remains largely unexplored.     
 
-Since mitochondria are maternally inherited, maternal condition plays a fundamental role in shaping offspring mitochondrial activity [@picard_mitochondria_2014]. In particular, maternal stress can strongly influence how mitochondria operate in the offspring [@zhu_prenatal_2004]. Stressful situations elevate glucocorticoids (GCs) [@sapolsky_how_2000], which can be transmitted to the developing embryo [@uller_sex-specific_2009], altering mitochondrial physiology through transgenerational effects [@picard_mitochondria_2014].For instance, maternal stress has been shown to contribute significantly to oxidative stress in the brain of rats (_Rattus norvegicus_) [@zhu_prenatal_2004; @haussmann_embryonic_2012].  
+Since mitochondria are maternally inherited, maternal condition plays a fundamental role in shaping offspring mitochondrial activity [@picard_mitochondria_2014]. In particular, maternal stress can strongly influence how mitochondria operate in the offspring [@zhu_prenatal_2004]. Stressful situations elevate glucocorticoids (GCs) [@sapolsky_how_2000], which can be transmitted to the developing embryo [@uller_sex-specific_2009] altering mitochondrial physiology through transgenerational effects [@picard_mitochondria_2014]. For instance, maternal stress has been shown to contribute significantly to oxidative stress in the brain of rats (_Rattus norvegicus_) [@zhu_prenatal_2004; @haussmann_embryonic_2012; @cao2014ampk].  
 
 Temperature can be a significant source of maternal stress in ectotherms. Thermal environments outside of the optimal range can elevate GCs in the mother, which can be passed to the offspring [see @Crino_2023]. In addition, temperature can also directly influence offspring development, particularly during early life [@noble_developmental_2018; @crino2024eggs]. The prenatal thermal environment plays a crucial role in shaping mitochondrial function, affecting energy metabolism and oxidative stress [@stier2022experimental; @crino2024eggs]. For instance, hatchlings of the red-eared slider turtle (_Trachemys scripta elegans_) incubated at 26.5 ºC exhibited greater oxidative damage than those incubated at temperatures 0.7 to 1.2 ºC warmer [@treidel2016temperature]. Thus, the combined effects of prenatal GCs and temperature may profoundly influence mitochondrial function, with important consequences for brain development and cognition. However, the extent to which prenatal GCs and temperature interact to shape cognitive abilities via mitochondrial physiology remains largely unknown.  
 
-Here, we examined how prenatal temperature and corticosterone (CORT) — the primary GC in reptiles — affect brain mitochondrial physiology and spatial learning in the delicate skink (_Lampropholis delicata_). We hypothesized that prenatal CORT and temperature would influence learning abilities through their effects on mitochondrial activity in the brain. Specifically, we predicted that prenatal CORT would decrease energy production while increasing oxidative damage [@costantini2011meta; @gong_chronic_2011; but see @crino2024eggs]. Similarly, high temperatures would decrease mitochondrial efficienty [@zavorka_climate_2021; @crino2024eggs], but with the potential to reduce oxidative stress [@treidel2016temperature]. We further predicted that the combined effects of CORT and temperature would lead to complex interactions, with both factors negatively impacting mitochondrial efficiency but having opposite effects on oxidative stress. These effects would lead to differences in learning abilities, that could be affected by the balance between energy production and oxidative stress [@du_dynamic_2009; @picard_energetic_2018; @alexandrov_neuronal_2022]. By examining these interactions, we aim to clarify how prenatal environmental factors shape learning abilities through mitochondrial function, shedding light on the role of early-life conditions in cognitive development and its mechanismsm.  
+Here, we examined how prenatal temperature and corticosterone (CORT) — the primary GC in reptiles — affect brain mitochondrial physiology and spatial learning in the delicate skink (_Lampropholis delicata_). We hypothesized that prenatal CORT and temperature would influence learning abilities through impacts on brain mitochondrial activity. Specifically, we predicted that prenatal CORT would decrease energy production while increasing oxidative damage [@costantini2011meta; @gong_chronic_2011; but see @crino2024eggs]. Similarly, high temperatures would decrease mitochondrial efficienty [@zavorka_climate_2021; @crino2024eggs], but with the potential to reduce oxidative stress [@treidel2016temperature]. We further predicted that the combined effects of CORT and temperature would lead to complex interactions, with both factors negatively impacting mitochondrial efficiency but having opposite effects on oxidative stress. These effects would lead to differences in learning abilities, that could be affected by the balance between energy production and oxidative stress [@du_dynamic_2009; @picard_energetic_2018; @alexandrov_neuronal_2022]. By examining these interactions, we aim to clarify how prenatal environmental factors shape learning abilities through mitochondrial function, shedding light on the role of early-life conditions in cognitive development and its mechanismsm.  
 
 ## Methods  
 
-#### Animal husbandry  
-*Breeding colony* - Juveniles of _L. delicata_ came from a breeding colony established in the laboratory since 2019. This colony consisted of 270 adults housed in plastic containers (41.5 L x 30.5 W x 21 H cm) with six lizards (two males and four females) per enclosure. Enclosures were provided with shelter, nonstick matting, and several small water dishes. The lizards were fed approx. 40 mid-size crickets (_Acheta domestica_) per enclosure three days a week, and water was given daily. The crickets were dusted with calcium weekly and multivitamin and calcium biweekly. Room temperatures were set to 22-24 ºC, but we also provided the enclosures with a heat chord and a heat lamp following a 12 h light:12 h dark cycle keeping warm side of enclosures is usually at 34 ºC.
-
-*Eggs collection and incubation* - Between mid-November 2023 to mid-January 2024, we placed a small box (12.5 L x 8.3 W x 5 H cm) with moist vermiculite in one side of the communal enclosures to provide females with a place to lay the eggs. These boxes were checked three days a week. After egg collection, we measured length and width with a digital caliper to the nearest 0.1 mm and weighted the eggs with a digital scale ± 0.001g error. Then eggs were treated with CORT or vehicle (see CORT and temperature manipulation below) and were placed in individual cups (80 mL) with moist vermiculite (12 parts water to 4 parts vermiculite). The cups were covered with cling wrap to retain moisture and left in two incubators at two different temperatures (see CORT and temperature manipulation below) until hatching.
-
-*Hatchlings* - Incubators were checked three times a week for hatchlings. Lizards were measured and weighed immediately after hatching. snout-vent length (SVL) and tail length (TL) were measured to the nearest millimeter, and weight was recorded using a digital scale with an accuracy of ± 0.001 g. Hatchlings were then placed in individual enclosures (18.7L x 13.2W x 6.3H cm) with nonstick matting and a small water dish. Watering, feeding, and temperature conditions were maintained as for adults (see above).      
-
+#### Animals' origin and collection
+Subjects came from a breeding colony established in the laboratory since 2019. It consisted in 270 adults living in groups of two males and four females. Eggs were collected from these groups between mid-Novemnber 2023 to mid-January 2024. After collecting the eggs, we treated them with CORT or vehicle and incubated them under two different temperature regimes (see below). Clutch and egg identity were asigned immediately after collection, and the eggs were incubated in individual cups until hatching. Hatchlings were also kept in individual enclosures until the end of the experiment. For details on husbandry and breeding conditions, see Methods 1: Animal husbandry in Supplementary Material.
+ 
 #### CORT and Temperature manipulation
-We tested the combined effects of prenatal CORT and temperature by elevating CORT concentrations in eggs and then incubating them under one of two temperature regimes (Cold - 23 ± 3 ºC or Hot - 28 ± 3 ºC) in a 2x2 factorial design (@fig-Methods **LTTER**). CORT-treated eggs were topically supplied with 5 µL of crystalline corticosterone (Sigma, Cat. No. C2505) dissolved in 100% ethanol at a final 10 pg CORT/mL concentration (CORT treatment), while Control eggs received an equal volume of 100% Ethanol. CORT dose increased mean yolk CORT levels ~3.7x higher than control eggs in previous studies [@crino2024eggs]. Eggs were then incubated in one of the two previously mentioned temperature regimes that are within the natural limits in _L. delicata_ [@cheetham2011embryonic].   
-
-We counterbalanced the number of eggs per clutch assigned to each hormone and temperature using a partial split-clutch design where at least one egg per clutch was assigned to each treatment. For clutches bigger than four, we assigned the remaining eggs randomly to one of the treatments. When we found less than four eggs in a clutch, we assigned each egg randomly to one of the treatments.   
+We tested the combined effects of prenatal CORT and temperature by elevating CORT concentrations in eggs and then incubating them under one of two temperature regimes (Cold - 23 ± 3 ºC or Hot - 28 ± 3 ºC) in a 2x2 factorial design. We used a partial split clutch design where eggs from a given clutch were distributed equally across the four treatments when clutch sizes were larger than four and randomly across treatments when less than four. CORT-treated eggs were topically supplied with 5 µL of crystalline corticosterone (Sigma, Cat. No. C2505) dissolved in 100% ethanol at a final 10 pg CORT/mL concentration (CORT treatment), while Control eggs received an equal volume of 100% Ethanol. CORT dose increased mean yolk CORT levels ~3.7x higher than control eggs in previous studies [@crino2024eggs]. Eggs were then incubated in one of the two previously mentioned temperature regimes that are within the natural limits in _L. delicata_ [@cheetham2011embryonic].   
 
 #### Learning  
-The spatial learning task involved training lizards to navigate a 6-arm maze to reach an exit connected to a transport box that allowed us to return the lizards to their enclosure without further contact (see @fig-Methods **LTTER**). In each trial, the lizards were placed by hand in the center of maze and left to acclimate for two minutes (see @fig-Methods **LTTER**). During acclimatation, the central are was surrounded by a yellow device mounted on a pulley system. At the start of each trial, this device was lifted to startle the lizard. If the lizard did not immediately choose an arm, it was gently prodded with a brush at the end of the tail. Once the lizard made a choice, the brush was used to encourage movement but without guiding it towards any specific arm. If the lizard did not choose correctly after 20 errors — at which point it typically ceased responding — the lizard was gently guided to the correct arm.  
+The spatial learning task involved training lizards to navigate a 6-arm maze to reach an exit connected to a transport box that allowed us to return the lizards to their enclosure without further contact. In each trial, the lizards were placed by hand in the center of maze and left to acclimate for two minutes. During acclimatation, the central area was surrounded by a yellow device mounted on a pulley system. At the start of each trial, this device was lifted to startle the lizard. If the lizard did not immediately choose an arm, it was gently prodded with a brush at the end of the tail. Once the lizard made a choice, the brush was used to encourage movement but without guiding it towards any specific arm. If the lizard did not choose correctly after 20 errors — at which point it typically ceased responding — the lizard was gently guided to the correct arm.     
 
-Extra-maze cues (but not intra-maze cues) were available to assist with navigation (see @fig-Methods **LTTER**). This design aimed to assess the lizards' ability to learn spatial relationships based on external cues rather than relying on familiar objects within the maze. Additionally, to prevent lizards from relying on subtle intra-maze cues, the maze was replaced every three trials with one of four identical mazes. Each replacement preserved the correct arm’s orientation and the maze’s position within the room, ensuring consistency for each individual. The maze was also cleaned with 70% ethanol between trials to avoid the influence of chemical cues. To control for potential side biases, the correct arm was randomly assigned to one of the six arms for each trial. We employed four different maze orientations (North-West, South-West, South, and South-East), and the number of lizards assigned to each orientation was counterbalanced across treatments.  
+We assessed lizards' spatial learning using external cues for navigation while avoiding intra-maze cues. To avoid subtle intra-maze cues, the maze was replaced every three trials with one of four identical mazes. Each replacement preserved the correct arm’s orientation and the maze’s position within the room, ensuring consistency for each individual. Additionally, the maze was cleaned with 70% ethanol between trials to avoid the influence of chemical cues. To control for potential side biases, the correct arm was randomly assigned to one of the six arms for each trial. We employed four different maze orientations (North-West, South-West, South, and South-East), and the number of lizards assigned to each orientation was counterbalanced across treatments.  
 
-The task was repeated once daily for 40 consecutive days, and the number of mistakes made by each lizard was recorded. A mistake was defined as the lizard inserting its head into one of the incorrect arms. The primary measure of spatial learning was the total number of errors made before the lizard chose the correct arm.  
-
-```{r, fig-Methods}
-#| label: fig-Methods
-#| fig.cap: "Panel **A** shows the experimental design of the study. On top, the treatments applied to the eggs. On the bottom the learning task and the brain region extracted together with the physiological analyses performed. In panel **B** the details and measurements of the spatial learning maze."
-
-knitr::include_graphics("./Others/SPAL_METH.svg")
-
-```
+The task was repeated once daily for 40 consecutive days, and the number of errors made by each lizard was recorded. An error was defined as the lizard inserting its head into one of the incorrect arms, choosing the same arm two or more times consecutively was counted as independent errors.   
 
 #### Brain mitochondrial activity
-Immediately following the completion of the tests, we asessed mitochondrial physiology in the brain of all remaining lizards (see below). We euthanized lizards via peritoneal injection 10 mg/kg of a 10 mg/mL alfaxan solution (a potent anesthetic), followed by decapitation. Before decapitation we evaluated the lizard’s response by turning it upside down and by testing the pinching relfex in one of the front limbs. This protocol was approved by the Animal Ethics Committee of the Australian National University (Protocol number: A2022_33).  
+Immediately following the completion of the tests, we asessed mitochondrial physiology in the brain of all remaining lizards (see below). We euthanized lizards via peritoneal injection 10 mg/kg of a 10 mg/mL alfaxan solution (a potent anesthetic), followed by decapitation. Before decapitation we evaluated lizard's righting response and the pinching reflex in one of the front limbs.  
 
-After decapitation, we extracted manually the medial cortext in the telencephalon (@fig-Methods **LETTER**). We selected the medial cortex because is considered homologous to the mammalian hippocampus, where spatial cognition is encoded [@rodríguez2002conservation; @naumann2015reptilian]. The tissue was transferred to 1xPBS solutioin and then homogenized mechanically using a 100 µm mesh filter (pluriStrainer). The resultant homogenate was divided into two aliquotes: one was used fresh for mitochondrial density, membrane potential, ROS assays; and the other was cryopreserved for later measurements of oxidative damage (DNA damage, lipid peroxidation).  
+After decapitation, we extracted the medial cortext in the telencephalon. We selected the medial cortex because is considered homologous to the mammalian hippocampus, where spatial cognition is encoded [@rodríguez2002conservation; @naumann2015reptilian]. The tissue was transferred to 1xPBS solution and then homogenized mechanically using a 100 µm mesh filter (pluriStrainer). The resultant homogenate was divided into two aliquotes: one was used fresh for mitochondrial density, membrane potential, and ROS assays; and the other was cryopreserved for later measurements of DNA damage and lipid peroxidation.  
 
-Fresh homogenate suspensions were stained with 5 µM MitoTracker Deep Red FM, 2.5 µM MitoTracker Orange CMTMRos, and 50 µM MitoSOX Red. We used these fluorescent probes to assess mitochondrial density, mitochondrial membrane potential, and superoxide (ROS) production, respectively. We also added 5 µL of #µM Hoechst 33342 Nuclear Viability Dye to each sample to differentiate viable cells from debris. After adding all the dyes, the samples were incubated at 32 °C for 30 minutes and then immediately transferred to flow cytometry facilities for data collection, within 2 hours.  
+Fresh homogenate suspensions were stained with 5 µM MitoTracker Deep Red FM, 2.5 µM MitoTracker Orange CMTMRos, and 50 µM MitoSOX Red. We used these fluorescent probes to assess mitochondrial density, mitochondrial membrane potential, and superoxide (ROS) production, respectively. We also added 5 µL of #µM Hoechst 33342 Nuclear Viability Dye to each sample to differentiate viable cells from debris. These samples were analyzed in a flow cytometer within 2 hours of brain extraction.  
 
-The aliquotes reserved for oxidative damage assays, were stained with 20 µL of #µM Hoechst 33342 Nuclear Viability Dye and 20 µL of 100 µM BODIPY 665/676 Lipid Peroxidation Sensor before cryopreservation. These dyes were used to measure cell viability and lipid peroxidation, respectively. The sampled were then fixed in 1% Neutral-Buffered Formalin, washed, and then preserved in a 1X Tris-EDTA solution with 10% DMSO at -20 °C. On the day of the oxidative damage assays, the samples were thawed, and DMSO was removed. Then, cell membranes were permeabilized by incubating the samples in 200 µL of 1X PBS containing 5mM (6.14 mg/mL) digitonin for 20 minutes at 32°C. Following membrane permeabilization we stained the samples with 20µL of 70µM 8-OHdG Polyclonal Antibody, and allowed them to incubate overnight (~12 hours). 8-OHdG Polyclonal Antibody was used to assessed 8-OHdG, a marker of oxidative damage on DNA. The following day we counterstained the cells with 20µL of #µM (100µg/mL) H+G Goat Anti-Rabbit Conjugate Antibody with Alexa-Fluor 488 at 32°C for 20 minutes and performed the flow cytometry. Oxidative damage assays were performed within 6 months of the initial analysis of fresh samples.  
+The aliquotes reserved for oxidative damage assays were stained with 20 µL of #µM Hoechst 33342 Nuclear Viability Dye and 20 µL of 100 µM BODIPY 665/676 Lipid Peroxidation Sensor before cryopreservation. These dyes were used to measure cell viability and lipid peroxidation, respectively. The samples were then fixed in 1% Neutral-Buffered Formalin, washed, and preserved in a 1X Tris-EDTA solution with 10% DMSO at -20 °C. On the day of the oxidative damage assays, the samples were thawed, and DMSO was removed. Then, cell membranes were permeabilized in 200 µL of 1X PBS containing 5mM (6.14 mg/mL) digitonin. Following membrane permeabilization we stained the samples with 20µL of 70µM 8-OHdG Polyclonal Antibody - a marker of DNA damage - and allowed them to incubate overnight (~12 hours). The following day we counterstained the cells with 20µL of #µM (100µg/mL) H+G Goat Anti-Rabbit Conjugate Antibody with Alexa-Fluor 488 and analyzed the samples in the the flow cytometer. Oxidative damage assays were performed within 6 months of the initial analysis of fresh samples.  
 
-Flow cytometry assays were performed on a Becton Dickson LSRFortessa X-20 flow cytometer using the default wavelength filters. The detectors and voltage settings for each assay were determined during pilot trials and and remained consistent throughout the experiment to ensure comparability across different plates and samples. Data was processed using FlowJo (v. 10.1) software. We used the geometric mean as our main response variables in analyses. For further details on the homogenization, staining, or flow cytometry assays, see the Supplementary Material.  
+Flow cytometry was performed on a Becton Dickson LSRFortessa X-20 flow cytometer using the default wavelength filters. The detectors and voltage settings for each assay were determined during pilot trials and and remained consistent throughout the experiment. Data was processed using FlowJo (v. 10.1) software. We obtained the mean fluorescent intensity for mitochondrial density, mitochondrial potential, ROS production, DNA damage, and lipid peroxidation. For further details on the homogenization, staining, or flow cytometry assays, see Methods 2: flow cytometry in Supplementary Material.  
 
 #### Statistical analyses
+We performed all the analyses using brm models from stan [@stan] on R version 4.4.0 [@R]. We run a series of univariate and multivariate models to test the effects of early envirnoment on each variable separately plus the relationships between physiology and learning. All models consisted of four MCMC chains of 8000 iterations, with a warm up interval of 2000 iterations. 
 
-We performed all the analyses using brm models from stan [@stan] on R version 4.4.0 [@R]. We run a series of univariate and miltivariate models to test the effects of early envirnoment on each variable separately plus the relationships between physiology and learning. All models consisted of four MCMC chains of 8000 iterations, with a warm up interval of 2000 iterations. 
+Univariate models were used to test the effects of early environment on each of the variables recorded: mitochondrial density, mitochondrial potential, ROS, DNA damage, lipid peroxidation, and the number of errors as a measure of learning. We included in all the models the hormone treatment (CORT vs Control), incubation temperature (Cold vs Hot) and their interaction. Sex and age were included in preliminary models and excluded from the final models when they were not significant. For all univariate models, clutch identity was included as a random factor. Mitochondrial related variables (density, potential, ROS, DNA damage, and lipid peroxidation) where log-transformed when necessary and all were mean-centered and standardized by dividing them by two times the standard deviation [@gelman2008scaling]. These variables were considered to follow a normal distribution. 
 
-Univariate models were used to test the effects of early environment on each of the variables recorded: mitochondrial density, mitochondrial potential, ROS, DNA damage, lipid peroxidation, and the number of errors as a measure of learning. We included in all the models the hormone treatment (CORT vs Control), incubation temperature (Cold vs Hot) and their interaction. Sex and age were included in preliminary models, and excluded from the final models when they were not significant (see Supplementary Material). For all univariate models, clutch identity was included as a random factor. Mitochondrial related variables (density, potential, ROS, DNA damage, and lipid peroxidation) where log-transformed when necessary and all were mean-centered and standardized by dividing them by two times the standard deviation [**REF DAN**]. These variables were considered to follow a normal distribution. The number of errors was modeled as a function of trial, cort, temperature, and the triple interaction. We included in this model the trial within each level of lizard identity as a random slope. The error structure was modelled using a negative binomial distribution with a logit link function [negbinomial(link = "log")]. Otherwise, the procedure was as in the other models.  
+The number of errors was modeled as a function of trial, cort, temperature, and the triple interaction. We included in this model the trial within each level of lizard identity as a random slope. The error structure was modelled using a negative binomial distribution with a logit link function [negbinomial(link = "log")]. Otherwise, the procedure was as in the other models.  
 
-We used the posterior distributions of parameters from these models to test for differences between treatments. Learning slopes were obtained using the ‘trial’ estimates and its interaction with hormone and temperature treatments. Slope estimates >0 were considered as evidence of learning. pMCMC were used to test the hypothesis that slopes and slope contrasts are different from zero. We considered an effect statistically significant when pMCMC <0.05.  
+We used the posterior distributions of parameters from these models to test for differences between treatments. Learning slopes were obtained using the ‘trial’ estimates and its interaction with hormone and temperature treatments. Slope estimates <0 were considered as evidence of learning. pMCMC were used to test the hypothesis that slopes and slope contrasts are different from zero. We considered an effect statistically significant when pMCMC <0.05.  
 
-To explore links between mitochondrial function and detection latency, we fitted a multivariate model on brm. We included in the model all the variables of interest and their interactions structured following a specific hypothesis (see @fig-SEM). Individual measurements for learning performance were obtained by modelling errors as a function of trial. We included the trial within each level of lizard identity as a random slope, which was used to obtain the learning slopes for each individual. These learning slopes, as well as the rest of variables, were standardized as before (see above). We assumed a gaussian family for all the variables. Factors found as non-significant in the univariate models were excluded. Clutch identity remained a random factor. Direct, indirect, and total effects were derived from posterior estimates following a Structural Equations Modelling approach [@kline2005principles] (see **TABLE** in Supplementary Material). 
+To explore links between mitochondrial function and detection latency, we fitted a multivariate model on brm. We included in the model all the variables of interest and their interactions structured following a specific hypothesis (see @fig-sem). Individual measurements for learning performance were obtained by modelling errors as a function of trial. We included the trial within each level of lizard identity as a random slope, which was used to obtain the learning slopes for each individual. These learning slopes, as well as the rest of variables, were standardized as before (see above). We assumed a gaussian family for all the variables. Factors found as non-significant in the univariate models were excluded. Clutch identity remained a random factor. Direct, indirect, and total effects were derived from posterior estimates following a Structural Equations Modelling approach [@kline2005principles] (see Table S4).  
+
+One of the plates used to analyze oxidative damage malfunctioned, compromising data quality. This data was excluded from the final analysis and, as a result, the sample size for DNA damage and lipid peroxidation is smaller than for the other variables. For the multivariate model, we imputed the missing values. The final sample sizes are presented below.    
  
 ## Results
 
-**Originally, we started with 96 lizards, 48 per species and 12 per treatment per species. However, due to natural mortality (n = 11), no completion of the training stage (n = 1), or no motivation during the learning tasks (n = 3; see above), we ended up with a total of 81 lizards. Final sample sizes per treatment and species are disclosed on @tbl-data.**   
+We started with 80 lizards - 20 per treatment - coming from `r total_clutches` clutches. However, due to natural mortality (n = 2), only 79 lizards were included in the learning analyses, and 78 in the mitochondrial analyses. Besides, due to malfunctioning of the flow cytometer, we ended up with 40 inividuals (10 per treatment) for DNA damage and lipid peroxidation. Final sample sizes per treatment and species are disclosed on @fig-learning and @fig-results_mit.     
 
 ```{r, models_mitochondrial}
 #| label: models_mitochondrial
@@ -183,94 +197,6 @@ m_def_learn <- fit_m(df = learning_df,
                       refit = FALSE)
 ```
 
-```{r, organise_posteriors_mit}
-#| label: organise_posteriors_mit
-#
-# Organising the posteriors of the previous models for tables and figures
-#
-source(here("R", "func.R"))
-#
-#
-post_mit <- data.frame()
-# Names posteriors:
-names <- c("m_def_mit_density", "m_def_mit_potential", "m_def_ROS", "m_def_DNAdamage", "m_def_peroxidation")
-#
-# Organising the results
-for (pos in names) {
-  model <- get(pos)      # Get the model from the global environment
-  post_result <- tidy_post(model)        # Apply tidy_post to each model
-  # Add a new column to the rmodel
-  post_result$Model <- pos
-  post_mit <- bind_rows(post_mit, post_result)
-}
-#
-#
-#
-# Extracting the posteriors for the models with mitochondrial variables and the values of interest. Here, I am creating dfs for each of the variables with the values for all the prenatal conditions to make contrasts easier to write.
-#
-MD <- post_values(m_def_mit_density, "none")
-MP <- post_values(m_def_mit_potential, "none")
-ROS <- post_values(m_def_ROS, "none")
-DNA <- post_values(m_def_DNAdamage, "none")
-LP <- post_values(m_def_peroxidation, "none")
-```
-
-```{r, fig-results_mit}
-#| label: fig-results_mit
-#| fig-cap: "Estimates of mitochondial density (A), mitochondrial potential (B), ROS (C), DNA damage (D), and lipid peroxidation (E) in the medial cortex of L. delicata hatchlings as a function of the different prenatal conditions. Black dots indicate the posterior mean, and the bars represent the SD of the estimates. The y-axis represents the posterior estimates of the variable of interest, and the x-axis represents the different prenatal conditions. Lines with asterisks represent significant differences between groups based on pMCMC values (pMCMC < 0.05), no lines indicate no significant differences."
-#| fig-name: "fig-results_oxidative"
-#
-source(here("R", "func.R"))
-#
-# A) Plotting the results for all variables
-plot_mit_density <- plotting(MD, "Mit density")
-plot_mit_potential <- plotting(MP, "Mit potential")
-plot_ros <- plotting(ROS, "ROS")
-#
-plot_legend_top <- plotting(ROS, "ROS") + theme(legend.position = "bottom", legend.title = element_blank())
-gtable <- ggplot_gtable(ggplot_build(plot_legend_top))
-legend_mit_top <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
-#
-plot_dnadamage <- plotting(DNA, "DNA damage")
-plot_peroxidation <- plotting(LP, "Lipid peroxidation")
-#
-plot_legend_bottom <- plotting(DNA, "DNA damage") + theme(legend.position = "bottom", legend.title = element_blank())
-gtable <- ggplot_gtable(ggplot_build(plot_legend_bottom))
-legend_mit_bottom <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
-#
-# B) Organising the plots
-fig_mit_top <- plot_grid(plot_mit_density, plot_mit_potential,
-                        nrow = 1, rel_widths = c(1, 1))
-fig_mit_mid <- plot_grid(plot_ros, NULL,
-                        nrow = 1, rel_widths = c(1, 1))
-fig_mit_bottom <- plot_grid(plot_dnadamage, plot_peroxidation,
-                        nrow = 1, rel_widths = c(1, 1))
-#
-# C) Merging everything in final figure
-# Create the figure grid with extra space for legend
-fig_mit <- plot_grid(
-  fig_mit_top, fig_mit_mid, NULL, fig_mit_bottom, NULL,
-  nrow = 5, rel_heights = c(0.3, 0.3, 0.05, 0.3, 0.05))
-# Final composition: Merge everything, adding images and legend
-final_plot_mit <- ggdraw(fig_mit) +
-  # Insert legend in the middle for ROS and energy variables
-  draw_grob(legend_mit_top, x = 0.49, y = 0.39, width = 0.01, height = 0.01) +
-  # Insert legend in the bottom for DNA damage and lipid peroxidation
-  draw_grob(legend_mit_bottom, x = 0.49, y = 0.03, width = 0.01, height = 0.01) +
-  # Insert title for each plot
-  annotate("text", x = 0.0325, y = 0.985, label = "A", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.531, y = 0.985, label = "B", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.0325, y = 0.682, label = "C", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.0325, y = 0.335, label = "D", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.53, y = 0.335, label = "E", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  # Insert figure brain
-  draw_image(here("./Others/brain_fig.png"), x = 0.5, y = 0.3, width = 0.5, height = 0.5)
-#
-# Print final plot
-ggsave(here("./output/figures/text/results_mit.png"), plot = final_plot_mit, width = 21, height = 21, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/text/results_mit.png")
-```
-
 ```{r, organise_posteriors_learning}
 #| label: organise_posteriors_learning
 # Rename some of the posteriors and make new estimates for the learning rate 
@@ -289,7 +215,7 @@ int_CORTHot <- m_def_learn$b_Intercept + m_def_learn$`b_cortCORT:tempHot` + m_de
 
 ```{r, fig-learning}
 #| label: fig-learning
-#| fig.cap: "Learning results"
+#| fig.cap: "Results for learning analyses. Panel A shows the predicted number of errors over trials. The lines represent the mean predicted number of errors for each trial, and the shaded areas indicate the standard deviation of the mean; both were obtained using the slope and intercept estimates from the posterior distributions. Panel B shows the distribution of the estimates of slopes per each treatment. The x-axis represents the slope estimate, and in the y-axis are the density of the estimates. Points and bars represent the mean and standard deviation of the estimated slopes, respectively. Dashed lines indicate value 0. The different colors in both panels indicate the different treatments."
 source(here("R", "func.R"))
 #
 #
@@ -359,8 +285,97 @@ ggsave("./output/figures/text/fig_results_errors.png", plot=fig_results_learning
 knitr::include_graphics("./output/figures/text/fig_results_errors.png")
 ``` 
 
+We found that the lizards improved their choices over time, making less mistakes as the trials progressed (see @fig-learning and Table S1). However, the learning rate was not influenced by CORT, temperature, or their interaction (see contrasts in Table S2).
 
-#### SEM
+Mitochondrial density, mitochondrial potential, ROS, DNA damage, and lipid peroxidation was not affected by prenatal conditions (see @fig-results_mit and Table S2). We did not see any significant effects of sex and age on mitochondrial physiology either (see Table S3 and Tables S5-S9).
+
+```{r, organise_posteriors_mit}
+#| label: organise_posteriors_mit
+#
+# Organising the posteriors of the previous models for tables and figures
+#
+source(here("R", "func.R"))
+#
+#
+post_mit <- data.frame()
+# Names posteriors:
+names <- c("m_def_mit_density", "m_def_mit_potential", "m_def_ROS", "m_def_DNAdamage", "m_def_peroxidation")
+#
+# Organising the results
+for (pos in names) {
+  model <- get(pos)      # Get the model from the global environment
+  post_result <- tidy_post(model)        # Apply tidy_post to each model
+  # Add a new column to the rmodel
+  post_result$Model <- pos
+  post_mit <- bind_rows(post_mit, post_result)
+}
+#
+#
+#
+# Extracting the posteriors for the models with mitochondrial variables and the values of interest. Here, I am creating dfs for each of the variables with the values for all the prenatal conditions to make contrasts easier to write.
+#
+MD <- post_values(m_def_mit_density, "none")
+MP <- post_values(m_def_mit_potential, "none")
+ROS <- post_values(m_def_ROS, "none")
+DNA <- post_values(m_def_DNAdamage, "none")
+LP <- post_values(m_def_peroxidation, "none")
+```
+
+```{r, fig-results_mit}
+#| label: fig-results_mit
+#| fig-cap: "Estimates of mitochondial density (A), mitochondrial potential (B), ROS (C), DNA damage (D), and lipid peroxidation (E) in the medial cortex as a function of the different prenatal conditions. The x-axis represents the estimated values and in the y-axis is the density of the estimates. Points and bars represent the mean and standard deviation of the estimated values, respectively. The different colors in both panels indicate the different treatments."
+#| fig-name: "fig-results_oxidative"
+#
+source(here("R", "func.R"))
+#
+# A) Plotting the results for all variables
+plot_mit_density <- plotting(MD, "Mit density")
+plot_mit_potential <- plotting(MP, "Mit potential")
+plot_ros <- plotting(ROS, "ROS")
+#
+plot_legend_top <- plotting(ROS, "ROS") + theme(legend.position = "bottom", legend.title = element_blank())
+gtable <- ggplot_gtable(ggplot_build(plot_legend_top))
+legend_mit_top <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
+#
+plot_dnadamage <- plotting(DNA, "DNA damage")
+plot_peroxidation <- plotting(LP, "Lipid peroxidation")
+#
+plot_legend_bottom <- plotting(DNA, "DNA damage") + theme(legend.position = "bottom", legend.title = element_blank())
+gtable <- ggplot_gtable(ggplot_build(plot_legend_bottom))
+legend_mit_bottom <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
+#
+# B) Organising the plots
+fig_mit_top <- plot_grid(plot_mit_density, plot_mit_potential,
+                        nrow = 1, rel_widths = c(1, 1))
+fig_mit_mid <- plot_grid(plot_ros, NULL,
+                        nrow = 1, rel_widths = c(1, 1))
+fig_mit_bottom <- plot_grid(plot_dnadamage, plot_peroxidation,
+                        nrow = 1, rel_widths = c(1, 1))
+#
+# C) Merging everything in final figure
+# Create the figure grid with extra space for legend
+fig_mit <- plot_grid(
+  fig_mit_top, fig_mit_mid, NULL, fig_mit_bottom, NULL,
+  nrow = 5, rel_heights = c(0.3, 0.3, 0.05, 0.3, 0.05))
+# Final composition: Merge everything, adding images and legend
+final_plot_mit <- ggdraw(fig_mit) +
+  # Insert legend in the middle for ROS and energy variables
+  draw_grob(legend_mit_top, x = 0.49, y = 0.39, width = 0.01, height = 0.01) +
+  # Insert legend in the bottom for DNA damage and lipid peroxidation
+  draw_grob(legend_mit_bottom, x = 0.49, y = 0.03, width = 0.01, height = 0.01) +
+  # Insert title for each plot
+  annotate("text", x = 0.0325, y = 0.985, label = "A", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.531, y = 0.985, label = "B", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.0325, y = 0.682, label = "C", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.0325, y = 0.335, label = "D", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.53, y = 0.335, label = "E", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  # Insert figure brain
+  draw_image(here("./Others/brain_fig.png"), x = 0.49, y = 0.3, width = 0.5, height = 0.5)
+#
+# Print final plot
+ggsave(here("./output/figures/text/results_mit.png"), plot = final_plot_mit, width = 21, height = 21, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/text/results_mit.png")
+```
 
 ```{r, model_sem}
 #| label: model_sem
@@ -592,10 +607,11 @@ ROS_sem <- data.frame(
 sem_results <- bind_rows(learn_sem, DNA_sem, perox_sem, ROS_sem)
 ```
 
+The multivariate model showed that mitochondrial physiology was not related to learning abilities (see @fig-sem and Table S4). We did not find significant relationships between ROS and oxidative damage or mitochondrial density and ROS (see @fig-sem and Table S4). However, we found that ROS production increased with mitochondrial potential (β = `r format_dec(mean(coeff_potential_ros), 3)`, 95% CI = [`r format_dec(quantile(coeff_potential_ros, 0.025), 3)`, `r format_dec(quantile(coeff_potential_ros, 0.975), 3)`], pMCMC `r format_p(pmcmc(coeff_potential_ros), 3, equal = TRUE)`).
 
 ```{r, fig-sem}
 #| label: fig-sem
-#| fig-cap: "Structural Equation Models"
+#| fig-cap: "Schematic representation of the multivariate model and the predicted coefficient for each variable. Arrows indicate the directionality of the estimate and the values show the mean predicted coefficient and the 95% CI around the mean."
 #| fig-name: "fig-sem"
 # 
 # A) Getting all the direct coefficients
@@ -631,21 +647,65 @@ imgSEM <- readPNG(here("Others", "SEM.png"))
 plot_SEM <- rasterGrob(imgSEM, interpolate = TRUE)
 #
 fig_SEM <- ggdraw(plot_SEM) +
-  annotate("text", x = 0.4, y = 0.17, label = density_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.4, y = 0.855, label = potential_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.85, y = 0.675, label = dna_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.85, y = 0.375, label = perox_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.535, y = 0.745, label = ros_dna, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.535, y = 0.28, label = ros_perox, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.3, y = 0.27, label = density_ros, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.3, y = 0.76, label = potential_ros, hjust = 1, vjust = 1, size = 2.8, family = "Times")
+  annotate("text", x = 0.433, y = 0.19, label = density_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.433, y = 0.85, label = potential_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.877, y = 0.675, label = dna_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.877, y = 0.387, label = perox_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.547, y = 0.745, label = ros_dna, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.547, y = 0.295, label = ros_perox, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.325, y = 0.284, label = density_ros, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.324, y = 0.757, label = potential_ros, hjust = 1, vjust = 1, size = 3.5, family = "Times")
 ggsave(here("./output/figures/text/SEM.png"), plot = fig_SEM, width = 21, height = 10, units = "cm", dpi = 600, bg = "white")
 knitr::include_graphics("./output/figures/text/SEM.png")
 ```
 
-
-
 ## Discussion
+
+We found that lizards improved their performance over time, indicating learning. However, this improvement was not influenced by prenatal conditions. Similarly, mitochondrial physiology was not affected by prenatal conditions, and we found no significant relationships between mitochondrial physiology and learning abilities. However, ROS production increased with mitochondrial potential, suggesting that mitochondrial potential may be a good predictor of ROS production in medial cortex of _L. delicata_ with potential implications for the balance between energy production and oxidative damage.  
+
+#### Spatial learning in _Lampropholis delicata_ is robust to prenatal conditions  
+Lizards exhibited learning, but learning rates were not influenced by prenatal CORT or temperature. This contrasts with findings in other taxa, where incubation temperature and prenatal GC elevations affected learning and brain development [@lemaire_prenatal_2000; @zhu_prenatal_2004; @amiel_hotter_2012; @amiel_effects_2017; @dayananda_incubation_2017]. Our results suggest that _L. delicata_ buffers cognitive functions against early environmental inputs, consistent with previous findings showing that behavioural flexibility in this species is also unaffected by prenatal CORT or temperature [@recio2025early]. However, since prenatal CORT and temperature can have region-specific effects on brain development [@coomber_independent_1997; @sakata_neural_2000], other cognitive domains might be more sensitive to prenatal conditions. Future research should explore whether different brain regions in _L. delicata_ vary in their resilience to prenatal inputs to gain a more comprehensive understanding of cognitive development in this species.  
+
+#### Mitochondrial physiology is not affected by prenatal conditions  
+Contrary to our predictions, prenatal temperature and CORT did not significantly influence mitochondrial physiology in the medial cortex of _L. delicata_. Studies in other taxa have been shown that incubation at high temperatures could decrease energy production and oxidative stress [@treidel2016temperature; @zavorka_climate_2021] while, GCs elevation or maternal stress is related to lower mitochondrial efficiency and higher oxidative stress [@costantini2011meta; @gong_chronic_2011; but see @crino2024eggs].  
+
+In _L. delicata_, previous research has demonstrated that high incubation temperatures decreased mitochondrial efficiency in the liver [@crino2024eggs]. Our study shows, however, that mitochondrial physiology in _L. delicata_'s brain is robust to both incubation temeprature and prenatal CORT. Nevertheless, brain effects of prenatal conditions can be region-dependent, with some areas having higher sensitivity to prenatal stressors than others [@coomber_independent_1997; @sakata_neural_2000]. As such, further investigations are necessary to determine whether mitochondrial responses to prenatal conditions vary between different brain regions in _L. delicata_ and their potential effects on behaviour.   
+
+#### Mitochondrial physiology is not related to learning abilities
+Mitochondria play a critical role in cognitive abilities by synthesizing energy [@siegel1994basic; @du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018], and through effects on cell senescence and death caused by oxidative damage [@mcnay_decreases_2000; @mann_coupling_2021; @alexandrov_neuronal_2022]. For example, donut-shaped mitochondrial density — associated with higher ROS production — on presynaptic neurons impairs visuospatial working-memory in rhesus monkeys (_Macaca mulatta_) [@hara_presynaptic_2014]. However, we found no significant relationships between mitochondrial physiology and learning rate in _L. delicata_.  
+
+Our findings suggest that energy production is not a limiting factor for spatial learning in _L. delicata_. The lack of association between mitochondrial density, mitochondrial potential, and learning abilities may reflect the species' ability to maintain energy production above the threshold required to prevent cognitive dysfunction. Alternatively, _L. delicata_ can sustain cognitive function despite fluctuations in energy availability. 
+
+However, we found a significant positive relationship between mitochondrial potential and ROS in the medial cortex. This aligns with the role of mitochondrial membrane potential in driving ATP synthesis and electron transport, processes that inherently generate ROS as byproducts [@rice2002brain]. Normally, moderate ROS levels serve essential signaling functions and are controlled by antioxidants [@rice2002brain; @terman2006oxidative]. However, excessive ROS production can exceed antioxidant action, leading to oxidative stress and cellular dysfunction [@rice2002brain; @terman2006oxidative]. In our study, we did not find any significant relationship between ROS and oxidative damage, suggesing that antioxidant action was sufficient to counteract ROS effects. However, higher energetic demands in the medial cortex may overcome antioxidant capactities and elevate oxidative stress.  
+
+Additionally, DNA damage or lipid peroxidation in the medial cortex were not linked to spatial learning. This suggests that oxidative damage levels were not high enough to impair cognitive function or that compensatory mechanisms counteracted any negative effects. Nevertheless, since oxidative damage accumulate over time [@terman2006oxidative], the relationships between oxidative damage and cognitive dysfunction could become more pronounced in older individuals [@hara_presynaptic_2014]. Future research should investigate the long-term consequences of mitochondrial activity on brain health and the potential mechanisms that sustain cognitive resilience in _L. delicata_.      
+
+#### Conclusions
+We found that spatial learning in _L. delicata_ was not influenced by prenatal CORT or temperature, nor was mitochondrial physiology in the medial cortex. Additionally, there was no relationship between mitochondrial function and learning abilities in a spatial task. However, we found that ROS production increased with mitochondrial potential, suggesting that links between energy production, mitochondrial respiration, and oxidative stress may become more pronounced under stressful conditions or with aging, potentially influencing cognitive function over time.  
+
+
+
+### Ethics
+Both the breeding animals and the experimental lizards were provided humane laboratory housing, with thermoregulatory opportunities, light (UV and heat) and moderate levels of humidity (see Methods 1: Animal husbandry in Supplementary Material for details). Euthanasia was performed by peritoneal injection of a 10 mg/kg of a 10 mg/mL alfaxan solution (a potent anesthetic) followed by decapitation. We monitored the animals to ensure there was no irritation from the agent as indicated by distressed animals. Before disposing of the lizard, we confirmed the absence of righting response and the pinching reflex in one of the front limbs. All the protocols complied with Australian law and were approved by the Australian National University Animal Experimentation Ethics Committee (A2022_33).
+
+### Data accessibility  
+All data, data description, and R code are available in public repository [https://github.com/Pablo-Recio/CORT-Temp_Spatial_learning](https://github.com/Pablo-Recio/CORT-Temp_Spatial_learning).  
+
+### Declaration of AI use
+We declare Chat GPT was used mainly for questions related to coding and data analyses. All other parts of the manuscript were written by the authors and those parts where AI was used were checked and modified accordingly by the authors.  
+
+### Authors' contributions
+P.R.: conceptualization, methodology, data collection, data curation, formal analysis, writing—original draft, writing—review and editing; D.C.L.: conceptualization, methodology, data collection, writing—review and editing; O.C.: conceptualization, methodology, writing—review and editing; C.F.: conceptualization, methodology, funding acquisition, writing—review and editing; D.N.: conceptualization, methodology, funding acquisition, project administration, resources, supervision, writing—review and editing.  
+All authors gave final approval for publication and agreed to be held accountable for the work performed therein.  
+
+### Conflict of interest declaration  
+We declare we have no competing interests.  
+
+### Funding
+This work was supported by a National Australian University fellowship (to P.R. and D.C.L.), and the Australian Research Council (grant no. DP210101152) to D.N. and C.R.F.
+
+### Acknowledgements
+We thank Dr. Mick Devoy and the Cytometry, Histology and Spatial Multiomics team for their advice and help througout the flow cytometry protocols. We thank the help and assistance of our lab technicians Benjamin Durant and Michelle Stephens for taking care of the lizards. We also thank ANU MakerSpace, where we designed and built the prototypes of the 3D printed feeders. Finally, we wish to acknowledge the anonymous reviewers for their valuable feedback on the manuscript. 
 
 ## References
 <div id="refs"></div>
@@ -654,123 +714,134 @@ knitr::include_graphics("./output/figures/text/SEM.png")
 cat("\\newpage")
 ```
 
+
+
 # Suplementary Material  
 
+#### Methods 1: Animal husbandry
+
+*Breeding colony* - Juveniles of _L. delicata_ came from a breeding colony established in the laboratory since 2019. This colony consisted of 270 adults housed in plastic containers (41.5 L x 30.5 W x 21 H cm) with six lizards (two males and four females) per enclosure. Enclosures were provided with shelter, nonstick matting, and several small water dishes. The lizards were fed approx. 40 mid-size crickets (_Acheta domestica_) per enclosure three days a week, and water was given daily. The crickets were dusted with calcium weekly and multivitamin and calcium biweekly. Room temperatures were set to 22-24 ºC, but we also provided the enclosures with a heat chord and a heat lamp following a 12 h light:12 h dark cycle keeping warm side of enclosures is usually at 34 ºC.
+
+*Eggs collection and incubation* - Between mid-November 2023 to mid-January 2024, we placed a small box (12.5 L x 8.3 W x 5 H cm) with moist vermiculite in one side of the communal enclosures to provide females with a place to lay the eggs. These boxes were checked three days a week. After egg collection, we measured length and width with a digital caliper to the nearest 0.1 mm and weighted the eggs with a digital scale ± 0.001g error. Then eggs were treated with CORT or vehicle (see CORT and temperature manipulation below) and were placed in individual cups (80 mL) with moist vermiculite (12 parts water to 4 parts vermiculite). The cups were covered with cling wrap to retain moisture and left in two incubators at two different temperatures (see CORT and temperature manipulation below) until hatching.
+
+*Hatchlings* - Incubators were checked three times a week for hatchlings. Lizards were measured and weighed immediately after hatching. snout-vent length (SVL) and tail length (TL) were measured to the nearest millimeter, and weight was recorded using a digital scale with an accuracy of ± 0.001 g. Hatchlings were then placed in individual enclosures (18.7L x 13.2W x 6.3H cm) with nonstick matting and a small water dish. Watering, feeding, and temperature conditions were maintained as for adults (see above).      
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+
+#### Methods 2: flow cytometry
+
+#### Brain mitochondrial activity
+_Homogenates_
+After the medial cortex was extracted, it was transferred immediately to 1.5mL centrifuge tubes containing 100µL of cold 1X PBS and kept on ice until further processing. The tissue was mechanically homogenized by placing the tissue in the well of a 100µm mesh filter (pluriStrainer) affixed atop a 1.5mL centrifuge tube, then mashed with the rubber end of an insulin syringe stopper. The resulting homogenate was then rinsed through the filter with 1000µL of cold 1X PBS to prepare a homogenate suspension. Following homogenization, we centrifuged each sample at 1000 RCF for 10 minutes to pellet cells, then removed the supernatant (hereafter, this process referred to as ‘washing’) and resuspended the cells in 500µL 1x PBS. This step was to performed to remove cellular debris from homogenates. 
+
+From each 500µL suspension of homogenate collected on a given trial day, we first added 100µL of homogenate to a pooled sample of each tissue type to use for single-color controls, and the remaining 400µL of homogenate was split among two 200µL aliquots. One aliquot was used fresh to measure mitochondrial function (mitochondrial density, membrane potential, ROS), one aliquot was cryopreserved for later measurements of oxidative damage (8-OHdG, lipid peroxidation), and the third aliquot was cryopreserved for a different experiment. 
+
+_Staining fresh samples_
+From fresh homogenate suspensions, we loaded the wells of a 96-well flat-bottom plate (Nunclon) with 50µL of homogenate in duplicates (2 wells per homogenate). To each replicate well, we added 5µL of a fluorescent probe mix containing equal parts 5µM MitoTracker Deep Red FM, 2.5µM MitoTracker Orange CMTMRos, and 50µM MitoSOX Red. We used these fluorescent probes as indicators of mitochondrial density, mitochondrial membrane potential, and superoxide (ROS) production, respectively. We then added 5µL of #µM Hoechst 33342 Nuclear Viability Dye to each sample, which we used to distinguish live, viable, intact cells from cellular debris. We then loaded 6 wells with 50µL of homogenate taken from each pooled homogenate suspension (12 wells total), which were to be negative and single-color controls. One well was left unstained as a negative control, one was stained with all the probes to be a positive control, and the remaining four wells were treated with 5µL of one of 5µM MitoTracker Deep Red FM, 2.5µM MitoTracker Orange CMTMRos, 50µM MitoSOX Red, or #µM Hoechst 33342 Nuclear Viability Dye. Any remaining pooled homogenate was fixed and frozen as previously described. We incubated the loaded plate at 32 °C for 30 minutes to stain and then diluted the samples with 50µL cold 1x PBS to halt the staining process. Upon the completion of staining, samples were immediately transferred to flow cytometry facilities for data collection and were sampled within 2 hours. Samples prepared this way remained viable for flow cytometry for approximately 5 hours post-staining at room temperature (~19°C) before cells began rapidly degrading (unpublished data).
+
+The aliquots destined to the analysis of oxidative damage were stained with 20µL (10µL for controls) of #µM Hoechst 33342 Nuclear Viability Dye and 20µL of 100µM BODIPY 665/676 Lipid Peroxidation Sensor and incubated at 32°C for 20 minutes. Following staining, we washed cells to prevent further binding of unbound fluorescent probes, then resuspended the pellet and continue with cryopreservation.  
+
+_Cryopreservation_
+Aliquots were fixed first by adding the samples into a 1mL solution of 1% Neutral-Buffered Formalin (as a fixative agent) and incubating them at 32°C for 20 min. Then we centrifuged the samples at 800-1200xg for 10 min to pellet cells, removed the supernatant, and resuspended the cells (from now on this process will be called as 'washing') in 1mL cold 1X Tris-EDTA (chelates metals that can damage DNA during freezing) and 10% DMSO (a cryoprotectant). Samples were stored at -20°C until oxidative damage assays.
+
+_Staining cryopreserved samples_
+Assays of oxidative damage from cryopreserved samples were performed within 6 months of the initial processing and analysis of fresh samples. On the day of oxidative damage assays, we rapidly thawed frozen samples by briefly (1-2 minutes) submerging them in hot water. We washed each thawed sample twice, the first time resuspending the pelleted cells in 1000µL warm 1X Tris-EDTA, and the second time in 200µL warm 1X PBS containing 5mM (6.14 mg/mL) digitonin. We incubated the samples at 32°C for 20 minutes to permeabilize the cell membrane, after which we washed the homogenate and resuspended the pelleted cells in 200µL 1X PBS. We added 20µL of 70µM 8-OHdG Polyclonal Antibody to each sample, and we left the homogenate overnight (~12 hours) for the antibody to bind to 8-OHdG, a marker of oxidative damage on DNA. The following day we counterstained the cells with 20µL of #µM (100µg/mL) H+G Goat Anti-Rabbit Conjugate Antibody with Alexa-Fluor 488 at 32°C for 20 minutes. After the cells had been tagged with 8-OHdG antibodies and counterstained, we washed the cells once more and resuspended the pellet in 400µL of 1X PBS. Unstained and single-color controls were treated identically to samples, but stained with only up to one of BODIPY 665/676, Hoechst 33342, 8-OHdG antibody, or Alexa-Fluor 488 conjugate. Additionally, one control was stained with both 8-OHdG antibody and the Alexa-Fluor 488 conjugated. We then loaded a 96-well plate with 100µL of each single-color control and 100µL in triplicate of each sample. We performed all flow cytometry assays on samples within 48-hours of thawing the samples.  
+
+_Flow cytometry_
+All flow cytometry assays were performed using a flow cytometer with 5-lasers (blue, red, yellow-green, violet, and ultraviolet), 20 detectors, and a high-throughput plate reader (Becton Dickson LSRFortessa X-20) using the default wavelength filters on detectors. Immediately prior to all assays, we performed a quality-control check and laser alignment using the CS&T function of BD FACSDiva (v. 8.0.1) and BD CS&T fluorescent beads (Lot No. 30664) diluted at 2 drops to 150µL 1X PBS. During data collection, data for single-color controls was filtered using a liberal threshold of 200 on the FSC (roughly, cell size) detector, while data from samples was filtered using a threshold of 200 on the BUV-496 (Hoechst 33342) detector. These thresholds were chosen to filter small debris or inviable or non-intact cells from our observations. The detectors and voltage settings used in data acquisition for each assay type (mitochondrial function, oxidative damage) were determined during pilot trials prior to assays and were not changed during assays to allow for comparison among different plates and samples throughout the experiment. Voltages were chosen to center the distribution of observations in each channel at 103 fluorescent intensity and reduce observations of off-scale (<101 or >105) events. For the mitochondrial function assay, we recorded data from the following channels (in brackets: voltage; parameter): FSC (44; forward scatter), SSC (180; side scatter), Alexa-Fluor 488 (544; autofluorescence), BUV-496 (450; Hoechst 33342), APC (647; MitoTracker Deep Red FM), PE (522; MitoTracker Orange CMTMRos), and PerCP-Cy5-5 (592; MitoSOX Red) channels. For the oxidative damage assay, we recorded data from the following channels: FSC (425; forward scatter), SSC (300; side scatter), Alexa-Fluor 488 (275; 8-OHdG Antibody + Alexa-Fluor 488 conjugate), BUV-496 (525; Hoechst 33342), and PE-Cy5 (850; BODIPY 665/676). Fluorescent intensity data was collected via the BD FACSDiva (v. 8.0.1) software, with no compensation applied during data collection, and all on a linear scale (detectable range of 0-252166). We recorded data for both the area and height of the fluorescent signal, but only used the area in downstream analyses, with height being recorded for the sake of quality control. Data was exported from BD FACSDiva as individual *.fcs (“flow cytometry standard”) files for each sample, then imported into FlowJo (v. 10.1) for processing.
+
+_Data processing_
+In FlowJo v. 10.1 we first applied transformed all fluorescent data to a logarithmic base 10 scale, then applied a basic gating process across all channels by filtering to observations within the detectable range (101-105) to remove any off-scale events. We then used a backgating process wherein we aimed to identify the approximate FSC (cell size) and SSC (cell complexity) range of viable cells that were positive for all stains. We primarily used the BUV-496 channel (Hoechst 33342) in the backgating process to identify intact, nucleated cells (BUV-496 > 103). For the mitochondrial function assay, we aimed to identify populations of viable cells containing mitochondria (APC > 103) and actively respiring (PE and PerCP-Cy5-5 > 103). For the oxidative damage assay, we aimed to identify populations of cells exhibiting both DNA damage (Alexa-Fluor 488 > 103) and lipid peroxidation (PerCP > 103). When backgating was done, we filtered the data to the FSC by SSC range that captured the ideal population. We used the backgated population for compensation of fluorescent spillover between different fluorescent probes. To account for fluorescent spillover, we used a traditional compensation matrix using the compensation function of FlowJo v.10.1. We identified the “positive” population for each channel as the brightest ~2.5% of the distribution of observations in the respective single-color control for that channel and used unstained controls as a universal negative. We visually inspected the compensation matrix and its effects on population distributions for under- and over-compensation, whereupon we changed the compensation matrix manually until data was properly compensated. We applied the compensation matrix to all samples for downstream processing. Following compensation, we again gated the data following the same process as for backgating but using the compensated parameters for each channel. Following gating, we exported the geometric mean (mean fluorescent intensity; MFI) and robust confidence-values for each channel for each sample. For analysis, we exported summary statistics of only the area of the fluorescent signal. Although we exported robust confidence values for checking repeatability between replicate samples, we used the mean and standard deviation of geometric means among replicates for each individual as our main response variables in analyses.
+
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
 
 
 #### Results of the final models
 
-Table S**13**. R^2^ values of the final models.
-```{r, table_bayesR2}
-#| label: table_bayesR2
-#| tbl-cap: "BayesR2 values of the final models"
-#
-data_bayes <- data.frame(
-  Model = character(0),
-  Mean = numeric(0),
-  Error = numeric(0),
-  Q2_5 = numeric(0),
-  Q97_5 = numeric(0)
-)
-models <- c("mit_density_def",
-            "mit_potential_def",
-            "ROS_def",
-            "DNAdamage_def",
-            "peroxidation_def",
-            "learning_def")
-#
-for (m in models){
-  mod <- readRDS(here("output/models/", paste0(m, ".rds")))
-  bayes <- bayes_R2(mod)
-  data_bayes <- rbind(data_bayes, data.frame(
-    Model = m,
-    Mean = format_dec(bayes[1], 3),
-    Error = format_dec(bayes[2], 3),
-    Q2_5 = format_dec(bayes[3], 3),
-    Q97_5 = format_dec(bayes[4], 3)
-  ))
-}
-#
-bayes_table_df <- data_bayes %>%
-  mutate(Model = factor(Model,
-                        levels = c("mit_density_def",
-                                  "mit_potential_def",
-                                  "ROS_def",
-                                  "DNAdamage_def",
-                                  "peroxidation_def",
-                                  "learning_def"),
-                        labels = c("mit_density_def" = "Mit density",
-                                  "mit_potential_def" = "Mit potential",
-                                  "ROS_def" = "ROS",
-                                  "DNAdamage_def" = "DNA damage",
-                                  "peroxidation_def" = "Lipid peroxidation",
-                                  "learning_def" = "Learning"))) %>%
-  dplyr::select(Model, Mean, Error, Q2_5, Q97_5) %>%
-  arrange(Model)
-#
-#
-# Create the table
-#
-## Table format
-set_flextable_defaults(
- font.family = "Times New Roman",
- font.size = 10)
-#
-bayes_table <- flextable(bayes_table_df) %>%
-  set_header_labels(
-    Region = "Region/Stimulus",
-    Mean = "Mean",
-    Error = "Error",
-    Q2_5 = "2.5%",
-    Q97_5 = "97.5%") %>%
-  align(align = "center", j = c(2:5), part = "body") %>%
-  align(align = "center", j = c(1:5), part = "header") %>%
-  autofit()
-#
-bayes_table
-```
-
-Mean indicates the mean of the R^2^ values obtained from the posteriors of the model, error the estimated SE of the mean and 95% CI indicates the 95% confidence interval around the mean. Model indicates the name of the variable analyzed.  
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-Table S**14**. Summary of the final models for all mitochondrial variables.
-```{r, tbl-results_mit_table}
-#| label: results_mit_table
-#| tbl-cap: "Summary of the final models for all mitochondrial variables."
-#| tbl-label: "results_mit_table"
+```{r, fig_learning_raw}
+#| label: fig_learning_raw
 #
 source(here("R", "func.R"))
-# 
-# A) Refining the df summarizing the posteriors for OB/Chemical stimulus (post_OB)
-post_mit_refined <- refine_post(post_mit) %>%
-  arrange(Variable, Predictors)
+# Modify the df to plot the raw data
+learning_df_plot <- learning_df %>%
+  mutate(treatment = factor(trt, levels = c("B_23", "A_23", "B_28", "A_28"),
+                      labels = c("B_23" = "CORT-Cold (n=20)",
+                                 "A_23" = "Control-Cold (n=20)",
+                                 "B_28" = "CORT-Hot (n=19)",
+                                 "A_28" = "Control-Hot (n=20)"))) %>%
+  group_by(treatment, day) %>%
+  mutate(mean_raw = mean(na.omit(errors)),
+         sd_raw = sd(na.omit(errors))) %>%
+data.frame()
+# Get the plot and combine it with the modeled data
+fig_raw_learning <- plot_errorsday(fig_A_df) +
+  geom_point(data = learning_df_plot, aes(x = day, y = mean_raw, color = treatment), size = 1.5) +
+  scale_color_manual(values = c("CORT-Cold (n=20)" = "#00008B",
+                                "Control-Cold (n=20)" = "#68bde1",
+                                "CORT-Hot (n=19)" = "#b50101",
+                                "Control-Hot (n=20)" = "#fa927d")) +
+  facet_grid(~treatment) +
+  ylim(c(min(na.omit(learning_df_plot$mean_raw)), max(na.omit(learning_df_plot$mean_raw)))) +  # Adjust y-axis limits
+  theme(
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+ggsave("./output/figures/suppl/Figure_S1_learning_raw.png", plot=fig_raw_learning , width = 21, height = 15, units = "cm", dpi = 600)
+knitr::include_graphics("./output/figures/suppl/Figure_S1_learning_raw.png")
+```
+
+Fig S1. Raw data of the learning task. Each point represents the mean number of errors per day. The lines represent the modeled data.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+Table S1. Estimates of the learning slopes per treatment, the 95% CI, and pMCMC values testing the hypothesis that slope is different from 0. In bold, the values that are significant at pMCMC < 0.05.
+```{r, tbl-learning}
+#| label: tbl-learning
+#| tbl-cap: "Learning tasks slopes per treatment"
+source(here("R", "func.R"))
 #
-# B) Create table
-## Table format
+table_learn_df <- data_fig_learning_slopes %>%
+  group_by(treatment) %>%
+  summarize(mean_slope = format_dec(mean(slopes), 3),
+            q025_slope = format_dec(quantile(slopes, 0.025), 3),
+            q975_slope = format_dec(quantile(slopes, 0.975), 3),
+            pMCMC = format_p(pmcmc(slopes), 3, equal = FALSE)) %>%
+  mutate(`95 CI` = paste0("[", q025_slope, ", ", q975_slope, "]")) %>%
+  dplyr::select(treatment, mean_slope, `95 CI`, pMCMC)
+#
+# Make Table
 set_flextable_defaults(
  font.family = "Times New Roman",
  font.size = 10)
 #
-mit_table <- flextable(post_mit_refined) %>%
-  align(align = "center", j = c(3:5), part = "body") %>%
-  align(align = "center", j = c(1:5), part = "header") %>%
-  bold(~`PMCMC` < 0.05, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors"),
+table_slopes <- flextable(table_learn_df) %>%
+  align(align = "center", j = c(3,4), part = "body") %>%
+  align(align = "center", j = c(1:4), part = "header") %>%
+  flextable::compose(j = 1, value = as_paragraph("Treatment"), part = "header") %>%
+  flextable::compose(j = 2, value = as_paragraph("Estimated slope"), part = "header") %>%
+  bold(~`pMCMC` == "< 0.05", j = c("pMCMC", "mean_slope", "95 CI", "treatment"),
        bold = TRUE) %>%  # Bold when PMCMC is "<0.05"
-  bold(~`PMCMC` <0.001, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors")) %>%  # Bold when PMCMC is "<0.001"
-  flextable::compose(i = c(2:4,6:8,10:12,14:16,18:21), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
+  bold(~`pMCMC` == "< 0.001", j = c("pMCMC", "mean_slope", "95 CI", "treatment")) %>%  # Bold when PMCMC is "<0.001"
   autofit()
 #
-mit_table
+table_slopes
 ```
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
 
-Table S **!%**. Contrasts between treatments for all the variables analysed.
+Table S2. Estimate of the contrasts between treatments for all the variables analysed, and pMCMC values testing the hypothesis that contrast is different from 0. In bold, the values that are significant at pMCMC < 0.05.
 ```{r tbl-contrasts}
 #| label: tbl-contrasts
 #| tbl-cap: "Contrasts between prenatal conditions for mitochondrial physiology and learning."
@@ -852,45 +923,6 @@ _Temperature_: β~Hot~ - β~Cold~
 _CORT_: β~CORT~ - β~Control~
 _Interaction_: (β~Control-Hot~ - β~CORT-Hot~) - (β~Control-Cold~ - β~CORT-Cold~)
 
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r, fig-learning_raw}
-#| label: fig-learning_raw
-#| fig.cap: "Raw data of the learning task."
-#
-source(here("R", "func.R"))
-# Modify the df to plot the raw data
-learning_df_plot <- learning_df %>%
-  mutate(treatment = factor(trt, levels = c("B_23", "A_23", "B_28", "A_28"),
-                      labels = c("B_23" = "CORT-Cold (n=20)",
-                                 "A_23" = "Control-Cold (n=20)",
-                                 "B_28" = "CORT-Hot (n=20)",
-                                 "A_28" = "Control-Hot (n=20)"))) %>%
-  group_by(treatment, day) %>%
-  mutate(mean_raw = mean(na.omit(errors)),
-         sd_raw = sd(na.omit(errors))) %>%
-data.frame()
-# Get the plot and combine it with the modeled data
-fig_raw_learning <- plot_errorsday(fig_A_df) +
-  geom_point(data = learning_df_plot, aes(x = day, y = mean_raw, color = treatment), size = 1.5) +
-  scale_color_manual(values = c("CORT-Cold (n=20)" = "#00008B",
-                                "Control-Cold (n=20)" = "#68bde1",
-                                "CORT-Hot (n=20)" = "#b50101",
-                                "Control-Hot (n=20)" = "#fa927d")) +
-  facet_grid(~treatment) +
-  ylim(c(min(na.omit(learning_df_plot$mean_raw)), max(na.omit(learning_df_plot$mean_raw)))) +  # Adjust y-axis limits
-  theme(
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "bottom",
-    legend.title = element_blank()
-  )
-ggsave("./output/figures/suppl/fig_learning_raw.png", plot=fig_raw_learning , width = 21, height = 15, units = "cm", dpi = 600)
-```
-
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
@@ -898,10 +930,10 @@ cat("\\newpage")
 
 #### Results SEM
 
-Table **S17**. Results of multivariate models
-```{r, table_sem_results_OB}
-#| label: table_sem_results_OB
-#| fig-cap: "Structural Equation Models for OB/Chemical stimulus"
+Table S3. Estimated direct, indirect, and total coefficients from the multivariate model
+```{r, table_sem_results}
+#| label: table_sem_results
+#| tbl-cap: "Structural Equation Models"
 #
 # Table created from the df sem_results_OB (see above)
 source(here("R", "func.R"))
@@ -959,7 +991,153 @@ cat("\\newpage")
 ```
 
 
+#### Final univariate models diagnostics (plots)
 
+```{r , plotmod_mitdensity, out.width="70%", fig.align="center"}
+#| label: plotmod_mitdensity
+#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Olfactory Bulbs."
+#
+mod <- readRDS(here("output/models/mit_density_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S2.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S2.png")
+```
+
+Fig S2. Posterior predictive checks for the model of Mitochondrial Density.
+Formula: mit_density ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_potential, out.width="70%", fig.align="center"}
+#| label: plotmod_potential
+#| caption: "Posterior predictive checks for the model of Mitochondrial Potential."
+#
+mod <- readRDS(here("output/models/mit_potential_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S3.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S3.png")
+```
+
+Fig S3. Posterior predictive checks for the model of Mitochondrial Potential.
+Formula: mit_potential ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_ros, out.width="70%", fig.align="center"}
+#| label: plotmod_ros
+#| caption: "Posterior predictive checks for the model of ROS."
+#
+mod <- readRDS(here("output/models/ROS_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S4.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S4.png")
+```
+
+Fig S4. Posterior predictive checks for the model of ROS.
+Formula: ROS ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_dnadamage, out.width="70%", fig.align="center"}
+#| label: plotmod_dnadamage
+#| caption: "Posterior predictive checks for the model of DNA damage."
+#
+mod <- readRDS(here("output/models/DNAdamage_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S5.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S5.png")
+```
+
+Fig S5. Posterior predictive checks for the model of DNA Damage.
+Formula: DNAdamage ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_peroxidation, out.width="70%", fig.align="center"}
+#| label: plotmod_peroxidation
+#| caption: "Posterior predictive checks for the model of lipid peroxidation."
+#
+mod <- readRDS(here("output/models/peroxidation_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S6.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S6.png")
+```
+
+Fig S6. Posterior predictive checks for the model of lipid peroxidation.
+Formula: peroxidation ~ cort * temp + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
+
+```{r , plotmod_learn, out.width="70%", fig.align="center"}
+#| label: plotmod_learn
+#| caption: "Posterior predictive checks for the model of learning."
+#
+mod <- readRDS(here("output/models/learning_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+plot_mod_3 <- plot_mod[[3]]
+#
+ggsave("./output/figures/suppl/Figure_S7A.png", plot = plot_mod_1,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S7A.png")
+#
+ggsave("./output/figures/suppl/Figure_S7B.png", plot = plot_mod_2,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S7B.png")
+#
+ggsave("./output/figures/suppl/Figure_S7C.png", plot = plot_mod_3,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S7C.png")
+```
+
+Fig S7. Posterior predictive checks for the model of spatial learning.
+Formula: errors ~ day * cort * temp + (1 + day|lizard_id) + (1|clutch)
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```
 
 
 #### Results of preliminary models  
@@ -995,8 +1173,8 @@ m_prel_learn <- fit_m(df = learning_df,
                       refit = FALSE)
 ```
 
-Table S1. Preliminary results of the models testing for Mitochondrial Density.
 
+Table S4. Preliminary results of the models testing for Mitochondrial Density.
 ```{r, results_preliminary_mitdensity}
 #| tbl-cap: "Preliminary results of the models testing for Mitochondrial Density"
 #| label: results_preliminary_mitdensity
@@ -1016,7 +1194,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S2.  Preliminary results of the models testing for Mitochondrial Potential.
+Table S5.  Preliminary results of the models testing for Mitochondrial Potential.
 ```{r, results_preliminary_potential}
 #| tbl-cap: "Preliminary results of the models testing for Mitochondrial Potential"
 #| label: results_preliminary_potential
@@ -1036,7 +1214,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S3. Preliminary results of the models testing for ROS.
+Table S6. Preliminary results of the models testing for ROS.
 ```{r, results_preliminary_ros}
 #| tbl-cap: "Preliminary results of the models testing for ROS"
 #| label: results_preliminary_ros
@@ -1056,7 +1234,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S4. Preliminary results of the models testing for DNA damage.
+Table S7. Preliminary results of the models testing for DNA damage.
 ```{r, results_preliminary_dnadamage}
 #| tbl-cap: "Preliminary results of the models testing for DNA damage"
 #| label: results_preliminary_dnadamage
@@ -1076,7 +1254,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S5. Preliminary results of the models testing for lipid peroxidation.
+Table S8. Preliminary results of the models testing for lipid peroxidation.
 ```{r, results_preliminary_peroxidation}
 #| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
 #| label: results_preliminary_peroxidation
@@ -1096,10 +1274,10 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S6. Preliminary results of the models testing for learning.
+Table S9. Preliminary results of the models testing for learning.
 ```{r, results_preliminary_learning}
 #| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
-#| label: results_preliminary_peroxidation
+#| label: results_preliminary_learning
 #
 sum_m_learn_prel <- m_prel_learn %>%
   dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
@@ -1110,290 +1288,10 @@ flextable(sum_m_learn_prel)
 ```
 
 Model formula: errors ~ day * cort * temp + sex + age+ (1 + day | lizard_id) + (1|clutch).
-Model convergence was checked through rhat and ess_bulk values. **Summary indicates no effect of sex, so it was discarded from the final models. However, we saw an effect of age and we included it in our final models.**
+Model convergence was checked through rhat and ess_bulk values. Summary indicates no effect of sex or age, so they were discarded from the final models.  
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
 
 
-
-
-
-#### Final models diagnostics (plots)
-
-```{r , plotmod_mitdensity, out.width="70%", fig.align="center"}
-#| label: plotmod_mitdensity
-#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mit_density_def.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX3.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX3.png")
-```
-
-Fig S1. Posterior predictive checks for the model of Mitochondrial Density in Olfactory Bulbs.
-Formula: mean_mitodensity ~ cort * temp + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_mitdensity_OT, out.width="70%", fig.align="center"}
-#| label: plotmod_mitdensity_OT
-#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_mitodensity_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX4.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX4.png")
-```
-
-Fig S2. Posterior predictive checks for the model of Mitochondrial Density in Optic Tecta.
-Formula: mean_mitodensity ~ cort * temp + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_potential_OB, out.width="70%", fig.align="center"}
-#| label: plotmod_potential_OB
-#| caption: "Posterior predictive checks for the model of Mitochondrial Potential in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_potential_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX5.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX5.png")
-```
-
-Fig S3. Posterior predictive checks for the model of Mitochondrial Potential in Olfactory Bulbs.
-Formula: mean_potential ~ cort * temp + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_potential_OT, out.width="70%", fig.align="center"}
-#| label: plotmod_potential_OT
-#| caption: "Posterior predictive checks for the model of Mitochondrial Potential in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_potential_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX6.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX6.png")
-```
-
-Fig S4. Posterior predictive checks for the model of Mitochondrial Potential in Optic Tecta.
-Formula: mean_potential ~ cort * temp + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_ros_OB, out.width="70%", fig.align="center"}
-#| label: plotmod_ros_OB
-#| caption: "Posterior predictive checks for the model of ROS Production in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_ros_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX7.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX7.png")
-```
-
-Fig S5. Posterior predictive checks for the model of ROS Production in Olfactory Bulbs.
-Formula: mean_ros ~ cort * temp + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_ros_OT, out.width="70%", fig.align="center"}
-#| label: plotmod_ros_OT
-#| caption: "Posterior predictive checks for the model of ROS Production in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_ros_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX8.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX8.png")
-```
-
-Fig S6. Posterior predictive checks for the model of ROS Production in Optic Tecta.
-Formula: mean_ros ~ cort * temp + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_dnadamage_OB, out.width="70%", fig.align="center"}
-#| label: plotmod_dnadamage_OB
-#| caption: "Posterior predictive checks for the model of DNA Damage in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_dnadamage_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX9.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX9.png")
-```
-
-Fig S7. Posterior predictive checks for the model of DNA Damage in Olfactory Bulbs.
-Formula: mean_dnadamage ~ cort * temp + age_euthanasia + sex + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_dnadamage_OT, out.width="70%", fig.align="center"}
-#| label: plotmod_dnadamage_OT
-#| caption: "Posterior predictive checks for the model of DNA Damage in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_dnadamage_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX10.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX10.png")
-```
-
-Fig S8. Posterior predictive checks for the model of DNA Damage in Optic Tecta.
-Formula: mean_dnadamage ~ cort * temp + sex + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_peroxidation_OB, out.width="70%", fig.align="center"}
-#| label: plotmod_peroxidation_OB
-#| caption: "Posterior predictive checks for the model of Lipid Peroxidation in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_peroxidation_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX11.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX11.png")
-```
-
-Fig S9. Posterior predictive checks for the model of Lipid Peroxidation in Olfactory Bulbs.
-Formula: mean_peroxidation ~ cort * temp + age_euthanasia + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_peroxidation_OT, out.width="70%", fig.align="center"}
-#| label: plotmod_peroxidation_OT
-#| caption: "Posterior predictive checks for the model of Lipid Peroxidation in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_peroxidation_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX12.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX12.png")
-```
-
-Fig S10. Posterior predictive checks for the model of Lipid Peroxidation in Optic Tecta.
-Formula: mean_peroxidation ~ cort * temp + age_euthanasia + (1|clutch)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_tD_Chemical, out.width="70%", fig.align="center"}
-#| label: plotmod_tD_Chemical
-#| caption: "Posterior predictive checks for the model of Detection Latency (t_D) in Chemical trials."
-#
-mod <- readRDS(here("output/models/t_D_def_Chemical.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX1.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX1.png")
-```
-
-Fig S11. Posterior predictive checks for the model of Detection Latency (t_D) in Chemical trials.
-Formula: t_D~ cort * temp + motivation + cort:motivation + (1|clutch) + (1|lizard_id)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```
-
-```{r , plotmod_tD_Visual, out.width="70%", fig.align="center"}
-#| label: plotmod_tD_Visual
-#| caption: "Posterior predictive checks for the model of Detection Latency (t_D) in Visual trials."
-#
-mod <- readRDS(here("output/models/t_D_def_Visual.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX2.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX2.png")
-```
-
-Fig S12. Posterior predictive checks for the model of Detection Latency (t_D) in Visual trials.
-Formula: t_D~ cort * temp + (1|clutch) + (1|lizard_id)
-
-```{r, results='asis', echo=FALSE}
-cat("\\newpage")
-```

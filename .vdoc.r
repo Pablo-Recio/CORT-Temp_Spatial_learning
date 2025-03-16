@@ -19,6 +19,8 @@
 #
 #
 #
+#
+#
 #| label: setup
 pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x, cowplot, fitdistrplus, MASS, goftest, forcats, nortest, fitdistrplus, ggh4x, PupillometryR, png, grid, remotes, ggthemes, bayestestR, HDInterval, DiagrammeR, magick)
 #
@@ -98,6 +100,7 @@ for(k in 1:length(hormone)){
 #
 #
 #
+cat("\\newpage")
 #
 #
 #
@@ -114,11 +117,26 @@ for(k in 1:length(hormone)){
 #
 #
 #
-#| label: fig-Methods
-#| fig.cap: "Panel **A** shows the experimental design of the study. On top, the treatments applied to the eggs. On the bottom the learning task and the brain region extracted together with the physiological analyses performed. In panel **B** the details and measurements of the spatial learning maze."
-
-knitr::include_graphics("./Others/SPAL_METH.svg")
-
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -184,94 +202,6 @@ m_def_learn <- fit_m(df = learning_df,
 #
 #
 #
-#| label: organise_posteriors_mit
-#
-# Organising the posteriors of the previous models for tables and figures
-#
-source(here("R", "func.R"))
-#
-#
-post_mit <- data.frame()
-# Names posteriors:
-names <- c("m_def_mit_density", "m_def_mit_potential", "m_def_ROS", "m_def_DNAdamage", "m_def_peroxidation")
-#
-# Organising the results
-for (pos in names) {
-  model <- get(pos)      # Get the model from the global environment
-  post_result <- tidy_post(model)        # Apply tidy_post to each model
-  # Add a new column to the rmodel
-  post_result$Model <- pos
-  post_mit <- bind_rows(post_mit, post_result)
-}
-#
-#
-#
-# Extracting the posteriors for the models with mitochondrial variables and the values of interest. Here, I am creating dfs for each of the variables with the values for all the prenatal conditions to make contrasts easier to write.
-#
-MD <- post_values(m_def_mit_density, "none")
-MP <- post_values(m_def_mit_potential, "none")
-ROS <- post_values(m_def_ROS, "none")
-DNA <- post_values(m_def_DNAdamage, "none")
-LP <- post_values(m_def_peroxidation, "none")
-#
-#
-#
-#| label: fig-results_mit
-#| fig-cap: "Estimates of mitochondial density (A), mitochondrial potential (B), ROS (C), DNA damage (D), and lipid peroxidation (E) in the medial cortex of L. delicata hatchlings as a function of the different prenatal conditions. Black dots indicate the posterior mean, and the bars represent the SD of the estimates. The y-axis represents the posterior estimates of the variable of interest, and the x-axis represents the different prenatal conditions. Lines with asterisks represent significant differences between groups based on pMCMC values (pMCMC < 0.05), no lines indicate no significant differences."
-#| fig-name: "fig-results_oxidative"
-#
-source(here("R", "func.R"))
-#
-# A) Plotting the results for all variables
-plot_mit_density <- plotting(MD, "Mit density")
-plot_mit_potential <- plotting(MP, "Mit potential")
-plot_ros <- plotting(ROS, "ROS")
-#
-plot_legend_top <- plotting(ROS, "ROS") + theme(legend.position = "bottom", legend.title = element_blank())
-gtable <- ggplot_gtable(ggplot_build(plot_legend_top))
-legend_mit_top <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
-#
-plot_dnadamage <- plotting(DNA, "DNA damage")
-plot_peroxidation <- plotting(LP, "Lipid peroxidation")
-#
-plot_legend_bottom <- plotting(DNA, "DNA damage") + theme(legend.position = "bottom", legend.title = element_blank())
-gtable <- ggplot_gtable(ggplot_build(plot_legend_bottom))
-legend_mit_bottom <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
-#
-# B) Organising the plots
-fig_mit_top <- plot_grid(plot_mit_density, plot_mit_potential,
-                        nrow = 1, rel_widths = c(1, 1))
-fig_mit_mid <- plot_grid(plot_ros, NULL,
-                        nrow = 1, rel_widths = c(1, 1))
-fig_mit_bottom <- plot_grid(plot_dnadamage, plot_peroxidation,
-                        nrow = 1, rel_widths = c(1, 1))
-#
-# C) Merging everything in final figure
-# Create the figure grid with extra space for legend
-fig_mit <- plot_grid(
-  fig_mit_top, fig_mit_mid, NULL, fig_mit_bottom, NULL,
-  nrow = 5, rel_heights = c(0.3, 0.3, 0.05, 0.3, 0.05))
-# Final composition: Merge everything, adding images and legend
-final_plot_mit <- ggdraw(fig_mit) +
-  # Insert legend in the middle for ROS and energy variables
-  draw_grob(legend_mit_top, x = 0.49, y = 0.39, width = 0.01, height = 0.01) +
-  # Insert legend in the bottom for DNA damage and lipid peroxidation
-  draw_grob(legend_mit_bottom, x = 0.49, y = 0.03, width = 0.01, height = 0.01) +
-  # Insert title for each plot
-  annotate("text", x = 0.0325, y = 0.985, label = "A", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.531, y = 0.985, label = "B", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.0325, y = 0.682, label = "C", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.0325, y = 0.335, label = "D", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  annotate("text", x = 0.53, y = 0.335, label = "E", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
-  # Insert figure brain
-  draw_image(here("./Others/brain_fig.png"), x = 0.5, y = 0.3, width = 0.5, height = 0.5)
-#
-# Print final plot
-ggsave(here("./output/figures/text/results_mit.png"), plot = final_plot_mit, width = 21, height = 21, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/text/results_mit.png")
-#
-#
-#
 #| label: organise_posteriors_learning
 # Rename some of the posteriors and make new estimates for the learning rate 
 #
@@ -289,7 +219,7 @@ int_CORTHot <- m_def_learn$b_Intercept + m_def_learn$`b_cortCORT:tempHot` + m_de
 #
 #
 #| label: fig-learning
-#| fig.cap: "Learning results"
+#| fig.cap: "Results for learning analyses. Panel A shows the predicted number of errors over trials. The lines represent the mean predicted number of errors for each trial, and the shaded areas indicate the standard deviation of the mean; both were obtained using the slope and intercept estimates from the posterior distributions. Panel B shows the distribution of the estimates of slopes per each treatment. The x-axis represents the slope estimate, and in the y-axis are the density of the estimates. Points and bars represent the mean and standard deviation of the mean of the estimated slopes, respectively. Dashed lines indicate value 0. The different colors in both panels indicate the different treatments."
 source(here("R", "func.R"))
 #
 #
@@ -360,6 +290,95 @@ knitr::include_graphics("./output/figures/text/fig_results_errors.png")
 #
 #
 #
+#
+#
+#
+#
+#| label: organise_posteriors_mit
+#
+# Organising the posteriors of the previous models for tables and figures
+#
+source(here("R", "func.R"))
+#
+#
+post_mit <- data.frame()
+# Names posteriors:
+names <- c("m_def_mit_density", "m_def_mit_potential", "m_def_ROS", "m_def_DNAdamage", "m_def_peroxidation")
+#
+# Organising the results
+for (pos in names) {
+  model <- get(pos)      # Get the model from the global environment
+  post_result <- tidy_post(model)        # Apply tidy_post to each model
+  # Add a new column to the rmodel
+  post_result$Model <- pos
+  post_mit <- bind_rows(post_mit, post_result)
+}
+#
+#
+#
+# Extracting the posteriors for the models with mitochondrial variables and the values of interest. Here, I am creating dfs for each of the variables with the values for all the prenatal conditions to make contrasts easier to write.
+#
+MD <- post_values(m_def_mit_density, "none")
+MP <- post_values(m_def_mit_potential, "none")
+ROS <- post_values(m_def_ROS, "none")
+DNA <- post_values(m_def_DNAdamage, "none")
+LP <- post_values(m_def_peroxidation, "none")
+#
+#
+#
+#| label: fig-results_mit
+#| fig-cap: "Estimates of mitochondial density (A), mitochondrial potential (B), ROS (C), DNA damage (D), and lipid peroxidation (E) in the medial cortex as a function of the different prenatal conditions. Black dots indicate the posterior mean, and the bars represent the SD of the estimates. "
+#| fig-name: "fig-results_oxidative"
+#
+source(here("R", "func.R"))
+#
+# A) Plotting the results for all variables
+plot_mit_density <- plotting(MD, "Mit density")
+plot_mit_potential <- plotting(MP, "Mit potential")
+plot_ros <- plotting(ROS, "ROS")
+#
+plot_legend_top <- plotting(ROS, "ROS") + theme(legend.position = "bottom", legend.title = element_blank())
+gtable <- ggplot_gtable(ggplot_build(plot_legend_top))
+legend_mit_top <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
+#
+plot_dnadamage <- plotting(DNA, "DNA damage")
+plot_peroxidation <- plotting(LP, "Lipid peroxidation")
+#
+plot_legend_bottom <- plotting(DNA, "DNA damage") + theme(legend.position = "bottom", legend.title = element_blank())
+gtable <- ggplot_gtable(ggplot_build(plot_legend_bottom))
+legend_mit_bottom <- gtable$grobs[[which(sapply(gtable$grobs, function(x) x$name) == "guide-box")]]
+#
+# B) Organising the plots
+fig_mit_top <- plot_grid(plot_mit_density, plot_mit_potential,
+                        nrow = 1, rel_widths = c(1, 1))
+fig_mit_mid <- plot_grid(plot_ros, NULL,
+                        nrow = 1, rel_widths = c(1, 1))
+fig_mit_bottom <- plot_grid(plot_dnadamage, plot_peroxidation,
+                        nrow = 1, rel_widths = c(1, 1))
+#
+# C) Merging everything in final figure
+# Create the figure grid with extra space for legend
+fig_mit <- plot_grid(
+  fig_mit_top, fig_mit_mid, NULL, fig_mit_bottom, NULL,
+  nrow = 5, rel_heights = c(0.3, 0.3, 0.05, 0.3, 0.05))
+# Final composition: Merge everything, adding images and legend
+final_plot_mit <- ggdraw(fig_mit) +
+  # Insert legend in the middle for ROS and energy variables
+  draw_grob(legend_mit_top, x = 0.49, y = 0.39, width = 0.01, height = 0.01) +
+  # Insert legend in the bottom for DNA damage and lipid peroxidation
+  draw_grob(legend_mit_bottom, x = 0.49, y = 0.03, width = 0.01, height = 0.01) +
+  # Insert title for each plot
+  annotate("text", x = 0.0325, y = 0.985, label = "A", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.531, y = 0.985, label = "B", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.0325, y = 0.682, label = "C", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.0325, y = 0.335, label = "D", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  annotate("text", x = 0.53, y = 0.335, label = "E", hjust = 1, vjust = 1, size = 7, fontface = "bold") +
+  # Insert figure brain
+  draw_image(here("./Others/brain_fig.png"), x = 0.49, y = 0.3, width = 0.5, height = 0.5)
+#
+# Print final plot
+ggsave(here("./output/figures/text/results_mit.png"), plot = final_plot_mit, width = 21, height = 21, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/text/results_mit.png")
 #
 #
 #
@@ -594,8 +613,9 @@ sem_results <- bind_rows(learn_sem, DNA_sem, perox_sem, ROS_sem)
 #
 #
 #
+#
 #| label: fig-sem
-#| fig-cap: "Structural Equation Models"
+#| fig-cap: "Schematic representation of the multivariate models and the predicted coefficient for each variable. Arrows indicate the directionality of the estimate and the values show the mean predicted coefficient and the 95% CI around the mean."
 #| fig-name: "fig-sem"
 # 
 # A) Getting all the direct coefficients
@@ -631,14 +651,14 @@ imgSEM <- readPNG(here("Others", "SEM.png"))
 plot_SEM <- rasterGrob(imgSEM, interpolate = TRUE)
 #
 fig_SEM <- ggdraw(plot_SEM) +
-  annotate("text", x = 0.4, y = 0.17, label = density_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.4, y = 0.855, label = potential_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.85, y = 0.675, label = dna_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.85, y = 0.375, label = perox_learn, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.535, y = 0.745, label = ros_dna, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.535, y = 0.28, label = ros_perox, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.3, y = 0.27, label = density_ros, hjust = 1, vjust = 1, size = 2.8, family = "Times") +
-  annotate("text", x = 0.3, y = 0.76, label = potential_ros, hjust = 1, vjust = 1, size = 2.8, family = "Times")
+  annotate("text", x = 0.433, y = 0.19, label = density_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.433, y = 0.85, label = potential_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.877, y = 0.675, label = dna_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.877, y = 0.387, label = perox_learn, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.547, y = 0.745, label = ros_dna, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.547, y = 0.295, label = ros_perox, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.325, y = 0.284, label = density_ros, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
+  annotate("text", x = 0.324, y = 0.757, label = potential_ros, hjust = 1, vjust = 1, size = 3.5, family = "Times")
 ggsave(here("./output/figures/text/SEM.png"), plot = fig_SEM, width = 21, height = 10, units = "cm", dpi = 600, bg = "white")
 knitr::include_graphics("./output/figures/text/SEM.png")
 #
@@ -653,6 +673,64 @@ knitr::include_graphics("./output/figures/text/SEM.png")
 #
 #
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 cat("\\newpage")
 #
 #
@@ -664,72 +742,21 @@ cat("\\newpage")
 #
 #
 #
-#| label: table_bayesR2
-#| tbl-cap: "BayesR2 values of the final models"
-#
-data_bayes <- data.frame(
-  Model = character(0),
-  Mean = numeric(0),
-  Error = numeric(0),
-  Q2_5 = numeric(0),
-  Q97_5 = numeric(0)
-)
-models <- c("mit_density_def",
-            "mit_potential_def",
-            "ROS_def",
-            "DNAdamage_def",
-            "peroxidation_def",
-            "learning_def")
-#
-for (m in models){
-  mod <- readRDS(here("output/models/", paste0(m, ".rds")))
-  bayes <- bayes_R2(mod)
-  data_bayes <- rbind(data_bayes, data.frame(
-    Model = m,
-    Mean = format_dec(bayes[1], 3),
-    Error = format_dec(bayes[2], 3),
-    Q2_5 = format_dec(bayes[3], 3),
-    Q97_5 = format_dec(bayes[4], 3)
-  ))
-}
-#
-bayes_table_df <- data_bayes %>%
-  mutate(Model = factor(Model,
-                        levels = c("mit_density_def",
-                                  "mit_potential_def",
-                                  "ROS_def",
-                                  "DNAdamage_def",
-                                  "peroxidation_def",
-                                  "learning_def"),
-                        labels = c("mit_density_def" = "Mit density",
-                                  "mit_potential_def" = "Mit potential",
-                                  "ROS_def" = "ROS",
-                                  "DNAdamage_def" = "DNA damage",
-                                  "peroxidation_def" = "Lipid peroxidation",
-                                  "learning_def" = "Learning"))) %>%
-  dplyr::select(Model, Mean, Error, Q2_5, Q97_5) %>%
-  arrange(Model)
 #
 #
-# Create the table
 #
-## Table format
-set_flextable_defaults(
- font.family = "Times New Roman",
- font.size = 10)
 #
-bayes_table <- flextable(bayes_table_df) %>%
-  set_header_labels(
-    Region = "Region/Stimulus",
-    Mean = "Mean",
-    Error = "Error",
-    Q2_5 = "2.5%",
-    Q97_5 = "97.5%") %>%
-  align(align = "center", j = c(2:5), part = "body") %>%
-  align(align = "center", j = c(1:5), part = "header") %>%
-  autofit()
 #
-bayes_table
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -740,32 +767,79 @@ cat("\\newpage")
 #
 #
 #
-#| label: results_mit_table
-#| tbl-cap: "Summary of the final models for all mitochondrial variables."
-#| tbl-label: "results_mit_table"
+#
+#
+#| label: fig-learning_raw
+#| fig.cap: "Raw data of the learning task."
 #
 source(here("R", "func.R"))
-# 
-# A) Refining the df summarizing the posteriors for OB/Chemical stimulus (post_OB)
-post_mit_refined <- refine_post(post_mit) %>%
-  arrange(Variable, Predictors)
+# Modify the df to plot the raw data
+learning_df_plot <- learning_df %>%
+  mutate(treatment = factor(trt, levels = c("B_23", "A_23", "B_28", "A_28"),
+                      labels = c("B_23" = "CORT-Cold (n=20)",
+                                 "A_23" = "Control-Cold (n=20)",
+                                 "B_28" = "CORT-Hot (n=19)",
+                                 "A_28" = "Control-Hot (n=20)"))) %>%
+  group_by(treatment, day) %>%
+  mutate(mean_raw = mean(na.omit(errors)),
+         sd_raw = sd(na.omit(errors))) %>%
+data.frame()
+# Get the plot and combine it with the modeled data
+fig_raw_learning <- plot_errorsday(fig_A_df) +
+  geom_point(data = learning_df_plot, aes(x = day, y = mean_raw, color = treatment), size = 1.5) +
+  scale_color_manual(values = c("CORT-Cold (n=20)" = "#00008B",
+                                "Control-Cold (n=20)" = "#68bde1",
+                                "CORT-Hot (n=19)" = "#b50101",
+                                "Control-Hot (n=20)" = "#fa927d")) +
+  facet_grid(~treatment) +
+  ylim(c(min(na.omit(learning_df_plot$mean_raw)), max(na.omit(learning_df_plot$mean_raw)))) +  # Adjust y-axis limits
+  theme(
+    axis.title = element_text(size = 12, family = "Times"),
+    axis.text = element_text(size = 10, family = "Times"),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+ggsave("./output/figures/suppl/Figure_S1_learning_raw.png", plot=fig_raw_learning , width = 21, height = 15, units = "cm", dpi = 600)
+knitr::include_graphics("./output/figures/suppl/Figure_S1_learning_raw.png")
 #
-# B) Create table
-## Table format
+#
+#
+#
+#
+cat("\\newpage")
+#
+#
+#
+#
+#| label: tbl-learning
+#| tbl-cap: "Learning tasks slopes per treatment"
+source(here("R", "func.R"))
+#
+table_learn_df <- data_fig_learning_slopes %>%
+  group_by(treatment) %>%
+  summarize(mean_slope = format_dec(mean(slopes), 3),
+            q025_slope = format_dec(quantile(slopes, 0.025), 3),
+            q975_slope = format_dec(quantile(slopes, 0.975), 3),
+            pMCMC = format_p(pmcmc(slopes), 3, equal = FALSE)) %>%
+  mutate(`95 CI` = paste0("[", q025_slope, ", ", q975_slope, "]")) %>%
+  dplyr::select(treatment, mean_slope, `95 CI`, pMCMC)
+#
+# Make Table
 set_flextable_defaults(
  font.family = "Times New Roman",
  font.size = 10)
 #
-mit_table <- flextable(post_mit_refined) %>%
-  align(align = "center", j = c(3:5), part = "body") %>%
-  align(align = "center", j = c(1:5), part = "header") %>%
-  bold(~`PMCMC` < 0.05, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors"),
+table_slopes <- flextable(table_learn_df) %>%
+  align(align = "center", j = c(3,4), part = "body") %>%
+  align(align = "center", j = c(1:4), part = "header") %>%
+  flextable::compose(j = 1, value = as_paragraph("Treatment"), part = "header") %>%
+  flextable::compose(j = 2, value = as_paragraph("Estimated slope"), part = "header") %>%
+  bold(~`pMCMC` == "< 0.05", j = c("pMCMC", "mean_slope", "95 CI", "treatment"),
        bold = TRUE) %>%  # Bold when PMCMC is "<0.05"
-  bold(~`PMCMC` <0.001, j = c("PMCMC", "Estimate Mean", "95% CI", "Predictors")) %>%  # Bold when PMCMC is "<0.001"
-  flextable::compose(i = c(2:4,6:8,10:12,14:16,18:21), j = 1, value = as_paragraph(""), part = "body") %>% # To remove some of the values in the first column
+  bold(~`pMCMC` == "< 0.001", j = c("pMCMC", "mean_slope", "95 CI", "treatment")) %>%  # Bold when PMCMC is "<0.001"
   autofit()
 #
-mit_table
+table_slopes
 #
 #
 #
@@ -855,45 +929,6 @@ contrast_table
 #
 #
 #
-#
-cat("\\newpage")
-#
-#
-#
-#| label: fig-learning_raw
-#| fig.cap: "Raw data of the learning task."
-#
-source(here("R", "func.R"))
-# Modify the df to plot the raw data
-learning_df_plot <- learning_df %>%
-  mutate(treatment = factor(trt, levels = c("B_23", "A_23", "B_28", "A_28"),
-                      labels = c("B_23" = "CORT-Cold (n=20)",
-                                 "A_23" = "Control-Cold (n=20)",
-                                 "B_28" = "CORT-Hot (n=20)",
-                                 "A_28" = "Control-Hot (n=20)"))) %>%
-  group_by(treatment, day) %>%
-  mutate(mean_raw = mean(na.omit(errors)),
-         sd_raw = sd(na.omit(errors))) %>%
-data.frame()
-# Get the plot and combine it with the modeled data
-fig_raw_learning <- plot_errorsday(fig_A_df) +
-  geom_point(data = learning_df_plot, aes(x = day, y = mean_raw, color = treatment), size = 1.5) +
-  scale_color_manual(values = c("CORT-Cold (n=20)" = "#00008B",
-                                "Control-Cold (n=20)" = "#68bde1",
-                                "CORT-Hot (n=20)" = "#b50101",
-                                "Control-Hot (n=20)" = "#fa927d")) +
-  facet_grid(~treatment) +
-  ylim(c(min(na.omit(learning_df_plot$mean_raw)), max(na.omit(learning_df_plot$mean_raw)))) +  # Adjust y-axis limits
-  theme(
-    axis.title = element_text(size = 12, family = "Times"),
-    axis.text = element_text(size = 10, family = "Times"),
-    legend.position = "bottom",
-    legend.title = element_blank()
-  )
-ggsave("./output/figures/suppl/fig_learning_raw.png", plot=fig_raw_learning , width = 21, height = 15, units = "cm", dpi = 600)
-#
-#
-#
 cat("\\newpage")
 #
 #
@@ -902,8 +937,8 @@ cat("\\newpage")
 #
 #
 #
-#| label: table_sem_results_OB
-#| fig-cap: "Structural Equation Models for OB/Chemical stimulus"
+#| label: table_sem_results
+#| fig-cap: "Structural Equation Models"
 #
 # Table created from the df sem_results_OB (see above)
 source(here("R", "func.R"))
@@ -961,6 +996,152 @@ cat("\\newpage")
 #
 #
 #
+#
+#
+#
+#| label: plotmod_mitdensity
+#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Olfactory Bulbs."
+#
+mod <- readRDS(here("output/models/mit_density_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S2.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S2.png")
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
+#
+#
+#
+#| label: plotmod_potential
+#| caption: "Posterior predictive checks for the model of Mitochondrial Potential."
+#
+mod <- readRDS(here("output/models/mit_potential_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S3.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S3.png")
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
+#
+#
+#
+#| label: plotmod_ros
+#| caption: "Posterior predictive checks for the model of ROS."
+#
+mod <- readRDS(here("output/models/ROS_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S4.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S4.png")
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
+#
+#
+#
+#| label: plotmod_dnadamage
+#| caption: "Posterior predictive checks for the model of DNA damage."
+#
+mod <- readRDS(here("output/models/DNAdamage_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S5.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S5.png")
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
+#
+#
+#
+#| label: plotmod_peroxidation
+#| caption: "Posterior predictive checks for the model of lipid peroxidation."
+#
+mod <- readRDS(here("output/models/peroxidation_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+#
+fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
+ggsave("./output/figures/suppl/Figure_S6.png", plot = fig_mod,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S6.png")
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
+#
+#
+#
+#| label: plotmod_learn
+#| caption: "Posterior predictive checks for the model of learning."
+#
+mod <- readRDS(here("output/models/learning_def.rds"))
+plot_mod <- plot(mod, plot = FALSE)
+#
+plot_mod_1 <- plot_mod[[1]]
+plot_mod_2 <- plot_mod[[2]]
+plot_mod_3 <- plot_mod[[3]]
+#
+ggsave("./output/figures/suppl/Figure_S7A.png", plot = plot_mod_1,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S7A.png")
+#
+ggsave("./output/figures/suppl/Figure_S7B.png", plot = plot_mod_2,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S7B.png")
+#
+ggsave("./output/figures/suppl/Figure_S7C.png", plot = plot_mod_3,
+       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/suppl/Figure_S7C.png")
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
 #
 #
 #
@@ -1101,7 +1282,7 @@ cat("\\newpage")
 #
 #
 #| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
-#| label: results_preliminary_peroxidation
+#| label: results_preliminary_learning
 #
 sum_m_learn_prel <- m_prel_learn %>%
   dplyr::select(starts_with("b_")) %>%  # Removes random effect terms
@@ -1118,286 +1299,6 @@ flextable(sum_m_learn_prel)
 cat("\\newpage")
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#| label: plotmod_mitdensity
-#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mit_density_def.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX3.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX3.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_mitdensity_OT
-#| caption: "Posterior predictive checks for the model of Mitochondrial Density in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_mitodensity_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX4.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX4.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_potential_OB
-#| caption: "Posterior predictive checks for the model of Mitochondrial Potential in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_potential_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX5.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX5.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_potential_OT
-#| caption: "Posterior predictive checks for the model of Mitochondrial Potential in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_potential_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX6.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX6.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_ros_OB
-#| caption: "Posterior predictive checks for the model of ROS Production in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_ros_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX7.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX7.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_ros_OT
-#| caption: "Posterior predictive checks for the model of ROS Production in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_ros_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX8.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX8.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_dnadamage_OB
-#| caption: "Posterior predictive checks for the model of DNA Damage in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_dnadamage_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX9.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX9.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_dnadamage_OT
-#| caption: "Posterior predictive checks for the model of DNA Damage in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_dnadamage_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX10.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX10.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_peroxidation_OB
-#| caption: "Posterior predictive checks for the model of Lipid Peroxidation in Olfactory Bulbs."
-#
-mod <- readRDS(here("output/models/mean_peroxidation_def_OB.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX11.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX11.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_peroxidation_OT
-#| caption: "Posterior predictive checks for the model of Lipid Peroxidation in Optic Tecta."
-#
-mod <- readRDS(here("output/models/mean_peroxidation_def_OT.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX12.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX12.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_tD_Chemical
-#| caption: "Posterior predictive checks for the model of Detection Latency (t_D) in Chemical trials."
-#
-mod <- readRDS(here("output/models/t_D_def_Chemical.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX1.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX1.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
-#
-#
-#
-#| label: plotmod_tD_Visual
-#| caption: "Posterior predictive checks for the model of Detection Latency (t_D) in Visual trials."
-#
-mod <- readRDS(here("output/models/t_D_def_Visual.rds"))
-plot_mod <- plot(mod, plot = FALSE)
-#
-plot_mod_1 <- plot_mod[[1]]
-plot_mod_2 <- plot_mod[[2]]
-#
-fig_mod <- plot_grid(plot_mod_1, plot_mod_2, ncol = 1)
-ggsave("./output/figures/suppl/Figure_SX2.png", plot = fig_mod,
-       width = 20, height = 28, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/suppl/Figure_SX2.png")
-#
-#
-#
-#
-#
-#
-cat("\\newpage")
 #
 #
 #
