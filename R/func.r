@@ -255,7 +255,7 @@ post_values <- function(df, fac){
 # Function to create the plots for mit variables
 #' @title plotting
 #' @param df to select the df (only posteriors)
-#' @param lab to select the appropriate label for axix Y
+#' @param lab to select the appropriate label for axis Y
 plotting <- function(df, lab){
   if(lab %in% c("DNA damage", "Lipid peroxidation")){
     n_CORTCold <- paste0("CORT-Cold (n=", n_damage$CORT_Cold, ")")
@@ -288,12 +288,13 @@ plotting <- function(df, lab){
   plot <- ggplot(db_violin, aes(x = Treatment, y = Estimate, fill = Treatment)) +
     geom_flat_violin(alpha = 0.5) +
     scale_fill_manual(values = set_names(
-      c("#fa927d", "#b50101", "#68bde1", "#00008B"),
+      c("#00008B", "#b50101", "#68bde1", "#fa927d"),
       unique(db_violin$Treatment))) +
     geom_point(data = db_bars, aes(y = Mean, x = Treatment), position = position_dodge(width = 0.75), color = "black", fill = "black", size = 3) +
     geom_segment(data = db_bars, aes(y = Mean - SD, yend = Mean + SD, x = Treatment, xend = Treatment), size = 1.5, color = "black") +
     ylim(min(db_violin$Estimate), max(db_violin$Estimate)) +
     coord_flip() +
+    guides(fill = guide_legend(reverse = TRUE)) +
     theme_classic() +
     labs(y = lab, x = "Treatments") +
     theme(plot.margin = margin(3, 3, 3, 3, "mm"),
