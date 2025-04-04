@@ -701,6 +701,7 @@ We declare we have no competing interests.
 This work was supported by a National Australian University fellowship (to P.R. and D.C.L.), and the Australian Research Council (grant no. DP210101152) to D.N. and C.R.F.
 
 ### Acknowledgements
+
 We thank Dr. Mick Devoy and the Cytometry, Histology and Spatial Multiomics team for their advice and help througout the flow cytometry protocols. We thank the help and assistance of our lab technicians Benjamin Durant and Michelle Stephens for taking care of the lizards. We also thank ANU MakerSpace, where we designed and built the prototypes of the 3D printed feeders. Finally, we wish to acknowledge the anonymous reviewers for their valuable feedback on the manuscript. 
 
 ## References
@@ -1292,3 +1293,55 @@ cat("\\newpage")
 ```
 
 
+#### Brain validation
+
+To ensure that neurons were not unintentionally lost during homogenization, we performed a small pilot study where we euthanized four other lizards coming from the same breeding colony and prepeared the homogenates from the same brain regions as in the experiment. The homogenates here were then dyed with a specific neuronal marker as described in Farrow et al. (2021) and Storks et al. (2023). We employed flow cytometry and **fluorescent optical microscopy** to check for the presence of neurons in the homogenates.     
+
+Euthanasia and homogenization for each of brain region followed the procedures outlined above (see Methods: Flow cytometry). Before staining the samples, cells were also fixed and permeabilized as described previously (see Methods: Flow cytometry). Following permeabilization, we centrifuged the samples at 1000 RCF for 10 minutes and resuspended the pellet in 100 µL of a 1:100 NeuN + Alexa488 fluorescent conjugate solution to dye the neuronal nuclei (Farrow et al. 2021; Storks et al. 2023). The samples were incubated at +4 ºC overnight. 
+
+The following day we centrifuged the samples at 1000 RCF for 10 minutes and resuspended the pellet in 100 µL of PBS. Samples were split in two: 50 µL from each was reserved for examination under a **MICROSCOPE**, while the remaining 50 µL from each sample was pooled into a single tube for flow cytometry analysis.  
+
+```{r, cell_size}
+#| label: cell_size
+# Getting the size of the cells in the experiment
+mit_df <- read.csv(here("./data/mit_data.csv"))
+euth <- read.csv(here("./data/Euthanasia.csv"))
+#
+data_cells <- merge(mit_df, euth, by = c("plate", "tube.no")) %>%
+  filter(type != "control", ch == "fsc") %>% 
+  dplyr::select(lizard_id, sex, ch, geo.mean) %>%
+  group_by(lizard_id, ch) %>%
+  summarize(geo.mean = mean(geo.mean, na.rm = TRUE),
+            .groups = 'drop') %>%
+  pivot_wider(
+    names_from = ch,
+    values_from = geo.mean
+  ) %>%
+data.frame()
+#
+mean_cells <- format_dec(mean(data_cells$fsc), 3)
+quant2_5_cells <- format_dec(quantile(data_cells$fsc, 0.025), 3)
+quant97_5_cells <- format_dec(quantile(data_cells$fsc, 0.975), 3)
+```
+
+Samples examined under the microscope showed a clear presence of neuronal nuclei in the homogenates (Figure S13). Flow cytometry analysis also confirmed the presence of neuronal nuclei in the homogenates, that were within the size range of the cells employed in the experiment (mean size cells experiment = `r mean_cells`, 95% CI = [`r quant2_5_cells`, `r quant97_5_cells`], n = 80; size neurons = ).
+
+```{r, fig-S8}
+#| label: fig-S13
+#| fig-cap: "Fluorescence microscopy image of neuron nuclei stained with NeuN-Alexa 488. The image was excited using a 488 nm wavelength, and green fluorescence corresponds to NeuN-positive cells."
+#
+knitr::include_graphics("./output/figures/microscope/neurons_black_background.jpg")
+```
+
+Figure S8. Fluorescence microscopy image of neuron nuclei stained with NeuN-Alexa 488. The image was excited using a 488 nm wavelength, and green fluorescence corresponds to NeuN-positive cells.
+
+
+**REFERENCES**
+
+Farrow LF, Andronicos NM, McDonald PG, Hamlin AS. 2021. Quantitative determination of neuronal size and density using flow cytometry. _Journal of Neuroscience Methods_, **352**, 109081.
+
+Storks L, Powell BJ, Leal M. 2023. Peeking inside the lizard brain: neuron numbers in Anolis and its implications for cognitive performance and vertebrate brain evolution. _Integrative and Comparative Biology_, **63(1)**, 223-237.
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
+```

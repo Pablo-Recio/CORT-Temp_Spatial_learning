@@ -707,6 +707,7 @@ knitr::include_graphics("./output/figures/text/SEM.png")
 #
 #
 #
+#
 cat("\\newpage")
 #
 #
@@ -1291,6 +1292,58 @@ flextable(sum_m_learn_prel)
 cat("\\newpage")
 #
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#| label: cell_size
+# Getting the size of the cells in the experiment
+mit_df <- read.csv(here("./data/mit_data.csv"))
+euth <- read.csv(here("./data/Euthanasia.csv"))
+#
+data_cells <- merge(mit_df, euth, by = c("plate", "tube.no")) %>%
+  filter(type != "control", ch == "fsc") %>% 
+  dplyr::select(lizard_id, sex, ch, geo.mean) %>%
+  group_by(lizard_id, ch) %>%
+  summarize(geo.mean = mean(geo.mean, na.rm = TRUE),
+            .groups = 'drop') %>%
+  pivot_wider(
+    names_from = ch,
+    values_from = geo.mean
+  ) %>%
+data.frame()
+#
+mean_cells <- format_dec(mean(data_cells$fsc), 3)
+quant2_5_cells <- format_dec(quantile(data_cells$fsc, 0.025), 3)
+quant97_5_cells <- format_dec(quantile(data_cells$fsc, 0.975), 3)
+#
+#
+#
+#
+#
+#| label: fig-S13
+#| fig-cap: "Fluorescence microscopy image of neuron nuclei stained with NeuN-Alexa 488. The image was excited using a 488 nm wavelength, and green fluorescence corresponds to NeuN-positive cells."
+#
+knitr::include_graphics("./output/figures/microscope/neurons_black_background.jpg")
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+cat("\\newpage")
 #
 #
 #
