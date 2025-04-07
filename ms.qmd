@@ -1319,12 +1319,17 @@ data_cells <- merge(mit_df, euth, by = c("plate", "tube.no")) %>%
   ) %>%
 data.frame()
 #
-mean_cells <- format_dec(mean(data_cells$fsc), 3)
-quant2_5_cells <- format_dec(quantile(data_cells$fsc, 0.025), 3)
-quant97_5_cells <- format_dec(quantile(data_cells$fsc, 0.975), 3)
+mean_cells <- format_dec(log(mean(data_cells$fsc)), 3)
+quant2_5_cells <- format_dec(log(quantile(data_cells$fsc, 0.025)), 3)
+quant97_5_cells <- format_dec(log(quantile(data_cells$fsc, 0.975)), 3)
+#
+# Getting the size of the neurons in the validation
+data_neurons <- read.csv(here("./data/neuron_size.csv")) %>%
+  filter(X == "Medial Cortex_Tube_002_003.fcs")
+neuron_size <- log(as.numeric(data_neurons$cells.Neurons...Geometric.Mean..FSC.A.))
 ```
 
-Samples examined under the microscope showed a clear presence of neuronal nuclei in the homogenates (Figure S13). Flow cytometry analysis also confirmed the presence of neuronal nuclei in the homogenates, that were within the size range of the cells employed in the experiment (mean size cells experiment = `r mean_cells`, 95% CI = [`r quant2_5_cells`, `r quant97_5_cells`], n = 80; size neurons = ).
+Samples examined under the microscope showed a clear presence of neuronal nuclei in the homogenates (Figure S13). Flow cytometry analysis also confirmed the presence of neuronal nuclei in the homogenates, that were within the size range of the cells employed in the experiment (mean size cells experiment = `r mean_cells`, 95% CI = [`r quant2_5_cells`, `r quant97_5_cells`], n = 80; size neurons = `r neuron_size`).
 
 ```{r, fig-S8}
 #| label: fig-S13
