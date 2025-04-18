@@ -1,4 +1,4 @@
-,n,mean_DNAdamage,mean_peroxidation,CV_DNAdamage,CV_peroxidation,plate.dam
+specimen,n,mean_DNAdamage,mean_peroxidation,CV_DNAdamage,CV_peroxidation,plate.dam
 Specimen_002_B1_B01_001.fcs,410,24321,11266,110,86.7,1
 Specimen_002_B2_B02_002.fcs,522,16616,7769,155,126,1
 Specimen_003_B3_B03_009.fcs,764,22468,12136,153,133,1
