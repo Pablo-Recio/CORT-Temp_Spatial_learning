@@ -16,16 +16,16 @@ The key file in this repository is the 📄 ms.qmd. This file can be rendered in
 
 The 📄 ms.qmd file makes use of files within a number of folders that are identified in the code chunks. There are a number of important folders in the repository.
 
-  📂 data folder contains all the raw data used in files. Note that there are different files, but the file metadata.xlsx contains all the information about each of the files. In output/database_clean there are the main files employed in the analyses and figures; names of the columns are defined in the metadata.xls file on data folder. 
-  📂 output/figs/ Folder contains all the figures for the paper that are read and included in the paper. 
-  📂 R folder contains three files, two of them used to clean and process data to prepare it for use in the ms.qmd file. Note that readers do not need to open and run these files, but they are simply here to document the workflow and code used to clean up data to be used. These include:
-        📄 1_data_process.R, which is used to produce the files in output/database_clean from the raw data in data folder.
-        📄 func.R, which contains all the functions called later in the ms.qmd file. 
-  📂 bib The bib folder contains:
-        📄 refs.bib the references;
-        📄 animal-cognition.csl the journal formatting style file;
-        📄 template.docx a template docx file to format the resulting rendered files.
-  📂 ANIMCOG This folder contains all the material submitted to the journal, plus all the material from the reviews.
+  📂 data folder contains all the raw data used in files. Note that there are different files, but the file metadata.xlsx contains all the information about each of the files. In output/database_clean there are the main files employed in the analyses and figures; names of the columns are defined in the metadata.xls file on data folder.   
+  📂 output/figs/ Folder contains all the figures for the paper that are read and included in the paper.   
+  📂 R folder contains three files, two of them used to clean and process data to prepare it for use in the ms.qmd file. Note that readers do not need to open and run these files, but they are simply here to document the workflow and code used to clean up data to be used. These include:  
+        📄 1_data_process.R, which is used to produce the files in output/database_clean from the raw data in data folder.  
+        📄 func.R, which contains all the functions called later in the ms.qmd file.   
+  📂 bib The bib folder contains:  
+        📄 refs.bib the references;  
+        📄 animal-cognition.csl the journal formatting style file;  
+        📄 template.docx a template docx file to format the resulting rendered files.  
+  📂 ANIMCOG This folder contains all the material submitted to the journal, plus all the material from the reviews.  
 
 #### Reporting Issues or Asking Questions
 If anything is unclear or you require further detail please do not hesitate to lodge an issue.
