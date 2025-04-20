@@ -71,8 +71,8 @@ learning_slopes <- merge(mod_learning, posteriors_errors, by = "lizard_id")
 mit_df <- read.csv(here("./data/mit_data.csv"))
 euth <- read.csv(here("./data/Euthanasia.csv"))
 mit_damage <- read.csv(here("./data/mit_damage.csv")) %>%
-  filter(startsWith(X, "Specimen_")) %>%
-  mutate(tube.dam = sapply(strsplit(X, "_"), function(x) x[4])) %>%
+  filter(startsWith(specimen, "Specimen_")) %>%
+  mutate(tube.dam = sapply(strsplit(specimen, "_"), function(x) x[4])) %>%
 data.frame()
 #
 #### B.2) Merge mito_df and mit_damage and modify the resultant df to make it clearer

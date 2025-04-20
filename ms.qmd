@@ -2,7 +2,7 @@
 title: "Prenatal conditions do not affect brain physiology and learning in a lizard"
 docx: 
 bibliography: "./bib/refs.bib"
-csl: "./bib/biology-letters.csl"
+csl: "./bib/the-journal-of-experimental-biology.csl"
 reference-doc: "./bib/tmpl.docx"
 execute:
   echo: false
@@ -11,9 +11,9 @@ execute:
   warning: false
 link-citations: true
 crossref:  
-  fig-title: Figure    # (default is "Figure")
+  fig-title: Fig.    # (default is "Figure")
   title-delim: —     # (default is ":")
-  fig-prefix: Figure   # (default is "Figure")
+  fig-prefix: Fig.   # (default is "Figure")
   tbl-prefix: Table  # (default is "Table")
 editor_options: 
   chunk_output_type: console
@@ -101,6 +101,9 @@ Daniel W.A. Noble ORCID: 0000-0001-9460-8743
 cat("\\newpage")
 ```
 
+## Keywords
+cognition, corticosterone, learning, mitochondria, reptiles, incubation temperature
+
 ## Abstract
 Early environmental factors like heat or stress hormones can impair learning through brain metabolic function, crucial for neural development and synaptic plasticity. However, whether early environments always result in cognitive impairment through changes in neural physiology is not well-established outside of a few model systems. Here, we investigated the effects of prenatal temperature and corticosterone (CORT) on brain mitochondrial activity and spatial learning in the delicate skink (_Lampropholis delicata_). We treated eggs with either CORT or a control vehicle and incubated at cold (23 ± 3°C) or hot (28 ± 3°C) temperatures. Juveniles were tested in a spatial learning task over 40 days after which mitochondrial function in the medial cortex was assessed. Despite among-individual variation in learning ability, mitochondrial physiology and spatial learning in _L. delicata_ remained robust to prenatal temperature and CORT exposure. No significant relationship was found between mitochondrial function and cognitive performance, contrary to predictions. Increased metabolic capacity correlated with higher ROS production but did not affect oxidative damage, possibly due to protective mechanisms. These findings highlight the physiological and cognitive resilience of _L. delicata_ to early-life challenges. Future research should explore whether this robustness extends to other brain regions, cognitive domains, and life stages.   
 
@@ -151,7 +154,7 @@ Learning was modeled as a function of trial, CORT, temperature, and their three-
 
 We used the posterior distributions of parameters from these models to test for differences between treatments. Learning slopes were obtained using the ‘trial’ estimates and its interaction with hormone and temperature treatments. Slope estimates less than 0 provide evidence of learning. _pMCMC_ was used to test the hypothesis that posterior distributions of slopes and slope contrasts differed from zero. We considered an effect statistically significant when _pMCMC_ <0.05.  
 
-We fitted a multivariate structural equation model (SEM) using _brms_ to explore direct and indirect links between mitochondrial function and learning. The model was structured based on theoretical expectations shown in @fig-sem. Any missing data was imputed during model fitting using data augmentation [@noble2021planned], but this was largely restricted to DNA damage and lipid peroxidation. To obtain a measure of learning performance we extracted the posterior distribution of individual learning slopes (i.e., changes in error over time) by including a random trial slope for each lizard. Learning slopes and the rest of variables, were standardized as before (see above). We assumed a Gaussian error distribution for all the variables in this model. Factors found to be non-significant in the univariate models were excluded. Clutch identity remained a random factor in our SEM model. Direct, indirect, and total effects were derived from posterior estimates [@kline2005principles] (see table S4).  
+We fitted a multivariate structural equation model (SEM) using _brms_ to explore direct and indirect links between mitochondrial function and learning. The model was structured based on theoretical expectations shown in @fig-sem. Any missing data was imputed during model fitting using data augmentation [@noble2021planned], but this was largely restricted to DNA damage and lipid peroxidation. To obtain a measure of learning performance we extracted the posterior distribution of individual learning slopes (i.e., changes in error over time) by including a random trial slope for each lizard. Learning slopes and the rest of variables, were standardized as before (see above). We assumed a Gaussian error distribution for all the variables in this model. Factors found to be non-significant in the univariate models were excluded. Clutch identity remained a random factor in our SEM model. Direct, indirect, and total effects were derived from posterior estimates [@kline2005principles] (see Table S4).  
   
 ## Results
 
@@ -286,9 +289,9 @@ ggsave("./output/figures/text/fig_results_errors.png", plot=fig_results_learning
 knitr::include_graphics("./output/figures/text/fig_results_errors.png")
 ``` 
 
-We found that the lizards improved their choices over time, making less mistakes as the trials progressed (see @fig-learning and table S1). However, the learning rate was not influenced by CORT, temperature, or their interaction (see contrasts in table S2).
+We found that the lizards improved their choices over time, making less mistakes as the trials progressed (see @fig-learning and Table S1). However, the learning rate was not influenced by CORT, temperature, or their interaction (see contrasts in Table S2).
 
-Mitochondrial density, metabolic capacity, ROS, DNA damage, and lipid peroxidation were also not affected by prenatal conditions (see @fig-results_mit and table S2). We did not find effects of sex and age on mitochondrial physiology (see table S3 and tables S5-S9).
+Mitochondrial density, metabolic capacity, ROS, DNA damage, and lipid peroxidation were also not affected by prenatal conditions (see @fig-results_mit and Table S2). We did not find effects of sex and age on mitochondrial physiology (see Table S3 and Tables S5-S9).
 
 ```{r, organise_posteriors_mit}
 #| label: organise_posteriors_mit
@@ -608,7 +611,7 @@ ROS_sem <- data.frame(
 sem_results <- bind_rows(learn_sem, DNA_sem, perox_sem, ROS_sem)
 ```
 
-Our SEM showed that mitochondrial physiology was unrelated to learning abilities (see @fig-sem and table S4). While we found that ROS production increased with metabolic capacity (β = `r format_dec(mean(coeff_potential_ros), 3)`, 95% CI = [`r format_dec(quantile(coeff_potential_ros, 0.025), 3)`, `r format_dec(quantile(coeff_potential_ros, 0.975), 3)`], _pMCMC_ `r format_p(pmcmc(coeff_potential_ros), 3, equal = TRUE)`), ROS was not related to  oxidative damage (see @fig-sem and table S4).
+Our SEM showed that mitochondrial physiology was unrelated to learning abilities (see @fig-sem and table S4). While we found that ROS production increased with metabolic capacity (β = `r format_dec(mean(coeff_potential_ros), 3)`, 95% CI = [`r format_dec(quantile(coeff_potential_ros, 0.025), 3)`, `r format_dec(quantile(coeff_potential_ros, 0.975), 3)`], _pMCMC_ `r format_p(pmcmc(coeff_potential_ros), 3, equal = TRUE)`), ROS was not related to  oxidative damage (see @fig-sem and Table S4).
 
 ```{r, fig-sem}
 #| label: fig-sem
@@ -1287,9 +1290,9 @@ cat("\\newpage")
 
 #### Brain validation
 
-To ensure that neurons were not unintentionally lost during homogenization, we performed a pilot study where we euthanized four lizards and prepared medial cortex homogenates using the same procedures as before. However, to ensure we could identify neurons, homogenates here were dyed with marker that specifically targeted neuron nuclei (Farrow et al. 2021; Storks et al. 2023). We employed fluorescence microscopy and flow cytometry to check for the presence of neurons in the homogenates.   
+To ensure that neurons were not unintentionally lost during homogenization, we performed a pilot study where we euthanized four lizards and prepared medial cortex homogenates using the same procedures as before. However, to ensure we could identify neurons, homogenates here were dyed with marker that specifically targeted neuron nuclei (Farrow et al., 2021; Storks et al., 2023). We employed fluorescence microscopy and flow cytometry to check for the presence of neurons in the homogenates.   
 
-Euthanasia and homogenization for each of brain region followed the procedures outlined above (see _Methods 2: Flow cytometry_). Before staining the samples, cells were also fixed and permeabilized as described previously (see _Methods 2: Flow cytometry_). Following permeabilization, we centrifuged the samples at 1000 RCF for 10 minutes and resuspended the pellet in 100 µL of a 1:100 dilution of NeuN + Alexa488 fluorescent conjugate to dye the neuronal nuclei (Farrow et al. 2021; Storks et al. 2023). The samples were incubated at +4 ºC overnight. 
+Euthanasia and homogenization for each of brain region followed the procedures outlined above (see _Methods 2: Flow cytometry_). Before staining the samples, cells were also fixed and permeabilized as described previously (see _Methods 2: Flow cytometry_). Following permeabilization, we centrifuged the samples at 1000 RCF for 10 minutes and resuspended the pellet in 100 µL of a 1:100 dilution of NeuN + Alexa488 fluorescent conjugate to dye the neuronal nuclei (Farrow et al., 2021; Storks et al., 2023). The samples were incubated at +4 ºC overnight. 
 
 The following day we centrifuged the samples at 1000 RCF for 10 minutes and resuspended the pellet in 100 µL of PBS. Samples were split in two: 50 µL from each was reserved for examination under a Zeiss AxioObserver Z1 microscope, while the remaining 50 µL from each sample was pooled into a single tube for flow cytometry analysis. . Flow cytometry of stained cells allowed us to validate that our gating strategy was correct.    
 
@@ -1335,9 +1338,9 @@ Figure S8. Fluorescence microscopy image of neuron nuclei stained with NeuN-Alex
 
 **REFERENCES**
 
-Farrow LF, Andronicos NM, McDonald PG, Hamlin AS. 2021. Quantitative determination of neuronal size and density using flow cytometry. _Journal of Neuroscience Methods_, **352**, 109081.
+**Farrow, L. F., Andronicos, N. M., McDonald, P. G. and Hamlin, A. S.** (2021). Quantitative determination of neuronal size and density using flow cytometry. _Journal of Neuroscience Methods_, **352**, 109081.  
 
-Storks L, Powell BJ, Leal M. 2023. Peeking inside the lizard brain: neuron numbers in Anolis and its implications for cognitive performance and vertebrate brain evolution. _Integrative and Comparative Biology_, **63(1)**, 223-237.
+**Storks, L., Powell, B. J. and Leal, M. (2023)**. Peeking inside the lizard brain: neuron numbers in Anolis and its implications for cognitive performance and vertebrate brain evolution. _Integrative and Comparative Biology_, **63(1)**, 223-237.  
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
