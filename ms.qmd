@@ -109,7 +109,7 @@ Early environmental factors like heat or stress hormones can impair learning thr
 
 ## Introduction
 
-Learning - the acquisition and consolidation of new information - enables animals to create new associations between events, which can be essential for coping with environmental change [@dukas_evolutionary_2004; @leal_behavioural_2012; @buchanan_condition_2013]. However, the capacity to form new associations varies among individuals, potentially affecting their responses to environmental challenges [@ward2016ecological; @welklin2024spatial]. Learning faster may imply better exploitation of resources or responding more efficiently to novel threats [@ward2016ecological]. Nevertheless, learning fast can also carry potential costs, such as reduced memory accuracy or energetic trade-offs [@dukas2004costs]. As such, variation in learning abilities likely reflects different evolutionary compromises, with significant implications for individual fitness [@ward2016ecological; @welklin2024spatial]. Unravelling the mechanisms that drive these differences is crucial for understanding cognitive evolution.    
+Learning - the acquisition and consolidation of new information - enables animals to create new associations between events, which can be essential for coping with environmental change [@dukas_evolutionary_2004; @leal_behavioural_2012; @buchanan_condition_2013]. However, the capacity to form new associations varies among individuals, potentially affecting their responses to environmental challenges [@ward2016ecological; @welklin2024spatial]. Learning faster may imply better exploitation of resources or responding more efficiently to novel threats [@ward2016ecological]. Nevertheless, learning fast can also carry potential costs, such as reduced memory accuracy or energetic trade-offs [@dukas_evolutionary_2004]. As such, variation in learning abilities likely reflects different evolutionary compromises, with significant implications for individual fitness [@ward2016ecological; @welklin2024spatial]. Unravelling the mechanisms that drive these differences is crucial for understanding cognitive evolution.    
 
 Factors like age, sex, or early-life conditions can have important effects on learning abilities [@szuran_water_1994; @lemaire_prenatal_2000; @zhu_prenatal_2004; @amiel_hotter_2012; @amiel_egg_2014; @carazo_sex_2014; @noble_age-dependent_2014]. Adverse developmental environments are particularly influential, as the brain is highly sensitive to environmental inputs during early life [@zhu_prenatal_2004]. For example, early experiences can alter neurotransmitter production [@amani2021perinatal], gene expression [@zhou2020effects], or brain structure [@amiel_effects_2017], with lasting effects on cognition. Among the physiological mechanisms underlying learning, mitochondrial activity is considered a key factor [@siegel1994basic; @du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. The neural processes involved in learning impose substantial energetic demands [@mcnay_decreases_2000; @mann_coupling_2021; @alexandrov_neuronal_2022], making efficient mitochondrial respiration essential [@du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. Additionally, learning depends on a dense network of functional neurons [@lefebvre_taxonomic_2011; @amiel_effects_2017], which can be compromised by excessive oxidative stress - a byproduct of mitochondrial metabolism [@finkel_oxidants_2000; @zhu_prenatal_2004; @du_dynamic_2009; @gong_chronic_2011; @hoffmann_mitochondrion_2018]. Studies on mammals have shown the pervasive effects of mitochondrial physiology on cognitive abilities [@zhu_prenatal_2004; @hara_presynaptic_2014; @cao2014ampk]. However, the extent to which these effects are generalisable to other taxa - particularly reptiles - remains largely unexplored [see @matsubara2017cold; @szabo_learning_2021].     
 
@@ -125,7 +125,7 @@ Here, we examined how prenatal temperature and corticosterone (CORT) — the pri
 Lizards came from a breeding colony established in the laboratory in 2019 from wild populations in Sydney, Australia. The colony consisted of 270 adults in groups of two males and four females. Eggs were collected from these groups between November 2023 to January 2024. The collected eggs belonged to either the first or second generation of our breeding colony. After collecting the eggs, we treated them with CORT or vehicle control and incubated them under two different temperature regimes (see below). Clutch and egg identity were assigned immediately after egg collection, and the eggs were incubated in individual cups until hatching. Hatchlings were also kept in individual enclosures until the end of the experiment (see @fig-Methods A). For details on husbandry and breeding conditions see _Methods 1: Animal husbandry in Supplementary Material_.
  
 #### Corticosterone and temperature manipulations
-We tested the combined effects of prenatal CORT and temperature by elevating CORT concentrations in eggs and then incubating them under one of two temperature regimes (Cold - 23 ± 3 ºC or Hot - 28 ± 3 ºC). We used a partial split clutch design where eggs from a given clutch were distributed equally across the four treatments when clutch sizes were larger than four and randomly across treatments when less than four. CORT-treated eggs were topically supplied with 5 µL of crystalline corticosterone (Sigma, Cat. No. C2505) dissolved in 100% ethanol at a final concentration of 10 pg CORT/mL (CORT treatment), while Control eggs received an equal volume of 100% Ethanol. CORT dose increased mean yolk CORT levels 2 standard deviations higher than control eggs in previous studies [@crino2024eggs]. Eggs were then incubated in one of the two previously mentioned temperature regimes. Mean incubation temperatures represent the lower and upper limits of the natural range of nest temperatures in _L. delicata_ [mean nesting temperatures = 27.4 ºC; @cheetham2011embryonic]. Incubation temperatures fluctuated daily by ± 3 ºC with all eggs within a treatment group experiencing identical thermal cycles mimicking natural conditions. Nonetheless, recent meta-analyses suggest little difference between dial temperature fluctuation treatments and constant ones [@raynal2022impact; @stocker2024effect]. The higher temperature treatment (28 ºC) was above the thermal optima estimated for _L. delicata_ [T~opt~ = 25 ºC; @pettersen2023maternal] and reached more stressful temperatures daily as fluctuations occurred around the mean treatment temperature (i.e., 32 ºC).
+We tested the combined effects of prenatal CORT and temperature by elevating CORT concentrations in eggs and then incubating them under one of two temperature regimes (Cold - 23 ± 3 ºC or Hot - 28 ± 3 ºC). We used a partial split clutch design where eggs from a given clutch were distributed equally across the four treatments when clutch sizes were larger than four and randomly across treatments when less than four. CORT-treated eggs were topically supplied with 5 µL of crystalline corticosterone (Sigma, Cat. No. C2505) dissolved in 100% ethanol at a final concentration of 10 pg CORT/mL (CORT treatment), while Control eggs received an equal volume of 100% Ethanol. CORT dose increased mean yolk CORT levels 2 standard deviations higher than control eggs in previous studies [@crino2024eggs]. Eggs were then incubated in one of the two previously mentioned temperature regimes. Mean incubation temperatures represent the lower and upper limits of the natural range of nest temperatures in _L. delicata_ [mean nesting temperatures = 27.4 ºC; @cheetham2011embryonic]. Incubation temperatures fluctuated daily by ± 3 ºC with all eggs within a treatment group experiencing identical thermal cycles mimicking natural conditions. Nonetheless, recent meta-analyses suggest little difference between dial temperature fluctuation treatments and constant ones [@raynal2022impact; @stocker2024effect]. The higher temperature treatment (28 ºC) was above the thermal optima estimated for _L. delicata_ [T~opt~ = 25 ºC; @pettersen2023maternal] and reached more stressful temperatures daily as fluctuations occurred around the mean treatment temperature (i.e., 31 ºC).     
 
 #### Spatial learning  
 The spatial learning task involved training lizards to navigate a 6-arm maze (see @fig-Methods B) to reach an exit connected to a transport box that allowed us to return the lizards to their enclosure without further contact. In each trial, lizards were placed by hand in the centre of the maze and left to acclimatise for two minutes. During acclimatisation, the central area was surrounded by a yellow device mounted on a pulley system. At the start of each trial, this device was lifted to startle the lizard. If the lizard did not immediately choose an arm, it was gently prodded with a brush at the end of the tail. A lizard was considered to have made a choice once it inserted its head into one of the arms. If the chosen arm was incorrect, we encouraged movement by gently touching the lizard with a brush, but without guiding it toward any specific arm or back to the centre of the maze. Each incorrect choice was recorded as an error, regardless of whether the same arm had been visited previously. If the lizard did not choose the correct arm after 20 errors — at which point it typically ceased responding — it was gently guided to the correct arm.   
@@ -143,7 +143,7 @@ knitr::include_graphics("./Others/Methods.png")
 ```
 
 #### Brain mitochondrial function
-Immediately after completing the tests, we quantified mitochondrial physiology in the brains of lizards. We euthanized lizards via intraperitoneal injection of 10 mg/kg of a 10 mg/mL alfaxan solution (a potent anesthetic), followed by decapitation. Before decapitation, we evaluated lizard righting responses and the pinching reflexes in one of the front limbs.  
+Immediately after completing the tests, we quantified mitochondrial physiology in the brains of lizards (see @fig-Methods A). We euthanized lizards via intraperitoneal injection of 10 mg/kg of a 10 mg/mL alfaxan solution (a potent anesthetic), followed by decapitation. Before decapitation, we evaluated lizard righting responses and the pinching reflexes in one of the front limbs.  
 
 We extracted the medial cortex in the telencephalon as this brain region is considered homologous to the mammalian hippocampus, where spatial cognition is encoded [@rodríguez2002conservation; @naumann2015reptilian]. The tissue was transferred to 1X PBS solution and then homogenized mechanically using a 100 µm mesh filter (pluriStrainer). The resultant homogenate was divided into two aliquots: one was used fresh for measuring mitochondrial density, membrane potential - a metric of mitochondrial metabolic capacity [@martinez2016tca] - and superoxide (ROS) production; and the other was cryopreserved for later measurements of DNA damage and lipid peroxidation.  
 
@@ -166,9 +166,7 @@ We fitted a multivariate structural equation model (SEM) using _brms_ to explore
   
 ## Results
 
-We started with 80 lizards - 20 per treatment - from `r total_clutches` clutches. However, due to natural mortality, only 79 lizards were included in the learning analyses, and 78 in the mitochondrial analyses. We provide final sample sizes in all our figures.     
-
-Mean estimated clutch effects in the univariate models ranged from 0.073 to 0.192 (see Table S3). Mean estimated effect of lizard identity on the learning slopes was `r format_dec(mean(m_def_learn$sd_lizard_id__Intercept), 3)` (90% CI = [`r format_dec(quantile(m_def_learn$sd_lizard_id__Intercept, 0.05), 3)`; `r format_dec(quantile(m_def_learn$sd_lizard_id__Intercept, 0.95), 3)`]).      
+We started with 80 lizards - 20 per treatment - from `r total_clutches` clutches. However, due to natural mortality, only 79 lizards were included in the learning analyses, and 78 in the mitochondrial analyses. We provide final sample sizes in all our figures.      
 
 ```{r, models_mitochondrial}
 #| label: models_mitochondrial
@@ -298,6 +296,8 @@ fig_results_learning <- plot_grid(fig_learningA, fig_learningB, nrow = 1) +
 ggsave("./output/figures/text/fig_results_errors.png", plot=fig_results_learning , width = 21, height = 7, units = "cm", dpi = 600)
 knitr::include_graphics("./output/figures/text/fig_results_errors.png")
 ``` 
+
+Univariate models suggested some variation between clutches for all the response variables as summarized in Table S3. We also found some variation across individuals in learning rates (SD trial slope = `r format_dec(mean(m_def_learn$sd_lizard_id__Intercept), 3)`; 95% CI = [`r format_dec(quantile(m_def_learn$sd_lizard_id__Intercept, 0.025), 3)`, `r format_dec(quantile(m_def_learn$sd_lizard_id__Intercept, 0.975), 3)`]).       
 
 We found that the lizards improved their choices over time, making less mistakes as the trials progressed (see @fig-learning and Table S1). However, the learning rate was not influenced by CORT, temperature, or their interaction (see contrasts in Table S2).
 
@@ -678,7 +678,9 @@ Lizards were able to learn a complex spatial task with marked improvements over 
 
 #### Spatial learning is robust to prenatal conditions  
 Lizards exhibited clear evidence for learning, but learning rates were not influenced by prenatal CORT or temperature as we predicted, contrasting with findings in other taxa where incubation temperature and prenatal GCs impacted learning and brain development [@lemaire_prenatal_2000; @zhu_prenatal_2004; @amiel_hotter_2012; @amiel_effects_2017; @dayananda_incubation_2017]. 
-Our results seem to suggest that spatial learning abilities in _L. delicata_ are buffered from adverse early environmental conditions, consistent with our previous findings showing that behavioural flexibility in this species is also unaffected by prenatal CORT or temperature [@recio2025early]. _L. delicata_'s resilience may stem from the relevance of spatial cognition in lizards. For example, spatial learning in velvet geckos (_Amalosia lesueurii_) enhances survival in the wild [@dayananda_incubation_2017]. **Alternatively, the experimental treatments may not have been sufficiently challenging to elicit detectable effects, and the apparent resilience observed in _L. delicata_ may reflect the relatively mild nature of the prenatal conditions. However, our CORT treatment elevated CORT levels in eggs above two standard deviations the natural mean concentration [@crino2024eggs], while our thermal regimes were both beyond the T~opt~ in this species [@pettersen2023maternal] and yet within the range of nesting temperatures in the wild [@cheetham2011embryonic]. Therefore, we consider that our manipulations represent biologically relevant, ecologically realistic stressors. Nonetheless, future studies could explore whether more extreme conditions, such as prolonged exposure elevated CORT or incubation temperatures beyond the natural nesting limits would affect brain function and cognition in _L. delicata_ or other lizard species.**    
+Our results seem to suggest that spatial learning abilities in _L. delicata_ are buffered from adverse early environmental conditions, consistent with our previous findings showing that behavioural flexibility in this species is also unaffected by prenatal CORT or temperature [@recio2025early]. _L. delicata_'s resilience may stem from the relevance of spatial cognition in lizards. For example, spatial learning in velvet geckos (_Amalosia lesueurii_) enhances survival in the wild [@dayananda_incubation_2017].   
+
+Alternatively, the experimental treatments may not have been sufficiently challenging to elicit detectable effects, and the apparent resilience observed in _L. delicata_ may reflect the relatively mild nature of the prenatal conditions. However, our CORT treatment elevated CORT levels in eggs above two standard deviations the natural mean concentration [@crino2024eggs], while our thermal regimes were both beyond the T~opt~ in this species [@pettersen2023maternal] and yet within the range of nesting temperatures in the wild [@cheetham2011embryonic]. Therefore, we consider that our manipulations represent biologically relevant, ecologically realistic stressors. Nonetheless, future studies could explore whether more extreme conditions, such as prolonged exposure elevated CORT or incubation temperatures beyond the natural nesting limits would affect brain function and cognition in _L. delicata_ or other lizard species.    
 
 #### Brain metabolic physiology is not affected by prenatal conditions   
 Contrary to our predictions, prenatal temperature and CORT did not significantly influence mitochondrial physiology in the medial cortex of _L. delicata_. Studies in other taxa have shown that incubation at high temperatures decreases energy production and oxidative stress [@treidel2016temperature; @zavorka_climate_2021], while elevated GCs or maternal stress is related to lower mitochondrial efficiency and higher oxidative damage [@costantini2011meta; @gong_chronic_2011; but see @crino2024eggs]. In _L. delicata_, high incubation temperatures are known to decrease mitochondrial efficiency in the liver [@crino2024eggs]. However, our study shows that mitochondrial physiology in _L. delicata_’s brain is robust to both incubation temperature and prenatal CORT. Differences between liver and brain could reflect tissue-dependent responses to early-life conditions, highlighting the importance of studying these effects across multiple tissues [@casagrande2023mitochondrial].   
@@ -959,18 +961,18 @@ for(x in var){
   }
   df <- get(x)
   mean <- format_dec(mean(df$sd_clutch__Intercept), 3)
-  q5 <- format_dec(quantile(df$sd_clutch__Intercept, 0.05), 3)
-  q95 <- format_dec(quantile(df$sd_clutch__Intercept, 0.95), 3)
+  q2_5 <- format_dec(quantile(df$sd_clutch__Intercept, 0.025), 3)
+  q975 <- format_dec(quantile(df$sd_clutch__Intercept, 0.975), 3)
   clutches <- rbind(clutches, data.frame(
     Variable = lab,
     Mean_effect = mean,
-    q5 = q5,
-    q95 = q95
+    q2_5 = q2_5,
+    q975 = q975
   ))
 }
 # Modify the df
 clutches <- clutches %>%
-  mutate('90% CI' = paste0("[", q5, ", ", q95, "]")) %>%
+  mutate('95% CI' = paste0("[", q2_5, ", ", q975, "]")) %>%
   dplyr::select(Variable, Mean_effect, `95% CI`)
 # Make the table for the clutch effects
 # Table format
@@ -983,6 +985,10 @@ table_clutches <- flextable(clutches) %>%
   autofit()
 #
 table_clutches
+```
+
+```{r, results='asis', echo=FALSE}
+cat("\\newpage")
 ```
 
 #### Results SEM
@@ -1251,7 +1257,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S6.  Preliminary results of the models testing for Metabolic capacity.
+_Table S6.  Preliminary results of the models testing for Metabolic capacity._
 ```{r, results_preliminary_potential}
 #| tbl-cap: "Preliminary results of the models testing for Metabolic capacity"
 #| label: results_preliminary_potential
@@ -1271,7 +1277,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S7. Preliminary results of the models testing for ROS.
+_Table S7. Preliminary results of the models testing for ROS._
 ```{r, results_preliminary_ros}
 #| tbl-cap: "Preliminary results of the models testing for ROS"
 #| label: results_preliminary_ros
@@ -1291,7 +1297,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S8. Preliminary results of the models testing for DNA damage.
+_Table S8. Preliminary results of the models testing for DNA damage._
 ```{r, results_preliminary_dnadamage}
 #| tbl-cap: "Preliminary results of the models testing for DNA damage"
 #| label: results_preliminary_dnadamage
@@ -1311,7 +1317,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S9. Preliminary results of the models testing for lipid peroxidation.
+_Table S9. Preliminary results of the models testing for lipid peroxidation._
 ```{r, results_preliminary_peroxidation}
 #| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
 #| label: results_preliminary_peroxidation
@@ -1331,7 +1337,7 @@ Model convergence was checked through rhat and ess_bulk values. Summary indicate
 cat("\\newpage")
 ```
 
-Table S10. Preliminary results of the models testing for learning.
+_Table S10. Preliminary results of the models testing for learning._
 ```{r, results_preliminary_learning}
 #| tbl-cap: "Preliminary results of the models testing for lipid peroxidation"
 #| label: results_preliminary_learning
