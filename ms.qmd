@@ -21,7 +21,7 @@ editor_options:
 
 ```{r}
 #| label: setup
-pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x, cowplot, fitdistrplus, MASS, goftest, forcats, nortest, fitdistrplus, ggh4x, PupillometryR, png, grid, remotes, ggthemes, bayestestR, HDInterval, DiagrammeR, magick)
+pacman::p_load(tidyverse, flextable, emmeans, DHARMa, brms, here, ggplot2, lme4, zoo, lmerTest, broom, tidybayes, ggh4x, cowplot, fitdistrplus, MASS, goftest, forcats, nortest, fitdistrplus, ggh4x, PupillometryR, png, grid, remotes, ggthemes, bayestestR, HDInterval, DiagrammeR, magick, grImport2)
 ```
 
 ```{r, data_processing}
@@ -139,7 +139,7 @@ The task was repeated once daily for 40 consecutive days. By the end of the expe
 #| label: fig-Methods
 #| fig-cap: "Scheme of our experimental design. In panel A, we show the different stages of our experiment and the main manipulations. In panel B, we show the spatial learning maze with its dimensions."
 #
-knitr::include_graphics("./Others/Methods.png")
+knitr::include_graphics("./Others/Methods.pdf")
 ```
 
 #### Brain mitochondrial function
@@ -293,8 +293,8 @@ fig_results_learning <- plot_grid(fig_learningA, fig_learningB, nrow = 1) +
   annotate("text", x = 0.7, y = 0.55, label = "*", hjust = 1, vjust = 1, size = 7) +
   annotate("text", x = 0.69, y = 0.38, label = "*", hjust = 1, vjust = 1, size = 7)
 #
-ggsave("./output/figures/text/fig_results_errors.png", plot=fig_results_learning , width = 21, height = 7, units = "cm", dpi = 600)
-knitr::include_graphics("./output/figures/text/fig_results_errors.png")
+ggsave("./output/figures/text/fig_results_errors.pdf", plot=fig_results_learning , width = 21, height = 7, units = "cm", dpi = 600)
+knitr::include_graphics("./output/figures/text/fig_results_errors.pdf")
 ``` 
 
 Univariate models suggested some variation between clutches for all the response variables as summarized in Table S3. We also found some variation across individuals in learning rates (SD trial slope = `r format_dec(mean(m_def_learn$sd_lizard_id__Intercept), 3)`; 95% CI = [`r format_dec(quantile(m_def_learn$sd_lizard_id__Intercept, 0.025), 3)`, `r format_dec(quantile(m_def_learn$sd_lizard_id__Intercept, 0.975), 3)`]).       
@@ -387,8 +387,8 @@ final_plot_mit <- ggdraw(fig_mit) +
   draw_image(here("./Others/brain_fig.png"), x = 0.53, y = 0.34, width = 0.45, height = 0.45)
 #
 # Print final plot
-ggsave(here("./output/figures/text/results_mit.png"), plot = final_plot_mit, width = 21, height = 21, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/text/results_mit.png")
+ggsave(here("./output/figures/text/results_mit.pdf"), plot = final_plot_mit, width = 21, height = 21, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/text/results_mit.pdf")
 ```
 
 ```{r, model_sem}
@@ -657,6 +657,7 @@ potential_ros <- paste0(format_dec(mean(coeff_potential_ros), 3),
                   " [", format_dec(quantile(coeff_potential_ros, 0.05), 3),
                   ", ", format_dec(quantile(coeff_potential_ros, 0.95), 3), "]")
 #
+#
 imgSEM <- readPNG(here("Others", "SEM.png"))
 plot_SEM <- rasterGrob(imgSEM, interpolate = TRUE)
 #
@@ -669,8 +670,8 @@ fig_SEM <- ggdraw(plot_SEM) +
   annotate("text", x = 0.547, y = 0.295, label = ros_perox, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
   annotate("text", x = 0.325, y = 0.284, label = density_ros, hjust = 1, vjust = 1, size = 3.5, family = "Times") +
   annotate("text", x = 0.324, y = 0.757, label = potential_ros, hjust = 1, vjust = 1, size = 3.5, family = "Times")
-ggsave(here("./output/figures/text/SEM.png"), plot = fig_SEM, width = 21, height = 10, units = "cm", dpi = 600, bg = "white")
-knitr::include_graphics("./output/figures/text/SEM.png")
+ggsave(here("./output/figures/text/SEM.pdf"), plot = fig_SEM, width = 21, height = 10, units = "cm", dpi = 600, bg = "white")
+knitr::include_graphics("./output/figures/text/SEM.pdf")
 ```
 
 ## Discussion
