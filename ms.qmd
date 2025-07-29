@@ -81,14 +81,14 @@ for(k in 1:length(hormone)){
 }
 ```
 
-Pablo Recio^1^,$\ddagger$ , Dalton C. Leibold^1^, Ondi L. Crino ^1,2^, Christopher R. Friesen^3,4^, Daniel W.A. Noble^1^
+Pablo Recio^1#^,$\ddagger$ , Dalton C. Leibold^1#^, Ondi L. Crino ^1,2^, Christopher R. Friesen^3,4^, Daniel W.A. Noble^1^
 
 ^1^ Division of Ecology and Evolution, Research School of Biology, The Australian National University, Canberra, ACT 2601, Australia  
 ^2^ Flinders University, College of Science and Engineering, Bedford Park, SA 5042, Australia  
 ^3^ University of Wollongong, Wollongong, NSW 2500, Australia  
 ^4^ Environmental Futures University of Wollongong, Wollongong, NSW 2500, Australia
 $\ddagger$ Corresponding author: pablo.reciosantiago@anu.edu.au  
-
+^#^ These authors contributed equally to this work
 
 Pablo Recio ORCID: 0000-0002-5890-0218  
 Dalton C. Leibold ORCID: 0000-0001-9645-2033  
@@ -109,7 +109,7 @@ Early environmental factors like heat or stress hormones can impair learning thr
 
 ## Introduction
 
-Learning - the acquisition and consolidation of new information - enables animals to create new associations between events, which can be essential for coping with environmental change [@dukas_evolutionary_2004; @leal_behavioural_2012; @buchanan_condition_2013]. However, the capacity to form new associations varies among individuals, potentially affecting their responses to environmental challenges [@ward2016ecological; @welklin2024spatial]. Learning faster may imply better exploitation of resources or more efficient responses to novel threats [@ward2016ecological]. Nevertheless, learning fast can also carry potential costs, such as reduced memory accuracy or energetic trade-offs [@dukas_evolutionary_2004]. As such, variation in learning abilities likely reflects different evolutionary compromises, with significant implications for individual fitness [@ward2016ecological; @welklin2024spatial]. Unravelling the mechanisms that drive these differences is crucial for understanding cognitive evolution.    
+Learning- the acquisition and consolidation of new information- enables animals to create new associations between events, which can be essential for coping with environmental change [@dukas_evolutionary_2004; @leal_behavioural_2012; @buchanan_condition_2013]. However, the capacity to form new associations varies among individuals, potentially affecting their responses to environmental challenges [@ward2016ecological; @welklin2024spatial]. Learning faster may imply better exploitation of resources or more efficient responses to novel threats [@ward2016ecological]. Nevertheless, learning fast can also carry potential costs, such as reduced memory accuracy or energetic trade-offs [@dukas_evolutionary_2004]. As such, variation in learning abilities likely reflects different evolutionary compromises, with significant implications for individual fitness [@ward2016ecological; @welklin2024spatial]. Unravelling the mechanisms that drive these differences is crucial for understanding cognitive evolution.    
 
 Factors like age, sex, or early-life conditions can have important effects on learning abilities [@szuran_water_1994; @lemaire_prenatal_2000; @zhu_prenatal_2004; @amiel_hotter_2012; @amiel_egg_2014; @carazo_sex_2014; @noble_age-dependent_2014]. Adverse developmental environments are particularly influential, as the brain is highly sensitive to environmental inputs during early life [@zhu_prenatal_2004]. For example, early experiences can alter neurotransmitter production [@amani2021perinatal], gene expression [@zhou2020effects], or brain structure [@amiel_effects_2017], with lasting effects on cognition. Among the physiological mechanisms underlying learning, mitochondrial activity is considered a key factor [@siegel1994basic; @du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. The neural processes involved in learning impose substantial energetic demands [@mcnay_decreases_2000; @mann_coupling_2021; @alexandrov_neuronal_2022], making efficient mitochondrial respiration essential [@du_dynamic_2009; @picard_mitochondria_2014; @picard_energetic_2018]. Additionally, learning depends on a dense network of functional neurons [@lefebvre_taxonomic_2011; @amiel_effects_2017], which can be compromised by excessive oxidative stress - a byproduct of mitochondrial metabolism [@finkel_oxidants_2000; @zhu_prenatal_2004; @du_dynamic_2009; @gong_chronic_2011; @hoffmann_mitochondrion_2018]. Studies on mammals have shown the pervasive effects of mitochondrial physiology on cognitive abilities [@zhu_prenatal_2004; @hara_presynaptic_2014; @cao2014ampk]. However, the extent to which these effects are generalisable to other taxa - particularly reptiles - remains largely unexplored [see @matsubara2017cold; @szabo_learning_2021].     
 
