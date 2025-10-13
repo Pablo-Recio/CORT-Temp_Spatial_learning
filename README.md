@@ -4,7 +4,7 @@
 
 This repository contains the final code, data, and figures used in the following manuscript:
 
-Recio et al. 2024. Prenatal conditions do not affect brain physiology and learning in a lizard
+Recio et al. 2024. Prenatal conditions do not affect brain physiology and learning in a lizard. Journal of Experimental Biology.
 
 Supplementary Materials: The supplementary materials associated with this paper is integrated within the ms.docx or ms.qmd files. 
 
